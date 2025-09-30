@@ -13,8 +13,9 @@ message BoothEvent {
   Date date = 3;
   float participation_fee = 4;
   float sales_fee = 5;
-  bool closed = 6;
-  google.protobuf.Timestamp closed_on = 7;
+  float fees_rounding_step = 6;
+  bool closed = 7;
+  google.protobuf.Timestamp closed_on = 8;
 }
 
 message VendorKey {
