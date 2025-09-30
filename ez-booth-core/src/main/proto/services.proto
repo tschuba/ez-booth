@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "model.proto";
+
+message Checkout {
+  BoothEventKey event = 1;
+  repeated PurchaseItem items = 2;
+  bool print_receipt = 3;
+}
+
+message ChargedFees {
+  double participation_fee = 1;
+  double sales_fee = 2;
+}
+
+message ChargingConfig {
+  float participation_fee = 1;
+  float sales_fee = 2;
+  float rounding_step = 3;
+}
+
+message BalanceInput {
+  float total_sales_amount = 1;
+  ChargingConfig charging_config = 2;
+}
+
+message SalesBalance {
+  double total_revenue = 1;
+  ChargedFees fees = 2;
+}
+
+service BoothEventService {
+  rpc SaveEvent(BoothEvent) returns (google.protobuf.Empty);
+  rpc GetAllEvents(google.protobuf.Empty) returns (stream BoothEvent);
+  rpc GetEvent(BoothEventKey) returns (BoothEvent);
+  rpc CloseEvent(BoothEventKey) returns (BoothEvent);
+  rpc OpenEvent(BoothEventKey) returns (BoothEvent);
+  rpc DeleteEvent(BoothEventKey) returns (google.protobuf.Empty);
+}
+
+service PurchaseService {
+  rpc Checkout(Checkout) returns (Purchase);
+  rpc GetPurchaseByKey(PurchaseKey) returns (Purchase);
+  rpc GetPurchasesByEvent(PurchaseKey) returns (Purchase);
+}
+
+service ChargingService {
+  rpc CalculateFees(VendorKey) returns (ChargedFees);
+  rpc CalculateBalance(BalanceInput) returns (SalesBalance);
+}
