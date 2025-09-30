@@ -15,15 +15,6 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <properties>
-        <java.version>25</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <grpc.version>1.74.0</grpc.version>
-        <protobuf-java.version>4.31.1</protobuf-java.version>
-        <ez-booth-core.version>1.0.0</ez-booth-core.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.grpc</groupId>
