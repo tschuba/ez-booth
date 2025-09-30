@@ -5,7 +5,7 @@ import "google/protobuf/timestamp.proto";
 import "core.proto";
 import "model.proto";
 
-message Checkout {
+message CheckoutInput {
   BoothEventKey event = 1;
   repeated PurchaseItem items = 2;
   bool print_receipt = 3;
@@ -21,7 +21,7 @@ service BoothEventService {
 }
 
 service PurchaseService {
-  rpc Checkout(Checkout) returns (Purchase);
+  rpc Checkout(CheckoutInput) returns (Purchase);
   rpc GetPurchaseByKey(PurchaseKey) returns (Purchase);
   rpc GetPurchasesByEvent(PurchaseKey) returns (Purchase);
 }
