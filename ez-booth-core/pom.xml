@@ -6,7 +6,7 @@
 
     <groupId>tschuba.ez-booth</groupId>
     <artifactId>ez-booth-core</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <properties>
         <java.version>25</java.version>
