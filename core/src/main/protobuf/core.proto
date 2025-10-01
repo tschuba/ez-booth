@@ -1,6 +1,10 @@
 syntax = "proto3";
 
+option java_package = "tschuba.ez.booth.proto";
+option java_outer_classname = "ProtoCore";
+
 message Date {
+
   // Year of the date. Must be from 1 to 9999, or 0 to specify a date without
   // a year.
   uint32 year = 1;

@@ -5,6 +5,9 @@ import "google/protobuf/timestamp.proto";
 import "core.proto";
 import "model.proto";
 
+option java_package = "tschuba.ez.booth.proto";
+option java_outer_classname = "ProtoServices";
+
 message CheckoutInput {
   BoothEventKey event = 1;
   repeated PurchaseItem items = 2;
