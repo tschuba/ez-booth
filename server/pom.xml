@@ -17,6 +17,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>tschuba.ez-booth</groupId>
+            <artifactId>ez-booth-core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-services</artifactId>
         </dependency>
@@ -39,23 +45,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>io.github.ascopes</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
-                <configuration>
-                    <sourceDirectories>
-                        <sourceDirectory>${project.basedir}/../core/src/main/protobuf</sourceDirectory>
-                    </sourceDirectories>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generate</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
