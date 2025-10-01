@@ -2,6 +2,7 @@ package tschuba.ez.booth.services;
 
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     private final BoothLocalService localService;
 
     @Autowired
-    BoothGrpcService(BoothLocalService localService) {
+    BoothGrpcService(@NonNull BoothLocalService localService) {
         this.localService = localService;
     }
 

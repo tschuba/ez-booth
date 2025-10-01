@@ -1,6 +1,7 @@
 package tschuba.ez.booth.services;
 
 import io.grpc.stub.StreamObserver;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
     private final PurchaseLocalService localService;
 
     @Autowired
-    PurchaseGrpcService(PurchaseLocalService localService) {
+    PurchaseGrpcService(@NonNull PurchaseLocalService localService) {
         this.localService = localService;
     }
 
@@ -69,7 +70,7 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
             });
             responseObserver.onCompleted();
         } catch (Exception ex) {
-            LOGGER.error("Error getting purchases by event: {}", request, ex);
+            LOGGER.error("Error getting purchases by booth: {}", request, ex);
             responseObserver.onError(ex);
         }
     }

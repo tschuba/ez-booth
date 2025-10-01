@@ -1,6 +1,7 @@
 package tschuba.ez.booth.services;
 
 import io.grpc.stub.StreamObserver;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ChargingGrpcService extends ChargingServiceGrpc.ChargingServiceImpl
     private final ChargingLocalService localService;
 
     @Autowired
-    ChargingGrpcService(ChargingLocalService localService) {
+    ChargingGrpcService(@NonNull ChargingLocalService localService) {
         this.localService = localService;
     }
 
