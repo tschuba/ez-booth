@@ -306,6 +306,9 @@ public class ProtoMapper {
         }
     };
 
+    /**
+     * Mapper for {@link ServiceModel.Checkout} and {@link ProtoServices.CheckoutInput}.
+     */
     public static final Mapper<ServiceModel.Checkout, ProtoServices.CheckoutInput> CHECKOUT = new Mapper<>() {
         @Override
         public Function<ServiceModel.Checkout, ProtoServices.CheckoutInput> objectToMessage() {
@@ -330,6 +333,113 @@ public class ProtoMapper {
                 List<DataModel.PurchaseItem> convertedItemsList = checkout.getItemsList().stream().map(PURCHASE_ITEM::messageToObject).toList();
                 builder.items(convertedItemsList);
                 builder.printReceipt(checkout.getPrintReceipt());
+                return builder.build();
+            };
+        }
+    };
+
+    /**
+     * Mapper for {@link ServiceModel.ChargedFees} and {@link ProtoServices.ChargedFees}.
+     */
+    public static final Mapper<ServiceModel.ChargedFees, ProtoServices.ChargedFees> CHARGED_FEES = new Mapper<>() {
+        @Override
+        public Function<ServiceModel.ChargedFees, ProtoServices.ChargedFees> objectToMessage() {
+            return fees -> {
+                ProtoServices.ChargedFees.Builder builder = ProtoServices.ChargedFees.newBuilder();
+                builder.setParticipationFee(fees.participationFee().floatValue());
+                builder.setSalesFee(fees.salesFee().floatValue());
+                return builder.build();
+            };
+        }
+
+        @Override
+        public Function<ProtoServices.ChargedFees, ServiceModel.ChargedFees> messageToObject() {
+            return fees -> {
+                ServiceModel.ChargedFees.ChargedFeesBuilder builder = ServiceModel.ChargedFees.builder();
+                builder.participationFee(BigDecimal.valueOf(fees.getParticipationFee()));
+                builder.salesFee(BigDecimal.valueOf(fees.getSalesFee()));
+                return builder.build();
+            };
+        }
+    };
+
+    /**
+     * Mapper for {@link ServiceModel.ChargingConfig} and {@link ProtoServices.ChargingConfig}.
+     */
+    public static final Mapper<ServiceModel.ChargingConfig, ProtoServices.ChargingConfig> CHARGING_CONFIG = new Mapper<>() {
+        @Override
+        public Function<ServiceModel.ChargingConfig, ProtoServices.ChargingConfig> objectToMessage() {
+            return config -> {
+                ProtoServices.ChargingConfig.Builder builder = ProtoServices.ChargingConfig.newBuilder();
+                builder.setParticipationFee(config.participationFee().floatValue());
+                builder.setSalesFee(config.salesFee().floatValue());
+                builder.setRoundingStep(config.roundingStep().floatValue());
+                return builder.build();
+            };
+        }
+
+        @Override
+        public Function<ProtoServices.ChargingConfig, ServiceModel.ChargingConfig> messageToObject() {
+            return config -> {
+                ServiceModel.ChargingConfig.ChargingConfigBuilder builder = ServiceModel.ChargingConfig.builder();
+                builder.participationFee(BigDecimal.valueOf(config.getParticipationFee()));
+                builder.salesFee(BigDecimal.valueOf(config.getSalesFee()));
+                builder.roundingStep(BigDecimal.valueOf(config.getRoundingStep()));
+                return builder.build();
+            };
+        }
+    };
+
+    /**
+     * Mapper for {@link ServiceModel.Balance.Input} and {@link ProtoServices.BalanceInput}.
+     */
+    public static final Mapper<ServiceModel.Balance.Input, ProtoServices.BalanceInput> BALANCE_INPUT = new Mapper<>() {
+        @Override
+        public Function<ServiceModel.Balance.Input, ProtoServices.BalanceInput> objectToMessage() {
+            return input -> {
+                ProtoServices.BalanceInput.Builder builder = ProtoServices.BalanceInput.newBuilder();
+                builder.setTotalSalesAmount(input.totalSalesAmount().floatValue());
+                ProtoServices.ChargingConfig config = CHARGING_CONFIG.objectToMessage(input.chargingConfig());
+                builder.setChargingConfig(config);
+                return builder.build();
+            };
+        }
+
+        @Override
+        public Function<ProtoServices.BalanceInput, ServiceModel.Balance.Input> messageToObject() {
+            return input -> {
+                ServiceModel.Balance.Input.InputBuilder builder = ServiceModel.Balance.Input.builder();
+                builder.totalSalesAmount(BigDecimal.valueOf(input.getTotalSalesAmount()));
+                if (input.hasChargingConfig()) {
+                    ServiceModel.ChargingConfig config = CHARGING_CONFIG.messageToObject(input.getChargingConfig());
+                    builder.chargingConfig(config);
+                }
+                return builder.build();
+            };
+        }
+    };
+
+    public static final Mapper<ServiceModel.Balance.Output, ProtoServices.SalesBalance> BALANCE_OUTPUT = new Mapper<>() {
+        @Override
+        public Function<ServiceModel.Balance.Output, ProtoServices.SalesBalance> objectToMessage() {
+            return output -> {
+                ProtoServices.SalesBalance.Builder builder = ProtoServices.SalesBalance.newBuilder();
+                builder.setTotalRevenue(output.totalRevenue().floatValue());
+                ProtoServices.ChargedFees fees = CHARGED_FEES.objectToMessage(output.chargedFees());
+                builder.setFees(fees);
+                return builder.build();
+            };
+        }
+
+        @Override
+        public Function<ProtoServices.SalesBalance, ServiceModel.Balance.Output> messageToObject() {
+            return output -> {
+                ServiceModel.Balance.Output.OutputBuilder builder = ServiceModel.Balance.Output.builder();
+                builder.totalRevenue(BigDecimal.valueOf(output.getTotalRevenue()));
+                if (output.hasFees()) {
+                    ServiceModel.ChargedFees fees = CHARGED_FEES.messageToObject(output.getFees());
+                    builder.chargedFees(fees);
+                }
                 return builder.build();
             };
         }

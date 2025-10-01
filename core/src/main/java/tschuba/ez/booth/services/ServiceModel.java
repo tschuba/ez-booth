@@ -29,7 +29,7 @@ public final class ServiceModel {
     @Builder
     public record ChargingConfig(
             @NonNull BigDecimal participationFee,
-            @NonNull BigDecimal salesFeePercent,
+            @NonNull BigDecimal salesFee,
             @NonNull BigDecimal roundingStep
     ) {
     }
@@ -40,8 +40,8 @@ public final class ServiceModel {
 
         @Builder
         public record Input(
-                @NonNull DataModel.Booth.Key event,
-                @NonNull DataModel.Vendor.Key vendor
+                @NonNull BigDecimal totalSalesAmount,
+                @NonNull ServiceModel.ChargingConfig chargingConfig
         ) {
         }
 
