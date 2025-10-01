@@ -5,6 +5,7 @@ import com.google.protobuf.Timestamp;
 import jakarta.annotation.Nullable;
 import lombok.NonNull;
 import tschuba.ez.booth.DataModel;
+import tschuba.ez.booth.services.ServiceModel;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -300,6 +301,39 @@ public class ProtoMapper {
                     DataModel.Vendor.Key key = VENDOR_KEY.messageToObject(vendor.getKey());
                     builder.key(key);
                 }
+                return builder.build();
+            };
+        }
+    };
+
+    public static final Mapper<ServiceModel.Checkout, ProtoServices.CheckoutInput> CHECKOUT = new Mapper<>() {
+        @Override
+        public Function<ServiceModel.Checkout, ProtoServices.CheckoutInput> objectToMessage() {
+            return checkout -> {
+                ProtoServices.CheckoutInput.Builder builder = ProtoServices.CheckoutInput.newBuilder();
+                if (checkout.event() != null) {
+                    ProtoModel.BoothEventKey eventKey = EVENT_KEY.objectToMessage(checkout.event());
+                    builder.setEvent(eventKey);
+                }
+                if (checkout.items() != null) {
+                    Repeated.copyToMessage(checkout.items(), PURCHASE_ITEM, builder::addItems);
+                }
+                builder.setPrintReceipt(checkout.printReceipt());
+                return builder.build();
+            };
+        }
+
+        @Override
+        public Function<ProtoServices.CheckoutInput, ServiceModel.Checkout> messageToObject() {
+            return checkout -> {
+                ServiceModel.Checkout.CheckoutBuilder builder = ServiceModel.Checkout.builder();
+                if (checkout.hasEvent()) {
+                    DataModel.BoothEvent.Key eventKey = EVENT_KEY.messageToObject(checkout.getEvent());
+                    builder.event(eventKey);
+                }
+                List<DataModel.PurchaseItem> convertedItemsList = checkout.getItemsList().stream().map(PURCHASE_ITEM::messageToObject).toList();
+                builder.items(convertedItemsList);
+                builder.printReceipt(checkout.getPrintReceipt());
                 return builder.build();
             };
         }

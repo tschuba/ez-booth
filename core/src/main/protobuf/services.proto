@@ -26,7 +26,7 @@ service BoothEventService {
 service PurchaseService {
   rpc Checkout(CheckoutInput) returns (Purchase);
   rpc GetPurchaseByKey(PurchaseKey) returns (Purchase);
-  rpc GetPurchasesByEvent(PurchaseKey) returns (Purchase);
+  rpc GetPurchasesByEvent(PurchaseKey) returns (stream Purchase);
 }
 
 message ChargedFees {
