@@ -9,18 +9,18 @@ option java_package = "tschuba.ez.booth.proto";
 option java_outer_classname = "ProtoServices";
 
 message CheckoutInput {
-  BoothEventKey event = 1;
+  BoothKey booth = 1;
   repeated PurchaseItem items = 2;
   bool print_receipt = 3;
 }
 
-service BoothEventService {
-  rpc SaveEvent(BoothEvent) returns (google.protobuf.Empty);
-  rpc GetAllEvents(google.protobuf.Empty) returns (stream BoothEvent);
-  rpc GetEvent(BoothEventKey) returns (BoothEvent);
-  rpc CloseEvent(BoothEventKey) returns (BoothEvent);
-  rpc OpenEvent(BoothEventKey) returns (BoothEvent);
-  rpc DeleteEvent(BoothEventKey) returns (google.protobuf.Empty);
+service BoothService {
+  rpc Save(Booth) returns (google.protobuf.Empty);
+  rpc GetAll(google.protobuf.Empty) returns (stream Booth);
+  rpc Get(BoothKey) returns (Booth);
+  rpc Close(BoothKey) returns (Booth);
+  rpc Open(BoothKey) returns (Booth);
+  rpc Delete(BoothKey) returns (google.protobuf.Empty);
 }
 
 service PurchaseService {
@@ -57,7 +57,7 @@ service ChargingService {
 
 message VendorReportData {
   Vendor vendor = 1;
-  BoothEvent event = 2;
+  Booth booth = 2;
   repeated PurchaseItem items = 3;
 }
 

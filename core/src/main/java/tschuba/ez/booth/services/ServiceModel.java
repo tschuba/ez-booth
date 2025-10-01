@@ -13,7 +13,7 @@ public final class ServiceModel {
 
     @Builder
     public record Checkout(
-            @NonNull DataModel.BoothEvent.Key event,
+            @NonNull DataModel.Booth.Key event,
             @NonNull List<DataModel.PurchaseItem> items,
             boolean printReceipt
     ) {
@@ -40,7 +40,7 @@ public final class ServiceModel {
 
         @Builder
         public record Input(
-                @NonNull DataModel.BoothEvent.Key event,
+                @NonNull DataModel.Booth.Key event,
                 @NonNull DataModel.Vendor.Key vendor
         ) {
         }
@@ -57,7 +57,7 @@ public final class ServiceModel {
     @Builder
     public record VendorReportData(
             @NonNull DataModel.Vendor vendor,
-            @NonNull DataModel.BoothEvent event,
+            @NonNull DataModel.Booth event,
             @NonNull List<DataModel.PurchaseItem> items
     ) {
     }

@@ -20,76 +20,76 @@ import java.util.function.Function;
  */
 public class ProtoMapper {
     /**
-     * Mapper for {@link DataModel.BoothEvent.Key} and {@link ProtoModel.BoothEventKey}.
+     * Mapper for {@link DataModel.Booth.Key} and {@link ProtoModel.BoothKey}.
      */
-    public static final Mapper<DataModel.BoothEvent.Key, ProtoModel.BoothEventKey> EVENT_KEY = new Mapper<>() {
+    public static final Mapper<DataModel.Booth.Key, ProtoModel.BoothKey> EVENT_KEY = new Mapper<>() {
         @Override
-        public Function<DataModel.BoothEvent.Key, ProtoModel.BoothEventKey> objectToMessage() {
-            return key -> ProtoModel.BoothEventKey.newBuilder()
-                    .setEventId(key.eventId())
+        public Function<DataModel.Booth.Key, ProtoModel.BoothKey> objectToMessage() {
+            return key -> ProtoModel.BoothKey.newBuilder()
+                    .setBoothId(key.boothId())
                     .build();
         }
 
         @Override
-        public Function<ProtoModel.BoothEventKey, DataModel.BoothEvent.Key> messageToObject() {
-            return key -> DataModel.BoothEvent.Key.builder()
-                    .eventId(key.getEventId())
+        public Function<ProtoModel.BoothKey, DataModel.Booth.Key> messageToObject() {
+            return key -> DataModel.Booth.Key.builder()
+                    .boothId(key.getBoothId())
                     .build();
         }
     };
 
     /**
-     * Mapper for {@link DataModel.BoothEvent} and {@link ProtoModel.BoothEvent}.
+     * Mapper for {@link DataModel.Booth} and {@link ProtoModel.Booth}.
      */
-    public static final Mapper<DataModel.BoothEvent, ProtoModel.BoothEvent> EVENT = new Mapper<>() {
+    public static final Mapper<DataModel.Booth, ProtoModel.Booth> EVENT = new Mapper<>() {
         @Override
-        public Function<DataModel.BoothEvent, ProtoModel.BoothEvent> objectToMessage() {
-            return evt -> {
-                ProtoModel.BoothEvent.Builder builder = ProtoModel.BoothEvent.newBuilder();
-                if (evt.key() != null) {
-                    ProtoModel.BoothEventKey eventKey = EVENT_KEY.objectToMessage(evt.key());
-                    builder.setKey(eventKey);
+        public Function<DataModel.Booth, ProtoModel.Booth> objectToMessage() {
+            return booth -> {
+                ProtoModel.Booth.Builder builder = ProtoModel.Booth.newBuilder();
+                if (booth.key() != null) {
+                    ProtoModel.BoothKey key = EVENT_KEY.objectToMessage(booth.key());
+                    builder.setKey(key);
                 }
-                builder.setDescription(evt.description());
-                if (evt.date() != null) {
-                    builder.setDate(DateAndTime.dateOf(evt.date()));
+                builder.setDescription(booth.description());
+                if (booth.date() != null) {
+                    builder.setDate(DateAndTime.dateOf(booth.date()));
                 }
-                if (evt.participationFee() != null) {
-                    builder.setParticipationFee(evt.participationFee().floatValue());
+                if (booth.participationFee() != null) {
+                    builder.setParticipationFee(booth.participationFee().floatValue());
                 }
-                if (evt.salesFee() != null) {
-                    builder.setSalesFee(evt.salesFee().floatValue());
+                if (booth.salesFee() != null) {
+                    builder.setSalesFee(booth.salesFee().floatValue());
                 }
-                if (evt.feesRoundingStep() != null) {
-                    builder.setFeesRoundingStep(evt.feesRoundingStep().floatValue());
+                if (booth.feesRoundingStep() != null) {
+                    builder.setFeesRoundingStep(booth.feesRoundingStep().floatValue());
                 }
-                builder.setClosed(evt.closed());
-                if (evt.closedOn() != null) {
-                    builder.setClosedOn(DateAndTime.timestampOf(evt.closedOn()));
+                builder.setClosed(booth.closed());
+                if (booth.closedOn() != null) {
+                    builder.setClosedOn(DateAndTime.timestampOf(booth.closedOn()));
                 }
                 return builder.build();
             };
         }
 
         @Override
-        public Function<ProtoModel.BoothEvent, DataModel.BoothEvent> messageToObject() {
-            return evt -> {
-                DataModel.BoothEvent.BoothEventBuilder builder = DataModel.BoothEvent.builder();
-                if (evt.hasKey()) {
-                    DataModel.BoothEvent.Key key = EVENT_KEY.messageToObject(evt.getKey());
+        public Function<ProtoModel.Booth, DataModel.Booth> messageToObject() {
+            return booth -> {
+                DataModel.Booth.BoothBuilder builder = DataModel.Booth.builder();
+                if (booth.hasKey()) {
+                    DataModel.Booth.Key key = EVENT_KEY.messageToObject(booth.getKey());
                     builder.key(key);
                 }
-                if (evt.hasDate()) {
-                    LocalDate date = DateAndTime.asDate(evt.getDate());
+                if (booth.hasDate()) {
+                    LocalDate date = DateAndTime.asDate(booth.getDate());
                     builder.date(date);
                 }
-                builder.description(evt.getDescription());
-                builder.participationFee(BigDecimal.valueOf(evt.getParticipationFee()));
-                builder.salesFee(BigDecimal.valueOf(evt.getSalesFee()));
-                builder.feesRoundingStep(BigDecimal.valueOf(evt.getFeesRoundingStep()));
-                builder.closed(evt.getClosed());
-                if (evt.hasClosedOn()) {
-                    LocalDateTime closedOn = DateAndTime.asDateTime(evt.getClosedOn());
+                builder.description(booth.getDescription());
+                builder.participationFee(BigDecimal.valueOf(booth.getParticipationFee()));
+                builder.salesFee(BigDecimal.valueOf(booth.getSalesFee()));
+                builder.feesRoundingStep(BigDecimal.valueOf(booth.getFeesRoundingStep()));
+                builder.closed(booth.getClosed());
+                if (booth.hasClosedOn()) {
+                    LocalDateTime closedOn = DateAndTime.asDateTime(booth.getClosedOn());
                     builder.closedOn(closedOn);
                 }
                 return builder.build();
@@ -105,9 +105,9 @@ public class ProtoMapper {
         public Function<DataModel.Purchase.Key, ProtoModel.PurchaseKey> objectToMessage() {
             return key -> {
                 ProtoModel.PurchaseKey.Builder builder = ProtoModel.PurchaseKey.newBuilder();
-                if (key.event() != null) {
-                    ProtoModel.BoothEventKey event = EVENT_KEY.objectToMessage(key.event());
-                    builder.setEvent(event);
+                if (key.booth() != null) {
+                    ProtoModel.BoothKey booth = EVENT_KEY.objectToMessage(key.booth());
+                    builder.setBooth(booth);
                 }
                 builder.setPurchaseId(key.purchaseId());
                 return builder.build();
@@ -118,9 +118,9 @@ public class ProtoMapper {
         public Function<ProtoModel.PurchaseKey, DataModel.Purchase.Key> messageToObject() {
             return key -> {
                 DataModel.Purchase.Key.KeyBuilder builder = DataModel.Purchase.Key.builder();
-                if (key.hasEvent()) {
-                    DataModel.BoothEvent.Key eventKey = EVENT_KEY.messageToObject(key.getEvent());
-                    builder.event(eventKey);
+                if (key.hasBooth()) {
+                    DataModel.Booth.Key booth = EVENT_KEY.messageToObject(key.getBooth());
+                    builder.booth(booth);
                 }
                 builder.purchaseId(key.getPurchaseId());
                 return builder.build();
@@ -254,9 +254,9 @@ public class ProtoMapper {
         public Function<DataModel.Vendor.Key, ProtoModel.VendorKey> objectToMessage() {
             return key -> {
                 ProtoModel.VendorKey.Builder builder = ProtoModel.VendorKey.newBuilder();
-                if (key.event() != null) {
-                    ProtoModel.BoothEventKey eventKey = EVENT_KEY.objectToMessage(key.event());
-                    builder.setEvent(eventKey);
+                if (key.booth() != null) {
+                    ProtoModel.BoothKey eventKey = EVENT_KEY.objectToMessage(key.booth());
+                    builder.setBooth(eventKey);
                 }
                 builder.setVendorId(key.vendorId());
                 return builder.build();
@@ -267,9 +267,9 @@ public class ProtoMapper {
         public Function<ProtoModel.VendorKey, DataModel.Vendor.Key> messageToObject() {
             return key -> {
                 DataModel.Vendor.Key.KeyBuilder builder = DataModel.Vendor.Key.builder();
-                if (key.hasEvent()) {
-                    DataModel.BoothEvent.Key event = EVENT_KEY.messageToObject(key.getEvent());
-                    builder.event(event);
+                if (key.hasBooth()) {
+                    DataModel.Booth.Key booth = EVENT_KEY.messageToObject(key.getBooth());
+                    builder.booth(booth);
                 }
                 builder.vendorId(key.getVendorId());
                 return builder.build();
@@ -311,13 +311,9 @@ public class ProtoMapper {
         public Function<ServiceModel.Checkout, ProtoServices.CheckoutInput> objectToMessage() {
             return checkout -> {
                 ProtoServices.CheckoutInput.Builder builder = ProtoServices.CheckoutInput.newBuilder();
-                if (checkout.event() != null) {
-                    ProtoModel.BoothEventKey eventKey = EVENT_KEY.objectToMessage(checkout.event());
-                    builder.setEvent(eventKey);
-                }
-                if (checkout.items() != null) {
-                    Repeated.copyToMessage(checkout.items(), PURCHASE_ITEM, builder::addItems);
-                }
+                ProtoModel.BoothKey boothKey = EVENT_KEY.objectToMessage(checkout.event());
+                builder.setBooth(boothKey);
+                Repeated.copyToMessage(checkout.items(), PURCHASE_ITEM, builder::addItems);
                 builder.setPrintReceipt(checkout.printReceipt());
                 return builder.build();
             };
@@ -327,9 +323,9 @@ public class ProtoMapper {
         public Function<ProtoServices.CheckoutInput, ServiceModel.Checkout> messageToObject() {
             return checkout -> {
                 ServiceModel.Checkout.CheckoutBuilder builder = ServiceModel.Checkout.builder();
-                if (checkout.hasEvent()) {
-                    DataModel.BoothEvent.Key eventKey = EVENT_KEY.messageToObject(checkout.getEvent());
-                    builder.event(eventKey);
+                if (checkout.hasBooth()) {
+                    DataModel.Booth.Key boothKey = EVENT_KEY.messageToObject(checkout.getBooth());
+                    builder.event(boothKey);
                 }
                 List<DataModel.PurchaseItem> convertedItemsList = checkout.getItemsList().stream().map(PURCHASE_ITEM::messageToObject).toList();
                 builder.items(convertedItemsList);

@@ -12,7 +12,7 @@ public final class DataModel {
     }
 
     @Builder
-    public record BoothEvent(
+    public record Booth(
             Key key,
             String description,
             LocalDate date,
@@ -25,7 +25,7 @@ public final class DataModel {
 
         @Builder
         public record Key(
-                String eventId
+                String boothId
         ) {
         }
 
@@ -41,7 +41,7 @@ public final class DataModel {
 
         @Builder
         public record Key(
-                BoothEvent.Key event,
+                Booth.Key booth,
                 String purchaseId
         ) {
         }
@@ -69,7 +69,7 @@ public final class DataModel {
 
         @Builder
         public record Key(
-                BoothEvent.Key event,
+                Booth.Key booth,
                 String vendorId
         ) {
         }

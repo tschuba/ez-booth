@@ -6,12 +6,12 @@ import "core.proto";
 option java_package = "tschuba.ez.booth.proto";
 option java_outer_classname = "ProtoModel";
 
-message BoothEventKey {
-  string eventId = 1;
+message BoothKey {
+  string boothId = 1;
 }
 
-message BoothEvent {
-  BoothEventKey key = 1;
+message Booth {
+  BoothKey key = 1;
   string description = 2;
   Date date = 3;
   float participation_fee = 4;
@@ -22,7 +22,7 @@ message BoothEvent {
 }
 
 message VendorKey {
-  BoothEventKey event = 1;
+  BoothKey booth = 1;
   string vendorId = 2;
 }
 
@@ -42,7 +42,7 @@ message PurchaseItem {
 }
 
 message PurchaseKey {
-  BoothEventKey event = 1;
+  BoothKey booth = 1;
   string purchaseId = 2;
 }
 
