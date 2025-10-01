@@ -8,11 +8,12 @@ import tschuba.ez.booth.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -141,7 +142,7 @@ public class ProtoMapper {
                     builder.setKey(purchaseKey);
                 }
                 if (purchase.items() != null) {
-                    Repeated.copyToMessage(purchase.items(), PURCHASE_ITEM, builder::setItems);
+                    purchase.items().stream().map(PURCHASE_ITEM::objectToMessage).forEach(builder::addItems);
                 }
                 if (purchase.value() != null) {
                     builder.setValue(purchase.value().floatValue());
@@ -314,9 +315,9 @@ public class ProtoMapper {
         public Function<ServiceModel.Checkout, ProtoServices.CheckoutInput> objectToMessage() {
             return checkout -> {
                 ProtoServices.CheckoutInput.Builder builder = ProtoServices.CheckoutInput.newBuilder();
-                ProtoModel.BoothKey boothKey = EVENT_KEY.objectToMessage(checkout.event());
+                ProtoModel.BoothKey boothKey = EVENT_KEY.objectToMessage(checkout.booth());
                 builder.setBooth(boothKey);
-                Repeated.copyToMessage(checkout.items(), PURCHASE_ITEM, builder::addItems);
+                checkout.items().stream().map(PURCHASE_ITEM::objectToMessage).forEach(builder::addItems);
                 builder.setPrintReceipt(checkout.printReceipt());
                 return builder.build();
             };
@@ -328,7 +329,7 @@ public class ProtoMapper {
                 ServiceModel.Checkout.CheckoutBuilder builder = ServiceModel.Checkout.builder();
                 if (checkout.hasBooth()) {
                     DataModel.Booth.Key boothKey = EVENT_KEY.messageToObject(checkout.getBooth());
-                    builder.event(boothKey);
+                    builder.booth(boothKey);
                 }
                 List<DataModel.PurchaseItem> convertedItemsList = checkout.getItemsList().stream().map(PURCHASE_ITEM::messageToObject).toList();
                 builder.items(convertedItemsList);
@@ -419,6 +420,9 @@ public class ProtoMapper {
         }
     };
 
+    /**
+     * Mapper for {@link ServiceModel.Balance.Output} and {@link ProtoServices.SalesBalance}.
+     */
     public static final Mapper<ServiceModel.Balance.Output, ProtoServices.SalesBalance> BALANCE_OUTPUT = new Mapper<>() {
         @Override
         public Function<ServiceModel.Balance.Output, ProtoServices.SalesBalance> objectToMessage() {
@@ -442,6 +446,84 @@ public class ProtoMapper {
                 }
                 return builder.build();
             };
+        }
+    };
+
+    /**
+     * Mapper for {@link ServiceModel.VendorReportInput} and {@link ProtoServices.VendorReportInput}.
+     */
+    public static final Mapper<ServiceModel.VendorReportInput, ProtoServices.VendorReportInput> VENDOR_REPORT_INPUT = new Mapper<>() {
+        @Override
+        public Function<ServiceModel.VendorReportInput, ProtoServices.VendorReportInput> objectToMessage() {
+            return input -> {
+                ProtoServices.VendorReportInput.Builder builder = ProtoServices.VendorReportInput.newBuilder();
+                if (input.vendors() != null) {
+                    Arrays.stream(input.vendors()).map(VENDOR_KEY::objectToMessage).forEach(builder::addVendor);
+                }
+                return builder.build();
+            };
+        }
+
+        @Override
+        public Function<ProtoServices.VendorReportInput, ServiceModel.VendorReportInput> messageToObject() {
+            return input -> {
+                ServiceModel.VendorReportInput.VendorReportInputBuilder builder = ServiceModel.VendorReportInput.builder();
+                DataModel.Vendor.Key[] convertedVendors = input.getVendorList().stream().map(VENDOR_KEY::messageToObject).toArray(DataModel.Vendor.Key[]::new);
+                builder.vendors(convertedVendors);
+                return builder.build();
+            };
+        }
+    };
+
+    /**
+     * Mapper for {@link ServiceModel.VendorReportData} and {@link ProtoServices.VendorReportData}.
+     */
+    public static final Mapper<ServiceModel.VendorReportData, ProtoServices.VendorReportData> VENDOR_REPORT_DATA = new Mapper<>() {
+        @Override
+        public Function<ServiceModel.VendorReportData, ProtoServices.VendorReportData> objectToMessage() {
+            return reportData -> {
+                ProtoServices.VendorReportData.Builder builder = ProtoServices.VendorReportData.newBuilder();
+                ProtoModel.Vendor vendorMsg = VENDOR.objectToMessage(reportData.vendor());
+                builder.setVendor(vendorMsg);
+                ProtoModel.Booth boothMsg = EVENT.objectToMessage(reportData.booth());
+                builder.setBooth(boothMsg);
+                List<ProtoModel.PurchaseItem> itemsMsg = reportData.items().stream().map(PURCHASE_ITEM::objectToMessage).toList();
+                builder.addAllItems(itemsMsg);
+                return builder.build();
+            };
+        }
+
+        @Override
+        public Function<ProtoServices.VendorReportData, ServiceModel.VendorReportData> messageToObject() {
+            return reportData -> {
+                ServiceModel.VendorReportData.VendorReportDataBuilder builder = ServiceModel.VendorReportData.builder();
+                if (reportData.hasVendor()) {
+                    DataModel.Vendor vendor = VENDOR.messageToObject(reportData.getVendor());
+                    builder.vendor(vendor);
+                }
+                if (reportData.hasBooth()) {
+                    DataModel.Booth booth = EVENT.messageToObject(reportData.getBooth());
+                    builder.booth(booth);
+                }
+                List<DataModel.PurchaseItem> convertedItemsList = reportData.getItemsList().stream().map(PURCHASE_ITEM::messageToObject).toList();
+                builder.items(convertedItemsList);
+                return builder.build();
+            };
+        }
+    };
+
+    /**
+     * Mapper for {@link URI} and {@link ProtoCore.URI}.
+     */
+    public static final Mapper<URI, ProtoCore.URI> URI = new Mapper<>() {
+        @Override
+        public Function<URI, ProtoCore.URI> objectToMessage() {
+            return uri -> ProtoCore.URI.newBuilder().setResource(uri.toString()).build();
+        }
+
+        @Override
+        public Function<ProtoCore.URI, URI> messageToObject() {
+            return uriMsg -> java.net.URI.create(uriMsg.getResource());
         }
     };
 
@@ -508,24 +590,6 @@ public class ProtoMapper {
                     .setSeconds(dateTime.toEpochSecond(ZONE_OFFSET))
                     .setNanos(dateTime.getNano())
                     .build();
-        }
-    }
-
-    /**
-     * Helper for mapping repeated fields.
-     */
-    static class Repeated {
-        private Repeated() {
-        }
-
-        public static <T, M extends Message> void copyToMessage(@Nullable List<T> items, @NonNull Mapper<T, M> mapper, @NonNull BiConsumer<Integer, M> messageConsumer) {
-            if (items != null) {
-                for (int index = 0; index < items.size(); index++) {
-                    T item = items.get(index);
-                    M message = mapper.objectToMessage(item);
-                    messageConsumer.accept(index, message);
-                }
-            }
         }
     }
 

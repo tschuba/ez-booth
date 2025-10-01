@@ -61,7 +61,11 @@ message VendorReportData {
   repeated PurchaseItem items = 3;
 }
 
+message VendorReportInput {
+  repeated VendorKey vendor = 1;
+}
+
 service ReportingService {
   rpc CreateVendorReportData(VendorKey) returns (VendorReportData);
-  rpc GenerateVendorReport(stream VendorKey) returns (URI);
+  rpc GenerateVendorReport(VendorReportInput) returns (URI);
 }
