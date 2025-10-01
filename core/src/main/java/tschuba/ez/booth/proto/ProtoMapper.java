@@ -6,6 +6,7 @@ import jakarta.annotation.Nullable;
 import lombok.NonNull;
 import tschuba.ez.booth.DataModel;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -24,9 +25,9 @@ public class ProtoMapper {
 
         @Override
         public Function<ProtoModel.BoothEventKey, DataModel.BoothEvent.Key> messageToObject() {
-            return key -> {
-
-            };
+            return key -> DataModel.BoothEvent.Key.builder()
+                    .eventId(key.getEventId())
+                    .build();
         }
     };
 
@@ -63,7 +64,25 @@ public class ProtoMapper {
         @Override
         public Function<ProtoModel.BoothEvent, DataModel.BoothEvent> messageToObject() {
             return evt -> {
-
+                DataModel.BoothEvent.BoothEventBuilder builder = DataModel.BoothEvent.builder();
+                if (evt.hasKey()) {
+                    DataModel.BoothEvent.Key key = EVENT_KEY.messageToObject(evt.getKey());
+                    builder.key(key);
+                }
+                if (evt.hasDate()) {
+                    LocalDate date = DateAndTime.asDate(evt.getDate());
+                    builder.date(date);
+                }
+                builder.description(evt.getDescription());
+                builder.participationFee(BigDecimal.valueOf(evt.getParticipationFee()));
+                builder.salesFee(BigDecimal.valueOf(evt.getSalesFee()));
+                builder.feesRoundingStep(BigDecimal.valueOf(evt.getFeesRoundingStep()));
+                builder.closed(evt.getClosed());
+                if (evt.hasClosedOn()) {
+                    LocalDateTime closedOn = DateAndTime.asDateTime(evt.getClosedOn());
+                    builder.closedOn(closedOn);
+                }
+                return builder.build();
             };
         }
     };
@@ -74,8 +93,8 @@ public class ProtoMapper {
             return key -> {
                 ProtoModel.PurchaseKey.Builder builder = ProtoModel.PurchaseKey.newBuilder();
                 if (key.event() != null) {
-                    ProtoModel.BoothEventKey eventKey = EVENT_KEY.objectToMessage(key.event());
-                    builder.setEvent(eventKey);
+                    ProtoModel.BoothEventKey event = EVENT_KEY.objectToMessage(key.event());
+                    builder.setEvent(event);
                 }
                 builder.setPurchaseId(key.purchaseId());
                 return builder.build();
@@ -85,7 +104,13 @@ public class ProtoMapper {
         @Override
         public Function<ProtoModel.PurchaseKey, DataModel.Purchase.Key> messageToObject() {
             return key -> {
-
+                DataModel.Purchase.Key.KeyBuilder builder = DataModel.Purchase.Key.builder();
+                if (key.hasEvent()) {
+                    DataModel.BoothEvent.Key eventKey = EVENT_KEY.messageToObject(key.getEvent());
+                    builder.event(eventKey);
+                }
+                builder.purchaseId(key.getPurchaseId());
+                return builder.build();
             };
         }
     };
@@ -115,7 +140,21 @@ public class ProtoMapper {
         @Override
         public Function<ProtoModel.Purchase, DataModel.Purchase> messageToObject() {
             return purchase -> {
+                DataModel.Purchase.PurchaseBuilder builder = DataModel.Purchase.builder();
+                if (purchase.hasKey()) {
+                    DataModel.Purchase.Key key = PURCHASE_KEY.messageToObject(purchase.getKey());
+                    builder.key(key);
+                }
+                if (purchase.hasPurchasedOn()) {
+                    LocalDateTime purchasedOn = DateAndTime.asDateTime(purchase.getPurchasedOn());
+                    builder.purchasedOn(purchasedOn);
+                }
+                builder.value(BigDecimal.valueOf(purchase.getValue()));
 
+                List<DataModel.PurchaseItem> convertedItemsList = purchase.getItemsList().stream().map(PURCHASE_ITEM::messageToObject).toList();
+                builder.items(convertedItemsList);
+
+                return builder.build();
             };
         }
     };
@@ -137,7 +176,13 @@ public class ProtoMapper {
         @Override
         public Function<ProtoModel.PurchaseItemKey, DataModel.PurchaseItem.Key> messageToObject() {
             return key -> {
-
+                DataModel.PurchaseItem.Key.KeyBuilder builder = DataModel.PurchaseItem.Key.builder();
+                if (key.hasVendor()) {
+                    DataModel.Vendor.Key vendor = VENDOR_KEY.messageToObject(key.getVendor());
+                    builder.vendor(vendor);
+                }
+                builder.itemId(key.getItemId());
+                return builder.build();
             };
         }
     };
@@ -164,7 +209,17 @@ public class ProtoMapper {
         @Override
         public Function<ProtoModel.PurchaseItem, DataModel.PurchaseItem> messageToObject() {
             return item -> {
-
+                DataModel.PurchaseItem.PurchaseItemBuilder builder = DataModel.PurchaseItem.builder();
+                if (item.hasKey()) {
+                    DataModel.PurchaseItem.Key key = PURCHASE_ITEM_KEY.messageToObject(item.getKey());
+                    builder.key(key);
+                }
+                builder.price(BigDecimal.valueOf(item.getPrice()));
+                if (item.hasPurchasedOn()) {
+                    LocalDateTime purchasedOn = DateAndTime.asDateTime(item.getPurchasedOn());
+                    builder.purchasedOn(purchasedOn);
+                }
+                return builder.build();
             };
         }
     };
@@ -186,7 +241,13 @@ public class ProtoMapper {
         @Override
         public Function<ProtoModel.VendorKey, DataModel.Vendor.Key> messageToObject() {
             return key -> {
-
+                DataModel.Vendor.Key.KeyBuilder builder = DataModel.Vendor.Key.builder();
+                if (key.hasEvent()) {
+                    DataModel.BoothEvent.Key event = EVENT_KEY.messageToObject(key.getEvent());
+                    builder.event(event);
+                }
+                builder.vendorId(key.getVendorId());
+                return builder.build();
             };
         }
     };
@@ -206,8 +267,13 @@ public class ProtoMapper {
 
         @Override
         public Function<ProtoModel.Vendor, DataModel.Vendor> messageToObject() {
-            return key -> {
-
+            return vendor -> {
+                DataModel.Vendor.VendorBuilder builder = DataModel.Vendor.builder();
+                if (vendor.hasKey()) {
+                    DataModel.Vendor.Key key = VENDOR_KEY.messageToObject(vendor.getKey());
+                    builder.key(key);
+                }
+                return builder.build();
             };
         }
     };
