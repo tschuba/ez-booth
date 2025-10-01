@@ -14,8 +14,14 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+/**
+ * Provides mappings between {@link DataModel} and {@link ProtoModel} objects.
+ */
 public class ProtoMapper {
-    private static final Mapper<DataModel.BoothEvent.Key, ProtoModel.BoothEventKey> EVENT_KEY = new Mapper<>() {
+    /**
+     * Mapper for {@link DataModel.BoothEvent.Key} and {@link ProtoModel.BoothEventKey}.
+     */
+    public static final Mapper<DataModel.BoothEvent.Key, ProtoModel.BoothEventKey> EVENT_KEY = new Mapper<>() {
         @Override
         public Function<DataModel.BoothEvent.Key, ProtoModel.BoothEventKey> objectToMessage() {
             return key -> ProtoModel.BoothEventKey.newBuilder()
@@ -31,7 +37,10 @@ public class ProtoMapper {
         }
     };
 
-    private static final Mapper<DataModel.BoothEvent, ProtoModel.BoothEvent> EVENT = new Mapper<>() {
+    /**
+     * Mapper for {@link DataModel.BoothEvent} and {@link ProtoModel.BoothEvent}.
+     */
+    public static final Mapper<DataModel.BoothEvent, ProtoModel.BoothEvent> EVENT = new Mapper<>() {
         @Override
         public Function<DataModel.BoothEvent, ProtoModel.BoothEvent> objectToMessage() {
             return evt -> {
@@ -87,7 +96,10 @@ public class ProtoMapper {
         }
     };
 
-    private static final Mapper<DataModel.Purchase.Key, ProtoModel.PurchaseKey> PURCHASE_KEY = new Mapper<>() {
+    /**
+     * Mapper for {@link DataModel.Purchase.Key} and {@link ProtoModel.PurchaseKey}.
+     */
+    public static final Mapper<DataModel.Purchase.Key, ProtoModel.PurchaseKey> PURCHASE_KEY = new Mapper<>() {
         @Override
         public Function<DataModel.Purchase.Key, ProtoModel.PurchaseKey> objectToMessage() {
             return key -> {
@@ -115,7 +127,10 @@ public class ProtoMapper {
         }
     };
 
-    private static final Mapper<DataModel.Purchase, ProtoModel.Purchase> PURCHASE = new Mapper<>() {
+    /**
+     * Mapper for {@link DataModel.Purchase} and {@link ProtoModel.Purchase}.
+     */
+    public static final Mapper<DataModel.Purchase, ProtoModel.Purchase> PURCHASE = new Mapper<>() {
         @Override
         public Function<DataModel.Purchase, ProtoModel.Purchase> objectToMessage() {
             return purchase -> {
@@ -159,7 +174,10 @@ public class ProtoMapper {
         }
     };
 
-    private static final Mapper<DataModel.PurchaseItem.Key, ProtoModel.PurchaseItemKey> PURCHASE_ITEM_KEY = new Mapper<>() {
+    /**
+     * Mapper for {@link DataModel.PurchaseItem.Key} and {@link ProtoModel.PurchaseItemKey}.
+     */
+    public static final Mapper<DataModel.PurchaseItem.Key, ProtoModel.PurchaseItemKey> PURCHASE_ITEM_KEY = new Mapper<>() {
         @Override
         public Function<DataModel.PurchaseItem.Key, ProtoModel.PurchaseItemKey> objectToMessage() {
             return key -> {
@@ -187,7 +205,10 @@ public class ProtoMapper {
         }
     };
 
-    private static final Mapper<DataModel.PurchaseItem, ProtoModel.PurchaseItem> PURCHASE_ITEM = new Mapper<>() {
+    /**
+     * Mapper for {@link DataModel.PurchaseItem} and {@link ProtoModel.PurchaseItem}.
+     */
+    public static final Mapper<DataModel.PurchaseItem, ProtoModel.PurchaseItem> PURCHASE_ITEM = new Mapper<>() {
         @Override
         public Function<DataModel.PurchaseItem, ProtoModel.PurchaseItem> objectToMessage() {
             return item -> {
@@ -224,7 +245,10 @@ public class ProtoMapper {
         }
     };
 
-    private static final Mapper<DataModel.Vendor.Key, ProtoModel.VendorKey> VENDOR_KEY = new Mapper<>() {
+    /**
+     * Mapper for {@link DataModel.Vendor.Key} and {@link ProtoModel.VendorKey}.
+     */
+    public static final Mapper<DataModel.Vendor.Key, ProtoModel.VendorKey> VENDOR_KEY = new Mapper<>() {
         @Override
         public Function<DataModel.Vendor.Key, ProtoModel.VendorKey> objectToMessage() {
             return key -> {
@@ -252,7 +276,10 @@ public class ProtoMapper {
         }
     };
 
-    private static final Mapper<DataModel.Vendor, ProtoModel.Vendor> VENDOR = new Mapper<>() {
+    /**
+     * Mapper for {@link DataModel.Vendor} and {@link ProtoModel.Vendor}.
+     */
+    public static final Mapper<DataModel.Vendor, ProtoModel.Vendor> VENDOR = new Mapper<>() {
         @Override
         public Function<DataModel.Vendor, ProtoModel.Vendor> objectToMessage() {
             return vendor -> {
@@ -278,6 +305,12 @@ public class ProtoMapper {
         }
     };
 
+    /**
+     * Interface for implementations of mapping between object and protobuf message.
+     *
+     * @param <T>
+     * @param <M>
+     */
     public interface Mapper<T, M extends Message> {
 
         Function<T, M> objectToMessage();
@@ -293,6 +326,9 @@ public class ProtoMapper {
         }
     }
 
+    /**
+     * Provides mapping between protobuf date/time types and Java date/time types.
+     */
     public static class DateAndTime {
 
         private static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
@@ -335,6 +371,9 @@ public class ProtoMapper {
         }
     }
 
+    /**
+     * Helper for mapping repeated fields.
+     */
     static class Repeated {
         private Repeated() {
         }
