@@ -122,4 +122,42 @@ class ProtoMapperTest {
             assertThat(PURCHASE_ITEM.objectToMessage(Objects.PURCHASE_ITEM)).isEqualTo(Messages.PURCHASE_ITEM);
         }
     }
+
+    @Nested
+    class PurchaseKeyTests {
+        @Test
+        void testObjectToMessageShouldReturnNonNull() {
+            assertThat(PURCHASE_KEY.objectToMessage(Objects.PURCHASE_KEY)).isNotNull();
+        }
+
+        @Test
+        void testMessageToObjectShouldReturnNonNull() {
+            assertThat(PURCHASE_KEY.messageToObject(Messages.PURCHASE_KEY)).isNotNull();
+        }
+
+        @Test
+        void testObjectToMessageAndBackShouldReturnEqualData() {
+            assertThat(PURCHASE_KEY.messageToObject(Messages.PURCHASE_KEY)).isEqualTo(Objects.PURCHASE_KEY);
+            assertThat(PURCHASE_KEY.objectToMessage(Objects.PURCHASE_KEY)).isEqualTo(Messages.PURCHASE_KEY);
+        }
+    }
+
+    @Nested
+    class PurchaseTests {
+        @Test
+        void testObjectToMessageShouldReturnNonNull() {
+            assertThat(PURCHASE.objectToMessage(Objects.PURCHASE)).isNotNull();
+        }
+
+        @Test
+        void testMessageToObjectShouldReturnNonNull() {
+            assertThat(PURCHASE.messageToObject(Messages.PURCHASE)).isNotNull();
+        }
+
+        @Test
+        void testObjectToMessageAndBackShouldReturnEqualData() {
+            assertThat(PURCHASE.messageToObject(Messages.PURCHASE)).isEqualTo(Objects.PURCHASE);
+            assertThat(PURCHASE.objectToMessage(Objects.PURCHASE)).isEqualTo(Messages.PURCHASE);
+        }
+    }
 }

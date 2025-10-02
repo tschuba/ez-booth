@@ -116,11 +116,17 @@ public class ModelTestData {
                 .setPurchasedOn(Timestamp.newBuilder().setSeconds(ITEM_PURCHASED_ON.toEpochSecond(ZoneOffset.UTC)).setNanos(ITEM_PURCHASED_ON.getNano()).build())
                 .build();
 
+        public static final ProtoModel.PurchaseKey PURCHASE_KEY = ProtoModel.PurchaseKey.newBuilder()
+                .setBooth(BOOTH_KEY)
+                .setPurchaseId(PURCHASE_ID)
+                .build();
+
         public static final ProtoModel.Purchase PURCHASE = ProtoModel.Purchase.newBuilder()
                 .setKey(ProtoModel.PurchaseKey.newBuilder()
                         .setBooth(BOOTH_KEY)
                         .setPurchaseId(PURCHASE_ID)
                         .build())
+                .addItems(PURCHASE_ITEM)
                 .setValue(ITEM_PRICE.floatValue())
                 .setPurchasedOn(Timestamp.newBuilder().setSeconds(ITEM_PURCHASED_ON.toEpochSecond(ZoneOffset.UTC)).setNanos(ITEM_PURCHASED_ON.getNano()).build())
                 .build();

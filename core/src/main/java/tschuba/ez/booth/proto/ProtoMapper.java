@@ -204,7 +204,7 @@ public class ProtoMapper {
                     LocalDateTime purchasedOn = DateAndTime.asDateTime(purchase.getPurchasedOn());
                     builder.purchasedOn(purchasedOn);
                 }
-                builder.value(BigDecimal.valueOf(purchase.getValue()));
+                builder.value(new BigDecimal(Float.toString(purchase.getValue())));
 
                 List<DataModel.PurchaseItem> convertedItemsList = purchase.getItemsList().stream().map(PURCHASE_ITEM::messageToObject).toList();
                 builder.items(convertedItemsList);
