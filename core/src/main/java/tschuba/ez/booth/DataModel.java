@@ -62,6 +62,7 @@ public final class DataModel {
 
         @Builder
         public record Key(
+                Purchase.Key purchase,
                 String itemId
         ) {
         }

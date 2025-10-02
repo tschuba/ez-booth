@@ -12,11 +12,11 @@ import java.util.List;
 /**
  * JPA entities for {@link DataModel}.
  */
-public class Entities {
+public class EntityModel {
 
     private static final String SCHEMA = "ez_booth";
 
-    private Entities() {
+    private EntityModel() {
     }
 
     @Entity
@@ -25,6 +25,7 @@ public class Entities {
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
+    @EqualsAndHashCode(onlyExplicitlyIncluded = true)
     public static class Booth {
 
         @EmbeddedId

@@ -6,6 +6,7 @@ import tschuba.ez.booth.proto.ProtoModel;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 /**
  * Test data for model and proto classes.
@@ -34,6 +35,7 @@ public class ModelTestData {
         public static final DataModel.Booth.Key BOOTH_KEY = DataModel.Booth.Key.builder()
                 .boothId(BOOTH_ID)
                 .build();
+
         public static final DataModel.Booth BOOTH = DataModel.Booth.builder()
                 .key(BOOTH_KEY)
                 .description(BOOTH_DESCRIPTION)
@@ -43,30 +45,37 @@ public class ModelTestData {
                 .participationFee(BigDecimal.valueOf(PARTICIPATION_FEE))
                 .salesFee(BigDecimal.valueOf(SALES_FEE))
                 .build();
+
         public static final DataModel.Vendor.Key VENDOR_KEY = DataModel.Vendor.Key.builder()
                 .booth(BOOTH_KEY)
                 .vendorId(VENDOR_ID)
                 .build();
+
         public static final DataModel.Vendor VENDOR = DataModel.Vendor.builder()
                 .key(VENDOR_KEY)
                 .build();
-        public static final DataModel.Purchase.Key PURCHASE_KEY = DataModel.Purchase.Key.builder()
-                .booth(BOOTH_KEY)
-                .purchaseId(PURCHASE_ID)
-                .build();
-        public static final DataModel.Purchase PURCHASE = DataModel.Purchase.builder()
-                .key(PURCHASE_KEY)
-                .value(ITEM_PRICE)
-                .purchasedOn(ITEM_PURCHASED_ON)
-                .build();
+
         public static final DataModel.PurchaseItem.Key PURCHASE_ITEM_KEY = DataModel.PurchaseItem.Key.builder()
                 .itemId(ITEM_ID)
                 .build();
+
         public static final DataModel.PurchaseItem PURCHASE_ITEM = DataModel.PurchaseItem.builder()
                 .key(PURCHASE_ITEM_KEY)
                 .vendor(VENDOR_KEY)
                 .purchasedOn(ITEM_PURCHASED_ON)
                 .price(ITEM_PRICE)
+                .build();
+
+        public static final DataModel.Purchase.Key PURCHASE_KEY = DataModel.Purchase.Key.builder()
+                .booth(BOOTH_KEY)
+                .purchaseId(PURCHASE_ID)
+                .build();
+
+        public static final DataModel.Purchase PURCHASE = DataModel.Purchase.builder()
+                .key(PURCHASE_KEY)
+                .value(ITEM_PRICE)
+                .items(List.of(PURCHASE_ITEM))
+                .purchasedOn(ITEM_PURCHASED_ON)
                 .build();
 
         private Objects() {
@@ -80,6 +89,7 @@ public class ModelTestData {
         public static final ProtoModel.BoothKey BOOTH_KEY = ProtoModel.BoothKey.newBuilder()
                 .setBoothId(BOOTH_ID)
                 .build();
+
         public static final ProtoModel.Booth BOOTH = ProtoModel.Booth.newBuilder()
                 .setKey(BOOTH_KEY)
                 .setDescription(BOOTH_DESCRIPTION)
@@ -89,19 +99,23 @@ public class ModelTestData {
                 .setParticipationFee(PARTICIPATION_FEE)
                 .setSalesFee(SALES_FEE)
                 .build();
+
         public static final ProtoModel.VendorKey VENDOR_KEY = ProtoModel.VendorKey.newBuilder()
                 .setBooth(BOOTH_KEY)
                 .setVendorId(VENDOR_ID)
                 .build();
+
         public static final ProtoModel.Vendor VENDOR = ProtoModel.Vendor.newBuilder()
                 .setKey(VENDOR_KEY)
                 .build();
+
         public static final ProtoModel.PurchaseItem PURCHASE_ITEM = ProtoModel.PurchaseItem.newBuilder()
                 .setItemId(ITEM_ID)
                 .setVendor(VENDOR_KEY)
                 .setPrice(ITEM_PRICE.floatValue())
                 .setPurchasedOn(Timestamp.newBuilder().setSeconds(ITEM_PURCHASED_ON.toEpochSecond(ZoneOffset.UTC)).setNanos(ITEM_PURCHASED_ON.getNano()).build())
                 .build();
+
         public static final ProtoModel.Purchase PURCHASE = ProtoModel.Purchase.newBuilder()
                 .setKey(ProtoModel.PurchaseKey.newBuilder()
                         .setBooth(BOOTH_KEY)
@@ -112,6 +126,61 @@ public class ModelTestData {
                 .build();
 
         private Messages() {
+        }
+    }
+
+    /**
+     * Entity model test data.
+     */
+    public static class Entities {
+
+        public static final EntityModel.Booth.Key BOOTH_KEY = EntityModel.Booth.Key.builder()
+                .boothId(BOOTH_ID)
+                .build();
+
+        public static final EntityModel.Booth BOOTH = EntityModel.Booth.builder()
+                .key(BOOTH_KEY)
+                .description(BOOTH_DESCRIPTION)
+                .closed(true)
+                .closedOn(BOOTH_CLOSED_ON)
+                .feesRoundingStep(BigDecimal.valueOf(FEES_ROUNDING_STEP))
+                .participationFee(BigDecimal.valueOf(PARTICIPATION_FEE))
+                .salesFee(BigDecimal.valueOf(SALES_FEE))
+                .build();
+
+        public static final EntityModel.Vendor.Key VENDOR_KEY = EntityModel.Vendor.Key.builder()
+                .booth(BOOTH_KEY)
+                .vendorId(VENDOR_ID)
+                .build();
+
+        public static final EntityModel.Vendor VENDOR = EntityModel.Vendor.builder()
+                .key(VENDOR_KEY)
+                .build();
+
+        public static final EntityModel.PurchaseItem.Key PURCHASE_ITEM_KEY = EntityModel.PurchaseItem.Key.builder()
+                .itemId(ITEM_ID)
+                .build();
+
+        public static final EntityModel.PurchaseItem PURCHASE_ITEM = EntityModel.PurchaseItem.builder()
+                .key(PURCHASE_ITEM_KEY)
+                .vendor(VENDOR_KEY)
+                .purchasedOn(ITEM_PURCHASED_ON)
+                .price(ITEM_PRICE)
+                .build();
+
+        public static final EntityModel.Purchase.Key PURCHASE_KEY = EntityModel.Purchase.Key.builder()
+                .booth(BOOTH_KEY)
+                .purchaseId(PURCHASE_ID)
+                .build();
+
+        public static final EntityModel.Purchase PURCHASE = EntityModel.Purchase.builder()
+                .key(PURCHASE_KEY)
+                .value(ITEM_PRICE)
+                .items(List.of(PURCHASE_ITEM))
+                .purchasedOn(ITEM_PURCHASED_ON)
+                .build();
+
+        private Entities() {
         }
     }
 
