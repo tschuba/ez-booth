@@ -62,6 +62,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>tschuba.ez.booth.ServerApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
