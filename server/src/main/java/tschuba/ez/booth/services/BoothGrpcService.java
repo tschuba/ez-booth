@@ -12,7 +12,6 @@ import tschuba.ez.booth.proto.BoothServiceGrpc;
 import tschuba.ez.booth.proto.ProtoMapper;
 import tschuba.ez.booth.proto.ProtoModel;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -34,8 +33,8 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     @Override
     public void save(ProtoModel.Booth request, StreamObserver<Empty> responseObserver) {
         try {
-            DataModel.Booth booth = ProtoMapper.EVENT.messageToObject(request);
-            localService.saveEvent(booth);
+            DataModel.Booth booth = ProtoMapper.messageToObject(request);
+            localService.save(booth);
             responseObserver.onCompleted();
         } catch (Exception ex) {
             LOGGER.error("Error saving booth: {}", request, ex);
@@ -46,9 +45,9 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     @Override
     public void getAll(Empty request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
-            Stream<DataModel.Booth> allEvents = localService.getAllEvents();
+            Stream<DataModel.Booth> allEvents = localService.getAll();
             allEvents.forEach(booth -> {
-                ProtoModel.Booth boothMsg = ProtoMapper.EVENT.objectToMessage(booth);
+                ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
                 responseObserver.onNext(boothMsg);
             });
             responseObserver.onCompleted();
@@ -61,10 +60,9 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     @Override
     public void get(ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
-            DataModel.Booth.Key eventKey = ProtoMapper.EVENT_KEY.messageToObject(request);
-            Optional<DataModel.Booth> event = localService.getEvent(eventKey);
-            event.ifPresent(booth -> {
-                ProtoModel.Booth boothMsg = ProtoMapper.EVENT.objectToMessage(booth);
+            DataModel.Booth.Key eventKey = ProtoMapper.messageToObject(request);
+            localService.get(eventKey).ifPresent(booth -> {
+                ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
                 responseObserver.onNext(boothMsg);
             });
             responseObserver.onCompleted();
@@ -77,9 +75,9 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     @Override
     public void close(ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
-            DataModel.Booth.Key key = ProtoMapper.EVENT_KEY.messageToObject(request);
-            DataModel.Booth booth = localService.closeEvent(key);
-            ProtoModel.Booth boothMsg = ProtoMapper.EVENT.objectToMessage(booth);
+            DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
+            DataModel.Booth booth = localService.close(key);
+            ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
             responseObserver.onNext(boothMsg);
             responseObserver.onCompleted();
         } catch (Exception ex) {
@@ -91,9 +89,9 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     @Override
     public void open(ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
-            DataModel.Booth.Key event = ProtoMapper.EVENT_KEY.messageToObject(request);
-            DataModel.Booth booth = localService.openEvent(event);
-            ProtoModel.Booth boothMsg = ProtoMapper.EVENT.objectToMessage(booth);
+            DataModel.Booth.Key event = ProtoMapper.messageToObject(request);
+            DataModel.Booth booth = localService.open(event);
+            ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
             responseObserver.onNext(boothMsg);
             responseObserver.onCompleted();
         } catch (Exception ex) {
@@ -105,8 +103,8 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     @Override
     public void delete(ProtoModel.BoothKey request, StreamObserver<Empty> responseObserver) {
         try {
-            DataModel.Booth.Key key = ProtoMapper.EVENT_KEY.messageToObject(request);
-            localService.deleteEvent(key);
+            DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
+            localService.delete(key);
             responseObserver.onCompleted();
         } catch (Exception ex) {
             LOGGER.error("Error deleting booth: {}", request, ex);
