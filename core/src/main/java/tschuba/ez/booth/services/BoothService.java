@@ -7,19 +7,19 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface BoothService {
-    void saveEvent(@NonNull DataModel.Booth event);
+    void save(@NonNull DataModel.Booth event);
 
     @NonNull
-    Stream<DataModel.Booth> getAllEvents();
+    Stream<DataModel.Booth> getAll();
 
     @NonNull
-    Optional<DataModel.Booth> getEvent(@NonNull DataModel.Booth.Key event);
+    Optional<DataModel.Booth> get(@NonNull DataModel.Booth.Key event);
 
     @NonNull
-    DataModel.Booth closeEvent(@NonNull DataModel.Booth.Key event);
+    DataModel.Booth close(@NonNull DataModel.Booth.Key event);
 
     @NonNull
-    DataModel.Booth openEvent(@NonNull DataModel.Booth.Key event);
+    DataModel.Booth open(@NonNull DataModel.Booth.Key event);
 
-    void deleteEvent(@NonNull DataModel.Booth.Key event);
+    void delete(@NonNull DataModel.Booth.Key event);
 }
