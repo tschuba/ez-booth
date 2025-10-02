@@ -23,8 +23,9 @@ public class ProtoMapper {
     /**
      * Mapper for {@link DataModel.Booth.Key} and {@link ProtoModel.BoothKey}.
      */
-    public static final Mapper<DataModel.Booth.Key, ProtoModel.BoothKey> EVENT_KEY = new Mapper<>() {
+    public static final Mappable<DataModel.Booth.Key, ProtoModel.BoothKey> EVENT_KEY = new Mappable<>() {
         @Override
+        @NonNull
         public Function<DataModel.Booth.Key, ProtoModel.BoothKey> objectToMessage() {
             return key -> ProtoModel.BoothKey.newBuilder()
                     .setBoothId(key.boothId())
@@ -32,6 +33,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoModel.BoothKey, DataModel.Booth.Key> messageToObject() {
             return key -> DataModel.Booth.Key.builder()
                     .boothId(key.getBoothId())
@@ -39,11 +41,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoModel.BoothKey objectToMessage(@NonNull DataModel.Booth.Key object) {
+        return EVENT_KEY.objectToMessage(object);
+    }
+
+    @NonNull
+    public static DataModel.Booth.Key messageToObject(@NonNull ProtoModel.BoothKey message) {
+        return EVENT_KEY.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link DataModel.Booth} and {@link ProtoModel.Booth}.
      */
-    public static final Mapper<DataModel.Booth, ProtoModel.Booth> EVENT = new Mapper<>() {
+    public static final Mappable<DataModel.Booth, ProtoModel.Booth> EVENT = new Mappable<>() {
         @Override
+        @NonNull
         public Function<DataModel.Booth, ProtoModel.Booth> objectToMessage() {
             return booth -> {
                 ProtoModel.Booth.Builder builder = ProtoModel.Booth.newBuilder();
@@ -73,6 +86,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoModel.Booth, DataModel.Booth> messageToObject() {
             return booth -> {
                 DataModel.Booth.BoothBuilder builder = DataModel.Booth.builder();
@@ -98,11 +112,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoModel.Booth objectToMessage(@NonNull DataModel.Booth object) {
+        return EVENT.objectToMessage(object);
+    }
+
+    @NonNull
+    public static DataModel.Booth messageToObject(@NonNull ProtoModel.Booth message) {
+        return EVENT.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link DataModel.Purchase.Key} and {@link ProtoModel.PurchaseKey}.
      */
-    public static final Mapper<DataModel.Purchase.Key, ProtoModel.PurchaseKey> PURCHASE_KEY = new Mapper<>() {
+    public static final Mappable<DataModel.Purchase.Key, ProtoModel.PurchaseKey> PURCHASE_KEY = new Mappable<>() {
         @Override
+        @NonNull
         public Function<DataModel.Purchase.Key, ProtoModel.PurchaseKey> objectToMessage() {
             return key -> {
                 ProtoModel.PurchaseKey.Builder builder = ProtoModel.PurchaseKey.newBuilder();
@@ -116,6 +141,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoModel.PurchaseKey, DataModel.Purchase.Key> messageToObject() {
             return key -> {
                 DataModel.Purchase.Key.KeyBuilder builder = DataModel.Purchase.Key.builder();
@@ -129,11 +155,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoModel.PurchaseKey objectToMessage(@NonNull DataModel.Purchase.Key object) {
+        return PURCHASE_KEY.objectToMessage(object);
+    }
+
+    @NonNull
+    public static DataModel.Purchase.Key messageToObject(@NonNull ProtoModel.PurchaseKey message) {
+        return PURCHASE_KEY.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link DataModel.Purchase} and {@link ProtoModel.Purchase}.
      */
-    public static final Mapper<DataModel.Purchase, ProtoModel.Purchase> PURCHASE = new Mapper<>() {
+    public static final Mappable<DataModel.Purchase, ProtoModel.Purchase> PURCHASE = new Mappable<>() {
         @Override
+        @NonNull
         public Function<DataModel.Purchase, ProtoModel.Purchase> objectToMessage() {
             return purchase -> {
                 ProtoModel.Purchase.Builder builder = ProtoModel.Purchase.newBuilder();
@@ -155,6 +192,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoModel.Purchase, DataModel.Purchase> messageToObject() {
             return purchase -> {
                 DataModel.Purchase.PurchaseBuilder builder = DataModel.Purchase.builder();
@@ -176,11 +214,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoModel.Purchase objectToMessage(@NonNull DataModel.Purchase object) {
+        return PURCHASE.objectToMessage(object);
+    }
+
+    @NonNull
+    public static DataModel.Purchase messageToObject(@NonNull ProtoModel.Purchase message) {
+        return PURCHASE.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link DataModel.PurchaseItem.Key} and {@link ProtoModel.PurchaseItemKey}.
      */
-    public static final Mapper<DataModel.PurchaseItem.Key, ProtoModel.PurchaseItemKey> PURCHASE_ITEM_KEY = new Mapper<>() {
+    public static final Mappable<DataModel.PurchaseItem.Key, ProtoModel.PurchaseItemKey> PURCHASE_ITEM_KEY = new Mappable<>() {
         @Override
+        @NonNull
         public Function<DataModel.PurchaseItem.Key, ProtoModel.PurchaseItemKey> objectToMessage() {
             return key -> {
                 ProtoModel.PurchaseItemKey.Builder builder = ProtoModel.PurchaseItemKey.newBuilder();
@@ -194,6 +243,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoModel.PurchaseItemKey, DataModel.PurchaseItem.Key> messageToObject() {
             return key -> {
                 DataModel.PurchaseItem.Key.KeyBuilder builder = DataModel.PurchaseItem.Key.builder();
@@ -207,11 +257,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoModel.PurchaseItemKey objectToMessage(@NonNull DataModel.PurchaseItem.Key object) {
+        return PURCHASE_ITEM_KEY.objectToMessage(object);
+    }
+
+    @NonNull
+    public static DataModel.PurchaseItem.Key messageToObject(@NonNull ProtoModel.PurchaseItemKey message) {
+        return PURCHASE_ITEM_KEY.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link DataModel.PurchaseItem} and {@link ProtoModel.PurchaseItem}.
      */
-    public static final Mapper<DataModel.PurchaseItem, ProtoModel.PurchaseItem> PURCHASE_ITEM = new Mapper<>() {
+    public static final Mappable<DataModel.PurchaseItem, ProtoModel.PurchaseItem> PURCHASE_ITEM = new Mappable<>() {
         @Override
+        @NonNull
         public Function<DataModel.PurchaseItem, ProtoModel.PurchaseItem> objectToMessage() {
             return item -> {
                 ProtoModel.PurchaseItem.Builder builder = ProtoModel.PurchaseItem.newBuilder();
@@ -230,6 +291,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoModel.PurchaseItem, DataModel.PurchaseItem> messageToObject() {
             return item -> {
                 DataModel.PurchaseItem.PurchaseItemBuilder builder = DataModel.PurchaseItem.builder();
@@ -247,11 +309,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoModel.PurchaseItem objectToMessage(@NonNull DataModel.PurchaseItem object) {
+        return PURCHASE_ITEM.objectToMessage(object);
+    }
+
+    @NonNull
+    public static DataModel.PurchaseItem messageToObject(@NonNull ProtoModel.PurchaseItem message) {
+        return PURCHASE_ITEM.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link DataModel.Vendor.Key} and {@link ProtoModel.VendorKey}.
      */
-    public static final Mapper<DataModel.Vendor.Key, ProtoModel.VendorKey> VENDOR_KEY = new Mapper<>() {
+    public static final Mappable<DataModel.Vendor.Key, ProtoModel.VendorKey> VENDOR_KEY = new Mappable<>() {
         @Override
+        @NonNull
         public Function<DataModel.Vendor.Key, ProtoModel.VendorKey> objectToMessage() {
             return key -> {
                 ProtoModel.VendorKey.Builder builder = ProtoModel.VendorKey.newBuilder();
@@ -265,6 +338,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoModel.VendorKey, DataModel.Vendor.Key> messageToObject() {
             return key -> {
                 DataModel.Vendor.Key.KeyBuilder builder = DataModel.Vendor.Key.builder();
@@ -278,11 +352,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoModel.VendorKey objectToMessage(@NonNull DataModel.Vendor.Key object) {
+        return VENDOR_KEY.objectToMessage(object);
+    }
+
+    @NonNull
+    public static DataModel.Vendor.Key messageToObject(@NonNull ProtoModel.VendorKey message) {
+        return VENDOR_KEY.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link DataModel.Vendor} and {@link ProtoModel.Vendor}.
      */
-    public static final Mapper<DataModel.Vendor, ProtoModel.Vendor> VENDOR = new Mapper<>() {
+    public static final Mappable<DataModel.Vendor, ProtoModel.Vendor> VENDOR = new Mappable<>() {
         @Override
+        @NonNull
         public Function<DataModel.Vendor, ProtoModel.Vendor> objectToMessage() {
             return vendor -> {
                 ProtoModel.Vendor.Builder builder = ProtoModel.Vendor.newBuilder();
@@ -295,6 +380,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoModel.Vendor, DataModel.Vendor> messageToObject() {
             return vendor -> {
                 DataModel.Vendor.VendorBuilder builder = DataModel.Vendor.builder();
@@ -307,11 +393,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoModel.Vendor objectToMessage(@NonNull DataModel.Vendor object) {
+        return VENDOR.objectToMessage(object);
+    }
+
+    @NonNull
+    public static DataModel.Vendor messageToObject(@NonNull ProtoModel.Vendor message) {
+        return VENDOR.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link ServiceModel.Checkout} and {@link ProtoServices.CheckoutInput}.
      */
-    public static final Mapper<ServiceModel.Checkout, ProtoServices.CheckoutInput> CHECKOUT = new Mapper<>() {
+    public static final Mappable<ServiceModel.Checkout, ProtoServices.CheckoutInput> CHECKOUT = new Mappable<>() {
         @Override
+        @NonNull
         public Function<ServiceModel.Checkout, ProtoServices.CheckoutInput> objectToMessage() {
             return checkout -> {
                 ProtoServices.CheckoutInput.Builder builder = ProtoServices.CheckoutInput.newBuilder();
@@ -324,6 +421,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoServices.CheckoutInput, ServiceModel.Checkout> messageToObject() {
             return checkout -> {
                 ServiceModel.Checkout.CheckoutBuilder builder = ServiceModel.Checkout.builder();
@@ -339,11 +437,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoServices.CheckoutInput objectToMessage(@NonNull ServiceModel.Checkout object) {
+        return CHECKOUT.objectToMessage(object);
+    }
+
+    @NonNull
+    public static ServiceModel.Checkout messageToObject(@NonNull ProtoServices.CheckoutInput message) {
+        return CHECKOUT.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link ServiceModel.ChargedFees} and {@link ProtoServices.ChargedFees}.
      */
-    public static final Mapper<ServiceModel.ChargedFees, ProtoServices.ChargedFees> CHARGED_FEES = new Mapper<>() {
+    public static final Mappable<ServiceModel.ChargedFees, ProtoServices.ChargedFees> CHARGED_FEES = new Mappable<>() {
         @Override
+        @NonNull
         public Function<ServiceModel.ChargedFees, ProtoServices.ChargedFees> objectToMessage() {
             return fees -> {
                 ProtoServices.ChargedFees.Builder builder = ProtoServices.ChargedFees.newBuilder();
@@ -354,6 +463,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoServices.ChargedFees, ServiceModel.ChargedFees> messageToObject() {
             return fees -> {
                 ServiceModel.ChargedFees.ChargedFeesBuilder builder = ServiceModel.ChargedFees.builder();
@@ -364,11 +474,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoServices.ChargedFees objectToMessage(@NonNull ServiceModel.ChargedFees object) {
+        return CHARGED_FEES.objectToMessage(object);
+    }
+
+    @NonNull
+    public static ServiceModel.ChargedFees messageToObject(@NonNull ProtoServices.ChargedFees message) {
+        return CHARGED_FEES.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link ServiceModel.ChargingConfig} and {@link ProtoServices.ChargingConfig}.
      */
-    public static final Mapper<ServiceModel.ChargingConfig, ProtoServices.ChargingConfig> CHARGING_CONFIG = new Mapper<>() {
+    public static final Mappable<ServiceModel.ChargingConfig, ProtoServices.ChargingConfig> CHARGING_CONFIG = new Mappable<>() {
         @Override
+        @NonNull
         public Function<ServiceModel.ChargingConfig, ProtoServices.ChargingConfig> objectToMessage() {
             return config -> {
                 ProtoServices.ChargingConfig.Builder builder = ProtoServices.ChargingConfig.newBuilder();
@@ -380,6 +501,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoServices.ChargingConfig, ServiceModel.ChargingConfig> messageToObject() {
             return config -> {
                 ServiceModel.ChargingConfig.ChargingConfigBuilder builder = ServiceModel.ChargingConfig.builder();
@@ -391,11 +513,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoServices.ChargingConfig objectToMessage(@NonNull ServiceModel.ChargingConfig object) {
+        return CHARGING_CONFIG.objectToMessage(object);
+    }
+
+    @NonNull
+    public static ServiceModel.ChargingConfig messageToObject(@NonNull ProtoServices.ChargingConfig message) {
+        return CHARGING_CONFIG.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link ServiceModel.Balance.Input} and {@link ProtoServices.BalanceInput}.
      */
-    public static final Mapper<ServiceModel.Balance.Input, ProtoServices.BalanceInput> BALANCE_INPUT = new Mapper<>() {
+    public static final Mappable<ServiceModel.Balance.Input, ProtoServices.BalanceInput> BALANCE_INPUT = new Mappable<>() {
         @Override
+        @NonNull
         public Function<ServiceModel.Balance.Input, ProtoServices.BalanceInput> objectToMessage() {
             return input -> {
                 ProtoServices.BalanceInput.Builder builder = ProtoServices.BalanceInput.newBuilder();
@@ -407,6 +540,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoServices.BalanceInput, ServiceModel.Balance.Input> messageToObject() {
             return input -> {
                 ServiceModel.Balance.Input.InputBuilder builder = ServiceModel.Balance.Input.builder();
@@ -420,11 +554,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoServices.BalanceInput objectToMessage(@NonNull ServiceModel.Balance.Input object) {
+        return BALANCE_INPUT.objectToMessage(object);
+    }
+
+    @NonNull
+    public static ServiceModel.Balance.Input messageToObject(@NonNull ProtoServices.BalanceInput message) {
+        return BALANCE_INPUT.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link ServiceModel.Balance.Output} and {@link ProtoServices.SalesBalance}.
      */
-    public static final Mapper<ServiceModel.Balance.Output, ProtoServices.SalesBalance> BALANCE_OUTPUT = new Mapper<>() {
+    public static final Mappable<ServiceModel.Balance.Output, ProtoServices.SalesBalance> BALANCE_OUTPUT = new Mappable<>() {
         @Override
+        @NonNull
         public Function<ServiceModel.Balance.Output, ProtoServices.SalesBalance> objectToMessage() {
             return output -> {
                 ProtoServices.SalesBalance.Builder builder = ProtoServices.SalesBalance.newBuilder();
@@ -436,6 +581,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoServices.SalesBalance, ServiceModel.Balance.Output> messageToObject() {
             return output -> {
                 ServiceModel.Balance.Output.OutputBuilder builder = ServiceModel.Balance.Output.builder();
@@ -449,11 +595,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoServices.SalesBalance objectToMessage(@NonNull ServiceModel.Balance.Output object) {
+        return BALANCE_OUTPUT.objectToMessage(object);
+    }
+
+    @NonNull
+    public static ServiceModel.Balance.Output messageToObject(@NonNull ProtoServices.SalesBalance message) {
+        return BALANCE_OUTPUT.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link ServiceModel.VendorReportInput} and {@link ProtoServices.VendorReportInput}.
      */
-    public static final Mapper<ServiceModel.VendorReportInput, ProtoServices.VendorReportInput> VENDOR_REPORT_INPUT = new Mapper<>() {
+    public static final Mappable<ServiceModel.VendorReportInput, ProtoServices.VendorReportInput> VENDOR_REPORT_INPUT = new Mappable<>() {
         @Override
+        @NonNull
         public Function<ServiceModel.VendorReportInput, ProtoServices.VendorReportInput> objectToMessage() {
             return input -> {
                 ProtoServices.VendorReportInput.Builder builder = ProtoServices.VendorReportInput.newBuilder();
@@ -465,6 +622,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoServices.VendorReportInput, ServiceModel.VendorReportInput> messageToObject() {
             return input -> {
                 ServiceModel.VendorReportInput.VendorReportInputBuilder builder = ServiceModel.VendorReportInput.builder();
@@ -475,11 +633,22 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoServices.VendorReportInput objectToMessage(@NonNull ServiceModel.VendorReportInput object) {
+        return VENDOR_REPORT_INPUT.objectToMessage(object);
+    }
+
+    @NonNull
+    public static ServiceModel.VendorReportInput messageToObject(@NonNull ProtoServices.VendorReportInput message) {
+        return VENDOR_REPORT_INPUT.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link ServiceModel.VendorReportData} and {@link ProtoServices.VendorReportData}.
      */
-    public static final Mapper<ServiceModel.VendorReportData, ProtoServices.VendorReportData> VENDOR_REPORT_DATA = new Mapper<>() {
+    public static final Mappable<ServiceModel.VendorReportData, ProtoServices.VendorReportData> VENDOR_REPORT_DATA = new Mappable<>() {
         @Override
+        @NonNull
         public Function<ServiceModel.VendorReportData, ProtoServices.VendorReportData> objectToMessage() {
             return reportData -> {
                 ProtoServices.VendorReportData.Builder builder = ProtoServices.VendorReportData.newBuilder();
@@ -494,6 +663,7 @@ public class ProtoMapper {
         }
 
         @Override
+        @NonNull
         public Function<ProtoServices.VendorReportData, ServiceModel.VendorReportData> messageToObject() {
             return reportData -> {
                 ServiceModel.VendorReportData.VendorReportDataBuilder builder = ServiceModel.VendorReportData.builder();
@@ -512,20 +682,42 @@ public class ProtoMapper {
         }
     };
 
+    @NonNull
+    public static ProtoServices.VendorReportData objectToMessage(@NonNull ServiceModel.VendorReportData object) {
+        return VENDOR_REPORT_DATA.objectToMessage(object);
+    }
+
+    @NonNull
+    public static ServiceModel.VendorReportData messageToObject(@NonNull ProtoServices.VendorReportData message) {
+        return VENDOR_REPORT_DATA.messageToObject(message);
+    }
+
     /**
      * Mapper for {@link URI} and {@link ProtoCore.URI}.
      */
-    public static final Mapper<URI, ProtoCore.URI> URI = new Mapper<>() {
+    public static final Mappable<URI, ProtoCore.URI> URI = new Mappable<>() {
         @Override
+        @NonNull
         public Function<URI, ProtoCore.URI> objectToMessage() {
             return uri -> ProtoCore.URI.newBuilder().setResource(uri.toString()).build();
         }
 
         @Override
+        @NonNull
         public Function<ProtoCore.URI, URI> messageToObject() {
             return uriMsg -> java.net.URI.create(uriMsg.getResource());
         }
     };
+
+    @NonNull
+    public static ProtoCore.URI objectToMessage(@NonNull URI object) {
+        return URI.objectToMessage(object);
+    }
+
+    @NonNull
+    public static URI messageToObject(@NonNull ProtoCore.URI message) {
+        return URI.messageToObject(message);
+    }
 
     /**
      * Interface for implementations of mapping between object and protobuf message.
@@ -533,16 +725,20 @@ public class ProtoMapper {
      * @param <T>
      * @param <M>
      */
-    public interface Mapper<T, M extends Message> {
+    public interface Mappable<T, M extends Message> {
 
+        @NonNull
         Function<T, M> objectToMessage();
 
+        @NonNull
         Function<M, T> messageToObject();
 
+        @NonNull
         default M objectToMessage(@NonNull T input) {
             return objectToMessage().apply(input);
         }
 
+        @NonNull
         default T messageToObject(@NonNull M message) {
             return messageToObject().apply(message);
         }
