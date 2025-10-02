@@ -23,7 +23,7 @@ public class ProtoMapper {
     /**
      * Mapper for {@link DataModel.Booth.Key} and {@link ProtoModel.BoothKey}.
      */
-    public static final Mappable<DataModel.Booth.Key, ProtoModel.BoothKey> EVENT_KEY = new Mappable<>() {
+    public static final Mappable<DataModel.Booth.Key, ProtoModel.BoothKey> BOOTH_KEY = new Mappable<>() {
         @Override
         @NonNull
         public Function<DataModel.Booth.Key, ProtoModel.BoothKey> objectToMessage() {
@@ -43,25 +43,25 @@ public class ProtoMapper {
 
     @NonNull
     public static ProtoModel.BoothKey objectToMessage(@NonNull DataModel.Booth.Key object) {
-        return EVENT_KEY.objectToMessage(object);
+        return BOOTH_KEY.objectToMessage(object);
     }
 
     @NonNull
     public static DataModel.Booth.Key messageToObject(@NonNull ProtoModel.BoothKey message) {
-        return EVENT_KEY.messageToObject(message);
+        return BOOTH_KEY.messageToObject(message);
     }
 
     /**
      * Mapper for {@link DataModel.Booth} and {@link ProtoModel.Booth}.
      */
-    public static final Mappable<DataModel.Booth, ProtoModel.Booth> EVENT = new Mappable<>() {
+    public static final Mappable<DataModel.Booth, ProtoModel.Booth> BOOTH = new Mappable<>() {
         @Override
         @NonNull
         public Function<DataModel.Booth, ProtoModel.Booth> objectToMessage() {
             return booth -> {
                 ProtoModel.Booth.Builder builder = ProtoModel.Booth.newBuilder();
                 if (booth.key() != null) {
-                    ProtoModel.BoothKey key = EVENT_KEY.objectToMessage(booth.key());
+                    ProtoModel.BoothKey key = BOOTH_KEY.objectToMessage(booth.key());
                     builder.setKey(key);
                 }
                 builder.setDescription(booth.description());
@@ -91,7 +91,7 @@ public class ProtoMapper {
             return booth -> {
                 DataModel.Booth.BoothBuilder builder = DataModel.Booth.builder();
                 if (booth.hasKey()) {
-                    DataModel.Booth.Key key = EVENT_KEY.messageToObject(booth.getKey());
+                    DataModel.Booth.Key key = BOOTH_KEY.messageToObject(booth.getKey());
                     builder.key(key);
                 }
                 if (booth.hasDate()) {
@@ -114,12 +114,12 @@ public class ProtoMapper {
 
     @NonNull
     public static ProtoModel.Booth objectToMessage(@NonNull DataModel.Booth object) {
-        return EVENT.objectToMessage(object);
+        return BOOTH.objectToMessage(object);
     }
 
     @NonNull
     public static DataModel.Booth messageToObject(@NonNull ProtoModel.Booth message) {
-        return EVENT.messageToObject(message);
+        return BOOTH.messageToObject(message);
     }
 
     /**
@@ -132,7 +132,7 @@ public class ProtoMapper {
             return key -> {
                 ProtoModel.PurchaseKey.Builder builder = ProtoModel.PurchaseKey.newBuilder();
                 if (key.booth() != null) {
-                    ProtoModel.BoothKey booth = EVENT_KEY.objectToMessage(key.booth());
+                    ProtoModel.BoothKey booth = BOOTH_KEY.objectToMessage(key.booth());
                     builder.setBooth(booth);
                 }
                 builder.setPurchaseId(key.purchaseId());
@@ -146,7 +146,7 @@ public class ProtoMapper {
             return key -> {
                 DataModel.Purchase.Key.KeyBuilder builder = DataModel.Purchase.Key.builder();
                 if (key.hasBooth()) {
-                    DataModel.Booth.Key booth = EVENT_KEY.messageToObject(key.getBooth());
+                    DataModel.Booth.Key booth = BOOTH_KEY.messageToObject(key.getBooth());
                     builder.booth(booth);
                 }
                 builder.purchaseId(key.getPurchaseId());
@@ -299,7 +299,7 @@ public class ProtoMapper {
                     DataModel.PurchaseItem.Key key = PURCHASE_ITEM_KEY.messageToObject(item.getKey());
                     builder.key(key);
                 }
-                builder.price(BigDecimal.valueOf(item.getPrice()));
+                builder.price(new BigDecimal(Float.toString(item.getPrice())));
                 if (item.hasPurchasedOn()) {
                     LocalDateTime purchasedOn = DateAndTime.asDateTime(item.getPurchasedOn());
                     builder.purchasedOn(purchasedOn);
@@ -329,7 +329,7 @@ public class ProtoMapper {
             return key -> {
                 ProtoModel.VendorKey.Builder builder = ProtoModel.VendorKey.newBuilder();
                 if (key.booth() != null) {
-                    ProtoModel.BoothKey eventKey = EVENT_KEY.objectToMessage(key.booth());
+                    ProtoModel.BoothKey eventKey = BOOTH_KEY.objectToMessage(key.booth());
                     builder.setBooth(eventKey);
                 }
                 builder.setVendorId(key.vendorId());
@@ -343,7 +343,7 @@ public class ProtoMapper {
             return key -> {
                 DataModel.Vendor.Key.KeyBuilder builder = DataModel.Vendor.Key.builder();
                 if (key.hasBooth()) {
-                    DataModel.Booth.Key booth = EVENT_KEY.messageToObject(key.getBooth());
+                    DataModel.Booth.Key booth = BOOTH_KEY.messageToObject(key.getBooth());
                     builder.booth(booth);
                 }
                 builder.vendorId(key.getVendorId());
@@ -412,7 +412,7 @@ public class ProtoMapper {
         public Function<ServiceModel.Checkout, ProtoServices.CheckoutInput> objectToMessage() {
             return checkout -> {
                 ProtoServices.CheckoutInput.Builder builder = ProtoServices.CheckoutInput.newBuilder();
-                ProtoModel.BoothKey boothKey = EVENT_KEY.objectToMessage(checkout.booth());
+                ProtoModel.BoothKey boothKey = BOOTH_KEY.objectToMessage(checkout.booth());
                 builder.setBooth(boothKey);
                 checkout.items().stream().map(PURCHASE_ITEM::objectToMessage).forEach(builder::addItems);
                 builder.setPrintReceipt(checkout.printReceipt());
@@ -426,7 +426,7 @@ public class ProtoMapper {
             return checkout -> {
                 ServiceModel.Checkout.CheckoutBuilder builder = ServiceModel.Checkout.builder();
                 if (checkout.hasBooth()) {
-                    DataModel.Booth.Key boothKey = EVENT_KEY.messageToObject(checkout.getBooth());
+                    DataModel.Booth.Key boothKey = BOOTH_KEY.messageToObject(checkout.getBooth());
                     builder.booth(boothKey);
                 }
                 List<DataModel.PurchaseItem> convertedItemsList = checkout.getItemsList().stream().map(PURCHASE_ITEM::messageToObject).toList();
@@ -654,7 +654,7 @@ public class ProtoMapper {
                 ProtoServices.VendorReportData.Builder builder = ProtoServices.VendorReportData.newBuilder();
                 ProtoModel.Vendor vendorMsg = VENDOR.objectToMessage(reportData.vendor());
                 builder.setVendor(vendorMsg);
-                ProtoModel.Booth boothMsg = EVENT.objectToMessage(reportData.booth());
+                ProtoModel.Booth boothMsg = BOOTH.objectToMessage(reportData.booth());
                 builder.setBooth(boothMsg);
                 List<ProtoModel.PurchaseItem> itemsMsg = reportData.items().stream().map(PURCHASE_ITEM::objectToMessage).toList();
                 builder.addAllItems(itemsMsg);
@@ -672,7 +672,7 @@ public class ProtoMapper {
                     builder.vendor(vendor);
                 }
                 if (reportData.hasBooth()) {
-                    DataModel.Booth booth = EVENT.messageToObject(reportData.getBooth());
+                    DataModel.Booth booth = BOOTH.messageToObject(reportData.getBooth());
                     builder.booth(booth);
                 }
                 List<DataModel.PurchaseItem> convertedItemsList = reportData.getItemsList().stream().map(PURCHASE_ITEM::messageToObject).toList();
