@@ -31,8 +31,10 @@ message Vendor {
 }
 
 message PurchaseItem {
-  float price = 2;
-  google.protobuf.Timestamp purchased_on = 3;
+  string itemId = 1;
+  VendorKey vendor = 2;
+  float price = 3;
+  google.protobuf.Timestamp purchased_on = 4;
 }
 
 message PurchaseKey {

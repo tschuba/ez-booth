@@ -22,6 +22,7 @@ public class ModelTestData {
     private static final String ITEM_ID = "test-item";
     private static final LocalDateTime ITEM_PURCHASED_ON = LocalDateTime.of(2025, 10, 2, 19, 12, 27);
     private static final BigDecimal ITEM_PRICE = BigDecimal.valueOf(19.99);
+    private static final String PURCHASE_ID = "test-purchase";
 
     private ModelTestData() {
     }
@@ -49,12 +50,21 @@ public class ModelTestData {
         public static final DataModel.Vendor VENDOR = DataModel.Vendor.builder()
                 .key(VENDOR_KEY)
                 .build();
+        public static final DataModel.Purchase.Key PURCHASE_KEY = DataModel.Purchase.Key.builder()
+                .booth(BOOTH_KEY)
+                .purchaseId(PURCHASE_ID)
+                .build();
+        public static final DataModel.Purchase PURCHASE = DataModel.Purchase.builder()
+                .key(PURCHASE_KEY)
+                .value(ITEM_PRICE)
+                .purchasedOn(ITEM_PURCHASED_ON)
+                .build();
         public static final DataModel.PurchaseItem.Key PURCHASE_ITEM_KEY = DataModel.PurchaseItem.Key.builder()
-                .vendor(VENDOR_KEY)
                 .itemId(ITEM_ID)
                 .build();
         public static final DataModel.PurchaseItem PURCHASE_ITEM = DataModel.PurchaseItem.builder()
                 .key(PURCHASE_ITEM_KEY)
+                .vendor(VENDOR_KEY)
                 .purchasedOn(ITEM_PURCHASED_ON)
                 .price(ITEM_PRICE)
                 .build();
@@ -86,14 +96,19 @@ public class ModelTestData {
         public static final ProtoModel.Vendor VENDOR = ProtoModel.Vendor.newBuilder()
                 .setKey(VENDOR_KEY)
                 .build();
-        public static final ProtoModel.PurchaseItemKey PURCHASE_ITEM_KEY = ProtoModel.PurchaseItemKey.newBuilder()
-                .setVendor(VENDOR_KEY)
-                .setItemId(ITEM_ID)
-                .build();
         public static final ProtoModel.PurchaseItem PURCHASE_ITEM = ProtoModel.PurchaseItem.newBuilder()
-                .setKey(PURCHASE_ITEM_KEY)
-                .setPurchasedOn(Timestamp.newBuilder().setSeconds(ITEM_PURCHASED_ON.toEpochSecond(ZoneOffset.UTC)).setNanos(ITEM_PURCHASED_ON.getNano()).build())
+                .setItemId(ITEM_ID)
+                .setVendor(VENDOR_KEY)
                 .setPrice(ITEM_PRICE.floatValue())
+                .setPurchasedOn(Timestamp.newBuilder().setSeconds(ITEM_PURCHASED_ON.toEpochSecond(ZoneOffset.UTC)).setNanos(ITEM_PURCHASED_ON.getNano()).build())
+                .build();
+        public static final ProtoModel.Purchase PURCHASE = ProtoModel.Purchase.newBuilder()
+                .setKey(ProtoModel.PurchaseKey.newBuilder()
+                        .setBooth(BOOTH_KEY)
+                        .setPurchaseId(PURCHASE_ID)
+                        .build())
+                .setValue(ITEM_PRICE.floatValue())
+                .setPurchasedOn(Timestamp.newBuilder().setSeconds(ITEM_PURCHASED_ON.toEpochSecond(ZoneOffset.UTC)).setNanos(ITEM_PURCHASED_ON.getNano()).build())
                 .build();
 
         private Messages() {

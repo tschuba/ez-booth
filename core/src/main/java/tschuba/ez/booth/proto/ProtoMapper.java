@@ -233,6 +233,13 @@ public class ProtoMapper {
         public Function<DataModel.PurchaseItem, ProtoModel.PurchaseItem> objectToMessage() {
             return item -> {
                 ProtoModel.PurchaseItem.Builder builder = ProtoModel.PurchaseItem.newBuilder();
+                if (item.key() != null) {
+                    builder.setItemId(item.key().itemId());
+                }
+                if (item.vendor() != null) {
+                    ProtoModel.VendorKey vendor = VENDOR_KEY.objectToMessage(item.vendor());
+                    builder.setVendor(vendor);
+                }
                 if (item.price() != null) {
                     builder.setPrice(item.price().floatValue());
                 }
@@ -248,6 +255,10 @@ public class ProtoMapper {
         public Function<ProtoModel.PurchaseItem, DataModel.PurchaseItem> messageToObject() {
             return item -> {
                 DataModel.PurchaseItem.PurchaseItemBuilder builder = DataModel.PurchaseItem.builder();
+                builder.key(DataModel.PurchaseItem.Key.builder().itemId(item.getItemId()).build());
+                if (item.hasVendor()) {
+                    builder.vendor(VENDOR_KEY.messageToObject(item.getVendor()));
+                }
                 builder.price(new BigDecimal(Float.toString(item.getPrice())));
                 if (item.hasPurchasedOn()) {
                     LocalDateTime purchasedOn = DateAndTime.asDateTime(item.getPurchasedOn());
