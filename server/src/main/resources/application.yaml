@@ -1,0 +1,14 @@
+spring:
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: validate
+      show_sql: true
+tschuba:
+  ez:
+    booth:
+      datasource:
+        url: jdbc:sqlite:${HOME|HOMEPATH}/Documents/ez-booth/booth.db
+        driverClassName: org.sqlite.JDBC
+        username: ez-booth
+        password: ez-booth
