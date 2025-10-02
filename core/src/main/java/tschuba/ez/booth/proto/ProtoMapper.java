@@ -225,49 +225,6 @@ public class ProtoMapper {
     }
 
     /**
-     * Mapper for {@link DataModel.PurchaseItem.Key} and {@link ProtoModel.PurchaseItemKey}.
-     */
-    public static final Mappable<DataModel.PurchaseItem.Key, ProtoModel.PurchaseItemKey> PURCHASE_ITEM_KEY = new Mappable<>() {
-        @Override
-        @NonNull
-        public Function<DataModel.PurchaseItem.Key, ProtoModel.PurchaseItemKey> objectToMessage() {
-            return key -> {
-                ProtoModel.PurchaseItemKey.Builder builder = ProtoModel.PurchaseItemKey.newBuilder();
-                if (key.vendor() != null) {
-                    ProtoModel.VendorKey vendor = VENDOR_KEY.objectToMessage(key.vendor());
-                    builder.setVendor(vendor);
-                }
-                builder.setItemId(key.itemId());
-                return builder.build();
-            };
-        }
-
-        @Override
-        @NonNull
-        public Function<ProtoModel.PurchaseItemKey, DataModel.PurchaseItem.Key> messageToObject() {
-            return key -> {
-                DataModel.PurchaseItem.Key.KeyBuilder builder = DataModel.PurchaseItem.Key.builder();
-                if (key.hasVendor()) {
-                    DataModel.Vendor.Key vendor = VENDOR_KEY.messageToObject(key.getVendor());
-                    builder.vendor(vendor);
-                }
-                builder.itemId(key.getItemId());
-                return builder.build();
-            };
-        }
-    };
-
-    @NonNull
-    public static ProtoModel.PurchaseItemKey objectToMessage(@NonNull DataModel.PurchaseItem.Key object) {
-        return PURCHASE_ITEM_KEY.objectToMessage(object);
-    }
-
-    @NonNull
-    public static DataModel.PurchaseItem.Key messageToObject(@NonNull ProtoModel.PurchaseItemKey message) {
-        return PURCHASE_ITEM_KEY.messageToObject(message);
-    }
-
-    /**
      * Mapper for {@link DataModel.PurchaseItem} and {@link ProtoModel.PurchaseItem}.
      */
     public static final Mappable<DataModel.PurchaseItem, ProtoModel.PurchaseItem> PURCHASE_ITEM = new Mappable<>() {
@@ -276,10 +233,6 @@ public class ProtoMapper {
         public Function<DataModel.PurchaseItem, ProtoModel.PurchaseItem> objectToMessage() {
             return item -> {
                 ProtoModel.PurchaseItem.Builder builder = ProtoModel.PurchaseItem.newBuilder();
-                if (item.key() != null) {
-                    ProtoModel.PurchaseItemKey itemKey = PURCHASE_ITEM_KEY.objectToMessage(item.key());
-                    builder.setKey(itemKey);
-                }
                 if (item.price() != null) {
                     builder.setPrice(item.price().floatValue());
                 }
@@ -295,10 +248,6 @@ public class ProtoMapper {
         public Function<ProtoModel.PurchaseItem, DataModel.PurchaseItem> messageToObject() {
             return item -> {
                 DataModel.PurchaseItem.PurchaseItemBuilder builder = DataModel.PurchaseItem.builder();
-                if (item.hasKey()) {
-                    DataModel.PurchaseItem.Key key = PURCHASE_ITEM_KEY.messageToObject(item.getKey());
-                    builder.key(key);
-                }
                 builder.price(new BigDecimal(Float.toString(item.getPrice())));
                 if (item.hasPurchasedOn()) {
                     LocalDateTime purchasedOn = DateAndTime.asDateTime(item.getPurchasedOn());

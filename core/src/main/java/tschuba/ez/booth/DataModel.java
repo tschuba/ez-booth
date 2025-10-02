@@ -1,5 +1,6 @@
 package tschuba.ez.booth;
 
+import jakarta.persistence.*;
 import lombok.Builder;
 
 import java.math.BigDecimal;
@@ -8,69 +9,90 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public final class DataModel {
+
+    private static final String SCHEMA = "ez_booth";
+
     private DataModel() {
     }
 
     @Builder
+    @Entity
+    @Table(name = "booths", schema = SCHEMA)
     public record Booth(
-            Key key,
-            String description,
-            LocalDate date,
-            BigDecimal participationFee,
-            BigDecimal salesFee,
-            BigDecimal feesRoundingStep,
-            boolean closed,
-            LocalDateTime closedOn
+            @EmbeddedId Key key,
+            @Column(nullable = false) String description,
+            @Column(nullable = false) LocalDate date,
+            @Column(nullable = false, name = "participation_fee") BigDecimal participationFee,
+            @Column(nullable = false, name = "sales_fee") BigDecimal salesFee,
+            @Column(nullable = false, name = "fees_rounding_step") BigDecimal feesRoundingStep,
+            @Column boolean closed,
+            @Column(name = "closed_on") LocalDateTime closedOn
     ) {
 
         @Builder
+        @Embeddable
         public record Key(
-                String boothId
+                @Column(nullable = false, name = "booth_id") String boothId
         ) {
         }
 
     }
 
     @Builder
+    @Entity
+    @Table(name = "purchases", schema = SCHEMA)
     public record Purchase(
-            Key key,
+            @EmbeddedId Key key,
+            @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
             List<PurchaseItem> items,
-            BigDecimal value,
-            LocalDateTime purchasedOn
+            @Column(nullable = false) BigDecimal value,
+            @Column(nullable = false, name = "purchased_on") LocalDateTime purchasedOn
     ) {
 
         @Builder
+        @Embeddable
         public record Key(
-                Booth.Key booth,
-                String purchaseId
+                @Column(nullable = false) Booth.Key booth,
+                @Column(nullable = false, name = "purchase_id") String purchaseId
         ) {
         }
     }
 
     @Builder
+    @Entity
+    @Table(name = "purchase_items", schema = SCHEMA)
     public record PurchaseItem(
-            Key key,
-            BigDecimal price,
-            LocalDateTime purchasedOn
+            @ManyToOne(optional = false)
+            @JoinColumns({
+                    @JoinColumn(name = "booth_id", referencedColumnName = "booth"),
+                    @JoinColumn(name = "purchase_id", referencedColumnName = "purchase_id")
+            })
+            Purchase purchase,
+            @Column(nullable = false) BigDecimal price,
+            @Column(nullable = false, name = "purchased_on") LocalDateTime purchasedOn
     ) {
 
         @Builder
+        @Embeddable
         public record Key(
-                Vendor.Key vendor,
-                String itemId
+                @Column(nullable = false) Vendor.Key vendor,
+                @Column(nullable = false, name = "item_id") String itemId
         ) {
         }
     }
 
     @Builder
+    @Entity
+    @Table(name = "vendors", schema = SCHEMA)
     public record Vendor(
-            Key key
+            @EmbeddedId Key key
     ) {
 
         @Builder
+        @Embeddable
         public record Key(
-                Booth.Key booth,
-                String vendorId
+                @Column(nullable = false) Booth.Key booth,
+                @Column(nullable = false, name = "vendor_id") String vendorId
         ) {
         }
     }

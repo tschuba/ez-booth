@@ -102,28 +102,6 @@ class ProtoMapperTest {
     }
 
     /**
-     * Tests for PurchaseItemKey mapping.
-     */
-    @Nested
-    class PurchaseItemKeyTests {
-        @Test
-        void testObjectToMessageShouldReturnNonNull() {
-            assertThat(PURCHASE_ITEM_KEY.objectToMessage(Objects.PURCHASE_ITEM_KEY)).isNotNull();
-        }
-
-        @Test
-        void testMessageToObjectShouldReturnNonNull() {
-            assertThat(PURCHASE_ITEM_KEY.messageToObject(Messages.PURCHASE_ITEM_KEY)).isNotNull();
-        }
-
-        @Test
-        void testObjectToMessageAndBackShouldReturnEqualData() {
-            assertThat(PURCHASE_ITEM_KEY.messageToObject(Messages.PURCHASE_ITEM_KEY)).isEqualTo(Objects.PURCHASE_ITEM_KEY);
-            assertThat(PURCHASE_ITEM_KEY.objectToMessage(Objects.PURCHASE_ITEM_KEY)).isEqualTo(Messages.PURCHASE_ITEM_KEY);
-        }
-    }
-
-    /**
      * Tests for PurchaseItem mapping.
      */
     @Nested
