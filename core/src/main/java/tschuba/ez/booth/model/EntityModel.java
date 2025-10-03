@@ -22,7 +22,7 @@ public class EntityModel {
 
     @Entity(name = "Booth")
     @Table(name = "booths", schema = SCHEMA)
-    @Builder
+    @Builder(toBuilder = true)
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
@@ -53,7 +53,7 @@ public class EntityModel {
         private LocalDateTime closedOn;
 
         @Embeddable
-        @Builder
+        @Builder(toBuilder = true)
         @NoArgsConstructor
         @AllArgsConstructor
         @Getter
@@ -66,7 +66,7 @@ public class EntityModel {
 
     @Entity(name = "Vendor")
     @Table(name = "vendors", schema = SCHEMA)
-    @Builder
+    @Builder(toBuilder = true)
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
@@ -76,7 +76,7 @@ public class EntityModel {
         @EmbeddedId @EqualsAndHashCode.Include private Key key;
 
         @Embeddable
-        @Builder
+        @Builder(toBuilder = true)
         @NoArgsConstructor
         @AllArgsConstructor
         @Getter
@@ -91,7 +91,7 @@ public class EntityModel {
 
     @Entity(name = "Purchase")
     @Table(name = "purchases", schema = SCHEMA)
-    @Builder
+    @Builder(toBuilder = true)
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
@@ -114,7 +114,7 @@ public class EntityModel {
         private List<PurchaseItem> items;
 
         @Embeddable
-        @Builder
+        @Builder(toBuilder = true)
         @NoArgsConstructor
         @AllArgsConstructor
         @Getter
@@ -130,7 +130,7 @@ public class EntityModel {
 
     @Entity(name = "PurchaseItem")
     @Table(name = "purchase_items", schema = SCHEMA)
-    @Builder
+    @Builder(toBuilder = true)
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
@@ -149,7 +149,7 @@ public class EntityModel {
         private LocalDateTime purchasedOn;
 
         @Embeddable
-        @Builder
+        @Builder(toBuilder = true)
         @NoArgsConstructor
         @AllArgsConstructor
         @Getter
