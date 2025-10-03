@@ -1,4 +1,10 @@
 spring:
+  datasource:
+    url: jdbc:sqlite:${user.home}/Documents/tschuba/ez-booth/booth.db
+    driverClassName: org.sqlite.JDBC
+  sql:
+    init:
+      mode: always
   jpa:
     database-platform: org.hibernate.community.dialect.SQLiteDialect
     hibernate:
