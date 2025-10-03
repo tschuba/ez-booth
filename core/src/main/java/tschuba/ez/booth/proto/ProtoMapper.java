@@ -206,7 +206,8 @@ public class ProtoMapper {
                 }
                 builder.value(new BigDecimal(Float.toString(purchase.getValue())));
 
-                List<DataModel.PurchaseItem> convertedItemsList = purchase.getItemsList().stream().map(PURCHASE_ITEM::messageToObject).toList();
+                List<DataModel.PurchaseItem> convertedItemsList = purchase.getItemsList().stream()
+                        .map(PURCHASE_ITEM::messageToObject).toList();
                 builder.items(convertedItemsList);
 
                 return builder.build();
@@ -234,7 +235,10 @@ public class ProtoMapper {
             return item -> {
                 ProtoModel.PurchaseItem.Builder builder = ProtoModel.PurchaseItem.newBuilder();
                 if (item.key() != null) {
-                    builder.setItemId(item.key().itemId());
+                    DataModel.PurchaseItem.Key key = item.key();
+                    builder.setPurchase(PURCHASE_KEY.objectToMessage(key.purchase()));
+                    builder.setItemId(key.itemId());
+
                 }
                 if (item.vendor() != null) {
                     ProtoModel.VendorKey vendor = VENDOR_KEY.objectToMessage(item.vendor());
@@ -255,7 +259,14 @@ public class ProtoMapper {
         public Function<ProtoModel.PurchaseItem, DataModel.PurchaseItem> messageToObject() {
             return item -> {
                 DataModel.PurchaseItem.PurchaseItemBuilder builder = DataModel.PurchaseItem.builder();
-                builder.key(DataModel.PurchaseItem.Key.builder().itemId(item.getItemId()).build());
+
+                DataModel.PurchaseItem.Key.KeyBuilder keyBuilder = DataModel.PurchaseItem.Key.builder();
+                if (item.hasPurchase()) {
+                    keyBuilder.purchase(PURCHASE_KEY.messageToObject(item.getPurchase()));
+                }
+                keyBuilder.itemId(item.getItemId());
+                builder.key(keyBuilder.build());
+
                 if (item.hasVendor()) {
                     builder.vendor(VENDOR_KEY.messageToObject(item.getVendor()));
                 }

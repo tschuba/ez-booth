@@ -31,10 +31,11 @@ message Vendor {
 }
 
 message PurchaseItem {
-  string itemId = 1;
-  VendorKey vendor = 2;
-  float price = 3;
-  google.protobuf.Timestamp purchased_on = 4;
+  PurchaseKey purchase = 1;
+  string itemId = 2;
+  VendorKey vendor = 3;
+  float price = 4;
+  google.protobuf.Timestamp purchased_on = 5;
 }
 
 message PurchaseKey {

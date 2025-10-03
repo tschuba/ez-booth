@@ -110,16 +110,17 @@ public class ModelTestData {
                 .setKey(VENDOR_KEY)
                 .build();
 
+        public static final ProtoModel.PurchaseKey PURCHASE_KEY = ProtoModel.PurchaseKey.newBuilder()
+                .setBooth(BOOTH_KEY)
+                .setPurchaseId(PURCHASE_ID)
+                .build();
+
         public static final ProtoModel.PurchaseItem PURCHASE_ITEM = ProtoModel.PurchaseItem.newBuilder()
+                .setPurchase(PURCHASE_KEY)
                 .setItemId(ITEM_ID)
                 .setVendor(VENDOR_KEY)
                 .setPrice(ITEM_PRICE.floatValue())
                 .setPurchasedOn(Timestamp.newBuilder().setSeconds(ITEM_PURCHASED_ON.toEpochSecond(ZoneOffset.UTC)).setNanos(ITEM_PURCHASED_ON.getNano()).build())
-                .build();
-
-        public static final ProtoModel.PurchaseKey PURCHASE_KEY = ProtoModel.PurchaseKey.newBuilder()
-                .setBooth(BOOTH_KEY)
-                .setPurchaseId(PURCHASE_ID)
                 .build();
 
         public static final ProtoModel.Purchase PURCHASE = ProtoModel.Purchase.newBuilder()
