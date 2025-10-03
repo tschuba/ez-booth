@@ -7,8 +7,7 @@ package tschuba.ez.booth.services;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tschuba.ez.booth.data.Ids;
-import tschuba.ez.booth.data.Repositories;
+import tschuba.ez.booth.data.*;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
@@ -27,17 +26,17 @@ import java.util.stream.Stream;
 @Service
 public class PurchaseLocalService implements PurchaseService {
 
-    private final Repositories.Booth booths;
-    private final Repositories.Purchase purchases;
-    private final Repositories.PurchaseItem purchaseItems;
-    private final Repositories.Vendor vendors;
+    private final BoothRepository booths;
+    private final PurchaseRepository purchases;
+    private final PurchaseItemRepository purchaseItems;
+    private final VendorRepository vendors;
 
     @Autowired
     public PurchaseLocalService(
-            @NonNull Repositories.Booth booths,
-            @NonNull Repositories.Purchase purchases,
-            @NonNull Repositories.PurchaseItem purchaseItems,
-            @NonNull Repositories.Vendor vendors) {
+            @NonNull BoothRepository booths,
+            @NonNull PurchaseRepository purchases,
+            @NonNull PurchaseItemRepository purchaseItems,
+            @NonNull VendorRepository vendors) {
         this.booths = booths;
         this.purchases = purchases;
         this.purchaseItems = purchaseItems;

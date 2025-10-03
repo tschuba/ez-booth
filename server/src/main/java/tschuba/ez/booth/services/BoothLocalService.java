@@ -7,7 +7,7 @@ package tschuba.ez.booth.services;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tschuba.ez.booth.data.Repositories;
+import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 
@@ -21,10 +21,10 @@ import java.util.stream.Stream;
 @Service
 public class BoothLocalService implements BoothService {
 
-    private final Repositories.Booth booths;
+    private final BoothRepository booths;
 
     @Autowired
-    public BoothLocalService(@NonNull Repositories.Booth booths) {
+    public BoothLocalService(@NonNull BoothRepository booths) {
         this.booths = booths;
     }
 

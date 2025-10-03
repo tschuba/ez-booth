@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.model;
 
 import jakarta.persistence.*;
@@ -16,10 +20,9 @@ public class EntityModel {
 
     private static final String SCHEMA = "ez_booth";
 
-    private EntityModel() {
-    }
+    private EntityModel() {}
 
-    @Entity
+    @Entity(name = "Booth")
     @Table(name = "booths", schema = SCHEMA)
     @Builder
     @NoArgsConstructor
@@ -28,9 +31,7 @@ public class EntityModel {
     @EqualsAndHashCode(onlyExplicitlyIncluded = true)
     public static class Booth {
 
-        @EmbeddedId
-        @EqualsAndHashCode.Include
-        private Key key;
+        @EmbeddedId @EqualsAndHashCode.Include private Key key;
 
         @Column(nullable = false, name = "description")
         private String description;
@@ -65,7 +66,7 @@ public class EntityModel {
         }
     }
 
-    @Entity
+    @Entity(name = "Vendor")
     @Table(name = "vendors", schema = SCHEMA)
     @Builder
     @NoArgsConstructor
@@ -74,9 +75,7 @@ public class EntityModel {
     @EqualsAndHashCode(onlyExplicitlyIncluded = true)
     public static class Vendor {
 
-        @EmbeddedId
-        @EqualsAndHashCode.Include
-        private Key key;
+        @EmbeddedId @EqualsAndHashCode.Include private Key key;
 
         @Embeddable
         @Builder
@@ -85,15 +84,14 @@ public class EntityModel {
         @Getter
         @EqualsAndHashCode
         public static class Key {
-            @Embedded
-            private Booth.Key booth;
+            @Embedded private Booth.Key booth;
 
             @Column(nullable = false, name = "vendor_id")
             private String vendorId;
         }
     }
 
-    @Entity
+    @Entity(name = "Purchase")
     @Table(name = "purchases", schema = SCHEMA)
     @Builder
     @NoArgsConstructor
@@ -102,9 +100,7 @@ public class EntityModel {
     @EqualsAndHashCode(onlyExplicitlyIncluded = true)
     public static class Purchase {
 
-        @EmbeddedId
-        @EqualsAndHashCode.Include
-        private Purchase.Key key;
+        @EmbeddedId @EqualsAndHashCode.Include private Purchase.Key key;
 
         @Column(nullable = false, name = "value")
         private BigDecimal value;
@@ -114,8 +110,8 @@ public class EntityModel {
 
         @OneToMany
         @JoinColumns({
-                @JoinColumn(name = "booth_id", referencedColumnName = "booth_id"),
-                @JoinColumn(name = "purchase_id", referencedColumnName = "purchase_id")
+            @JoinColumn(name = "booth_id", referencedColumnName = "booth_id"),
+            @JoinColumn(name = "purchase_id", referencedColumnName = "purchase_id")
         })
         private List<PurchaseItem> items = new ArrayList<>();
 
@@ -132,10 +128,9 @@ public class EntityModel {
             @Column(nullable = false, name = "purchase_id")
             private String purchaseId;
         }
-
     }
 
-    @Entity
+    @Entity(name = "PurchaseItem")
     @Table(name = "purchase_items", schema = SCHEMA)
     @Builder
     @NoArgsConstructor
@@ -144,9 +139,7 @@ public class EntityModel {
     @EqualsAndHashCode(onlyExplicitlyIncluded = true)
     public static class PurchaseItem {
 
-        @EmbeddedId
-        @EqualsAndHashCode.Include
-        private Key key;
+        @EmbeddedId @EqualsAndHashCode.Include private Key key;
 
         @Column(name = "vendor_id", nullable = false)
         private String vendorId;
@@ -164,8 +157,7 @@ public class EntityModel {
         @Getter
         @EqualsAndHashCode
         public static class Key {
-            @Embedded
-            private Purchase.Key purchase;
+            @Embedded private Purchase.Key purchase;
 
             @Column(nullable = false, name = "item_id")
             private String itemId;
