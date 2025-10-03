@@ -4,6 +4,7 @@
  */
 package tschuba.ez.booth.services;
 
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
@@ -45,6 +46,7 @@ public class ReportingLocalService implements ReportingService {
     }
 
     @Override
+    @Transactional
     public @NonNull ServiceModel.VendorReportData createVendorReportData(
             @NonNull DataModel.Vendor.Key vendorKey) {
         EntityModel.Vendor vendor =

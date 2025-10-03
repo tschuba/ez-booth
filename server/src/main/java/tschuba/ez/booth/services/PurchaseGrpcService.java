@@ -39,10 +39,10 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
             ProtoServices.CheckoutInput request,
             StreamObserver<ProtoModel.Purchase> responseObserver) {
         try {
-            ServiceModel.Checkout checkout = ProtoMapper.CHECKOUT.messageToObject(request);
+            ServiceModel.Checkout checkout = ProtoMapper.messageToObject(request);
             DataModel.Purchase purchase = localService.checkout(checkout);
 
-            ProtoModel.Purchase purchaseMsg = ProtoMapper.PURCHASE.objectToMessage(purchase);
+            ProtoModel.Purchase purchaseMsg = ProtoMapper.objectToMessage(purchase);
             responseObserver.onNext(purchaseMsg);
             responseObserver.onCompleted();
         } catch (Exception ex) {
@@ -54,11 +54,10 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
     public void getPurchaseByKey(
             ProtoModel.PurchaseKey request, StreamObserver<ProtoModel.Purchase> responseObserver) {
         try {
-            DataModel.Purchase.Key key = ProtoMapper.PURCHASE_KEY.messageToObject(request);
+            DataModel.Purchase.Key key = ProtoMapper.messageToObject(request);
             Optional<DataModel.Purchase> purchase = localService.getPurchaseByKey(key);
             if (purchase.isPresent()) {
-                ProtoModel.Purchase purchaseMsg =
-                        ProtoMapper.PURCHASE.objectToMessage(purchase.get());
+                ProtoModel.Purchase purchaseMsg = ProtoMapper.objectToMessage(purchase.get());
                 responseObserver.onNext(purchaseMsg);
             }
             responseObserver.onCompleted();
@@ -72,13 +71,13 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
     public void getPurchasesByEvent(
             ProtoModel.PurchaseKey request, StreamObserver<ProtoModel.Purchase> responseObserver) {
         try {
-            DataModel.Purchase.Key purchaseKey = ProtoMapper.PURCHASE_KEY.messageToObject(request);
+            DataModel.Purchase.Key purchaseKey = ProtoMapper.messageToObject(request);
             localService
                     .getPurchasesByBooth(purchaseKey.booth())
                     .forEach(
                             purchase -> {
                                 ProtoModel.Purchase purchaseMsg =
-                                        ProtoMapper.PURCHASE.objectToMessage(purchase);
+                                        ProtoMapper.objectToMessage(purchase);
                                 responseObserver.onNext(purchaseMsg);
                             });
             responseObserver.onCompleted();

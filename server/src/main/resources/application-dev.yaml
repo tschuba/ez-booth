@@ -2,3 +2,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+logging:
+  level:
+    tschuba:
+      ez:
+        booth: DEBUG

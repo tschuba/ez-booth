@@ -31,10 +31,10 @@ public class ChargingGrpcService extends ChargingServiceGrpc.ChargingServiceImpl
     @Override
     public void calculateFees(ProtoModel.VendorKey request, StreamObserver<ProtoServices.ChargedFees> responseObserver) {
         try {
-            DataModel.Vendor.Key vendor = ProtoMapper.VENDOR_KEY.messageToObject(request);
+            DataModel.Vendor.Key vendor = ProtoMapper.messageToObject(request);
             ServiceModel.ChargedFees chargedFees = localService.calculateFees(vendor);
 
-            ProtoServices.ChargedFees chargedFeesMsg = ProtoMapper.CHARGED_FEES.objectToMessage(chargedFees);
+            ProtoServices.ChargedFees chargedFeesMsg = ProtoMapper.objectToMessage(chargedFees);
             responseObserver.onNext(chargedFeesMsg);
             responseObserver.onCompleted();
         } catch (Exception ex) {
@@ -46,10 +46,10 @@ public class ChargingGrpcService extends ChargingServiceGrpc.ChargingServiceImpl
     @Override
     public void calculateBalance(ProtoServices.BalanceInput request, StreamObserver<ProtoServices.SalesBalance> responseObserver) {
         try {
-            ServiceModel.Balance.Input input = ProtoMapper.BALANCE_INPUT.messageToObject(request);
+            ServiceModel.Balance.Input input = ProtoMapper.messageToObject(request);
             ServiceModel.Balance.Output output = localService.calculateBalance(input);
 
-            ProtoServices.SalesBalance balanceMsg = ProtoMapper.BALANCE_OUTPUT.objectToMessage(output);
+            ProtoServices.SalesBalance balanceMsg = ProtoMapper.objectToMessage(output);
             responseObserver.onNext(balanceMsg);
             responseObserver.onCompleted();
         } catch (Exception ex) {

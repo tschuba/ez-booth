@@ -58,6 +58,10 @@ message VendorReportData {
   Vendor vendor = 1;
   Booth booth = 2;
   repeated PurchaseItem items = 3;
+  float sales_sum = 4;
+  float participation_fee = 5;
+  float sales_fee = 6;
+  float total_revenue = 7;
 }
 
 message VendorReportInput {

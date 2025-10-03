@@ -31,10 +31,10 @@ public class ReportingGrpcService extends ReportingServiceGrpc.ReportingServiceI
     @Override
     public void createVendorReportData(ProtoModel.VendorKey request, StreamObserver<ProtoServices.VendorReportData> responseObserver) {
         try {
-            DataModel.Vendor.Key vendor = ProtoMapper.VENDOR_KEY.messageToObject(request);
+            DataModel.Vendor.Key vendor = ProtoMapper.messageToObject(request);
             ServiceModel.VendorReportData reportData = localService.createVendorReportData(vendor);
 
-            ProtoServices.VendorReportData reportDataMsg = ProtoMapper.VENDOR_REPORT_DATA.objectToMessage(reportData);
+            ProtoServices.VendorReportData reportDataMsg = ProtoMapper.objectToMessage(reportData);
             responseObserver.onNext(reportDataMsg);
             responseObserver.onCompleted();
         } catch (Exception ex) {
@@ -46,10 +46,10 @@ public class ReportingGrpcService extends ReportingServiceGrpc.ReportingServiceI
     @Override
     public void generateVendorReport(ProtoServices.VendorReportInput request, StreamObserver<ProtoCore.URI> responseObserver) {
         try {
-            DataModel.Vendor.Key[] vendors = request.getVendorList().stream().map(ProtoMapper.VENDOR_KEY::messageToObject).toArray(DataModel.Vendor.Key[]::new);
+            DataModel.Vendor.Key[] vendors = request.getVendorList().stream().map(ProtoMapper::messageToObject).toArray(DataModel.Vendor.Key[]::new);
             URI uri = localService.generateVendorReport(vendors);
 
-            ProtoCore.URI uriMsg = ProtoMapper.URI.objectToMessage(uri);
+            ProtoCore.URI uriMsg = ProtoMapper.objectToMessage(uri);
             responseObserver.onNext(uriMsg);
             responseObserver.onCompleted();
         } catch (Exception ex) {
