@@ -4,20 +4,34 @@
  */
 package tschuba.ez.booth.services;
 
+import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import tschuba.ez.booth.model.DataModel;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
+/**
+ * Service interface for managing purchases.
+ */
 public interface PurchaseService {
 
+    /**
+     * @param checkout the checkout information
+     * @return the created purchase
+     */
     @NonNull
     DataModel.Purchase checkout(@NonNull ServiceModel.Checkout checkout);
 
+    /**
+     * @param purchase the purchase key
+     * @return the purchase if found, otherwise an empty optional
+     */
     @NonNull
     Optional<DataModel.Purchase> getPurchaseByKey(@NonNull DataModel.Purchase.Key purchase);
 
+    /**
+     * @param booth the booth key
+     * @return a stream of all purchases for the given booth
+     */
     @NonNull
     Stream<DataModel.Purchase> getPurchasesByBooth(@NonNull DataModel.Booth.Key booth);
 }

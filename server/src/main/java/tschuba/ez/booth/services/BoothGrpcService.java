@@ -38,7 +38,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
         try {
             DataModel.Booth booth = ProtoMapper.messageToObject(request);
             LOGGER.debug("Saving booth: {}", request);
-            localService.save(booth);
+            localService.saveBooth(booth);
             LOGGER.info("Booth saved: {}", booth);
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
@@ -51,7 +51,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     @Override
     public void getAllBooths(Empty request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
-            Stream<DataModel.Booth> allEvents = localService.getAll();
+            Stream<DataModel.Booth> allEvents = localService.getAllBooths();
             allEvents.forEach(
                     booth -> {
                         ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
@@ -71,7 +71,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
         try {
             DataModel.Booth.Key eventKey = ProtoMapper.messageToObject(request);
             localService
-                    .get(eventKey)
+                    .getBooth(eventKey)
                     .ifPresent(
                             booth -> {
                                 ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
@@ -91,7 +91,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
         try {
             DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
             LOGGER.debug("Closing booth: {}", request);
-            DataModel.Booth booth = localService.close(key);
+            DataModel.Booth booth = localService.closeBooth(key);
             ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
             LOGGER.info("Booth closed: {}", boothMsg);
             responseObserver.onNext(boothMsg);
@@ -108,7 +108,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
         try {
             DataModel.Booth.Key event = ProtoMapper.messageToObject(request);
             LOGGER.debug("Opening booth: {}", request);
-            DataModel.Booth booth = localService.open(event);
+            DataModel.Booth booth = localService.openBooth(event);
             ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
             LOGGER.info("Booth opened: {}", boothMsg);
             responseObserver.onNext(boothMsg);
@@ -124,7 +124,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
         try {
             DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
             LOGGER.debug("Deleting booth: {}", key);
-            localService.delete(key);
+            localService.deleteBooth(key);
             responseObserver.onCompleted();
         } catch (Exception ex) {
             LOGGER.error("Error deleting booth: {}", request, ex);
