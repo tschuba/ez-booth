@@ -10,11 +10,3 @@ spring:
     hibernate:
       ddl-auto: validate
       show_sql: true
-tschuba:
-  ez:
-    booth:
-      datasource:
-        url: jdbc:sqlite:${user.home}/Documents/ez-booth/booth.db
-        driverClassName: org.sqlite.JDBC
-        username: ez-booth
-        password: ez-booth
