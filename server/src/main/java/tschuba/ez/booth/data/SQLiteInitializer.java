@@ -1,4 +1,4 @@
-package tschuba.ez.booth.model;
+package tschuba.ez.booth.data;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

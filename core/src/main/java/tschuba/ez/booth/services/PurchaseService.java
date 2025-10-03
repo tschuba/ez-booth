@@ -15,5 +15,5 @@ public interface PurchaseService {
     Optional<DataModel.Purchase> getPurchaseByKey(@NonNull DataModel.Purchase.Key purchase);
 
     @NonNull
-    Stream<DataModel.Purchase> getPurchasesByEvent(@NonNull DataModel.Purchase.Key purchase);
+    Stream<DataModel.Purchase> getPurchasesByBooth(@NonNull DataModel.Booth.Key booth);
 }

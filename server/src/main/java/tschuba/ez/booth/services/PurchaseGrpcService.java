@@ -63,8 +63,8 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
     @Override
     public void getPurchasesByEvent(ProtoModel.PurchaseKey request, StreamObserver<ProtoModel.Purchase> responseObserver) {
         try {
-            DataModel.Purchase.Key eventKey = ProtoMapper.PURCHASE_KEY.messageToObject(request);
-            localService.getPurchasesByEvent(eventKey).forEach(purchase -> {
+            DataModel.Purchase.Key purchaseKey = ProtoMapper.PURCHASE_KEY.messageToObject(request);
+            localService.getPurchasesByBooth(purchaseKey.booth()).forEach(purchase -> {
                 ProtoModel.Purchase purchaseMsg = ProtoMapper.PURCHASE.objectToMessage(purchase);
                 responseObserver.onNext(purchaseMsg);
             });

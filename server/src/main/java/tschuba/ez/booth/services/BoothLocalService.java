@@ -3,9 +3,9 @@ package tschuba.ez.booth.services;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tschuba.ez.booth.data.Repositories;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
-import tschuba.ez.booth.model.Repositories;
 
 import java.util.Optional;
 import java.util.stream.Stream;
