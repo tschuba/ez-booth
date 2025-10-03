@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.data;
 
 import org.slf4j.Logger;
@@ -39,7 +43,10 @@ public class SQLiteInitializer implements ApplicationListener<ApplicationEnviron
                     LOGGER.info("Creating directory for SQLite database file: {}", dbFilePath);
                     Files.createDirectories(dbFileDir);
                 } catch (IOException ex) {
-                    LOGGER.error("Failed to create directory for SQLite database file: {}", dbFilePath, ex);
+                    LOGGER.error(
+                            "Failed to create directory for SQLite database file: {}",
+                            dbFilePath,
+                            ex);
                 }
             } else {
                 LOGGER.debug("Directory for SQLite database file already exists: {}", dbFilePath);

@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.services;
 
 import lombok.NonNull;
@@ -29,10 +33,11 @@ public class PurchaseLocalService implements PurchaseService {
     private final Repositories.Vendor vendors;
 
     @Autowired
-    public PurchaseLocalService(@NonNull Repositories.Booth booths,
-                                @NonNull Repositories.Purchase purchases,
-                                @NonNull Repositories.PurchaseItem purchaseItems,
-                                @NonNull Repositories.Vendor vendors) {
+    public PurchaseLocalService(
+            @NonNull Repositories.Booth booths,
+            @NonNull Repositories.Purchase purchases,
+            @NonNull Repositories.PurchaseItem purchaseItems,
+            @NonNull Repositories.Vendor vendors) {
         this.booths = booths;
         this.purchases = purchases;
         this.purchaseItems = purchaseItems;
@@ -47,24 +52,31 @@ public class PurchaseLocalService implements PurchaseService {
         }
 
         List<DataModel.PurchaseItem> items = checkout.items();
-        BigDecimal purchaseValue = items.stream().map(DataModel.PurchaseItem::price).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
-        DataModel.Purchase.Key purchaseKey = DataModel.Purchase.Key.builder()
-                .booth(booth)
-                .purchaseId(Ids.UUID())
-                .build();
-        DataModel.Purchase purchase = DataModel.Purchase.builder()
-                .key(purchaseKey)
-                .value(purchaseValue)
-                .purchasedOn(LocalDateTime.now())
-                .items(items)
-                .build();
+        BigDecimal purchaseValue =
+                items.stream()
+                        .map(DataModel.PurchaseItem::price)
+                        .reduce(BigDecimal::add)
+                        .orElse(BigDecimal.ZERO);
+        DataModel.Purchase.Key purchaseKey =
+                DataModel.Purchase.Key.builder().booth(booth).purchaseId(Ids.UUID()).build();
+        DataModel.Purchase purchase =
+                DataModel.Purchase.builder()
+                        .key(purchaseKey)
+                        .value(purchaseValue)
+                        .purchasedOn(LocalDateTime.now())
+                        .items(items)
+                        .build();
 
-        List<EntityModel.Vendor> unregisteredVendors = items.stream().map(DataModel.PurchaseItem::vendor).map(EntitiesMapper::objectToEntity)
-                .filter(Predicate.not(vendors::existsById))
-                .map(EntityModel.Vendor::new)
-                .toList();
+        List<EntityModel.Vendor> unregisteredVendors =
+                items.stream()
+                        .map(DataModel.PurchaseItem::vendor)
+                        .map(EntitiesMapper::objectToEntity)
+                        .filter(Predicate.not(vendors::existsById))
+                        .map(EntityModel.Vendor::new)
+                        .toList();
 
-        Stream<EntityModel.PurchaseItem> itemEntities = items.stream().map(EntitiesMapper::objectToEntity);
+        Stream<EntityModel.PurchaseItem> itemEntities =
+                items.stream().map(EntitiesMapper::objectToEntity);
 
         if (!unregisteredVendors.isEmpty()) {
             vendors.saveAll(unregisteredVendors);
@@ -76,12 +88,18 @@ public class PurchaseLocalService implements PurchaseService {
     }
 
     @Override
-    public @NonNull Optional<DataModel.Purchase> getPurchaseByKey(@NonNull DataModel.Purchase.Key purchase) {
-        return purchases.findById(EntitiesMapper.objectToEntity(purchase)).map(EntitiesMapper::entityToObject);
+    public @NonNull Optional<DataModel.Purchase> getPurchaseByKey(
+            @NonNull DataModel.Purchase.Key purchase) {
+        return purchases
+                .findById(EntitiesMapper.objectToEntity(purchase))
+                .map(EntitiesMapper::entityToObject);
     }
 
     @Override
-    public @NonNull Stream<DataModel.Purchase> getPurchasesByBooth(@NonNull DataModel.Booth.Key booth) {
-        return purchases.findPurchasesByBooth(EntitiesMapper.objectToEntity(booth)).map(EntitiesMapper::entityToObject);
+    public @NonNull Stream<DataModel.Purchase> getPurchasesByBooth(
+            @NonNull DataModel.Booth.Key booth) {
+        return purchases
+                .findPurchasesByBooth(EntitiesMapper.objectToEntity(booth))
+                .map(EntitiesMapper::entityToObject);
     }
 }

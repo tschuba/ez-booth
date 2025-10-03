@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.services;
 
 import lombok.NonNull;
@@ -36,7 +40,8 @@ public class BoothLocalService implements BoothService {
 
     @Override
     public @NonNull Optional<DataModel.Booth> get(@NonNull DataModel.Booth.Key booth) {
-        return booths.findById(EntitiesMapper.objectToEntity(booth)).map(EntitiesMapper::entityToObject);
+        return booths.findById(EntitiesMapper.objectToEntity(booth))
+                .map(EntitiesMapper::entityToObject);
     }
 
     @Override

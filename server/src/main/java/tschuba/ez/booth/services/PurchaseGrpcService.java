@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.services;
 
 import io.grpc.stub.StreamObserver;
@@ -31,7 +35,9 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
     }
 
     @Override
-    public void checkout(ProtoServices.CheckoutInput request, StreamObserver<ProtoModel.Purchase> responseObserver) {
+    public void checkout(
+            ProtoServices.CheckoutInput request,
+            StreamObserver<ProtoModel.Purchase> responseObserver) {
         try {
             ServiceModel.Checkout checkout = ProtoMapper.CHECKOUT.messageToObject(request);
             DataModel.Purchase purchase = localService.checkout(checkout);
@@ -45,12 +51,14 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
     }
 
     @Override
-    public void getPurchaseByKey(ProtoModel.PurchaseKey request, StreamObserver<ProtoModel.Purchase> responseObserver) {
+    public void getPurchaseByKey(
+            ProtoModel.PurchaseKey request, StreamObserver<ProtoModel.Purchase> responseObserver) {
         try {
             DataModel.Purchase.Key key = ProtoMapper.PURCHASE_KEY.messageToObject(request);
             Optional<DataModel.Purchase> purchase = localService.getPurchaseByKey(key);
             if (purchase.isPresent()) {
-                ProtoModel.Purchase purchaseMsg = ProtoMapper.PURCHASE.objectToMessage(purchase.get());
+                ProtoModel.Purchase purchaseMsg =
+                        ProtoMapper.PURCHASE.objectToMessage(purchase.get());
                 responseObserver.onNext(purchaseMsg);
             }
             responseObserver.onCompleted();
@@ -61,13 +69,18 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
     }
 
     @Override
-    public void getPurchasesByEvent(ProtoModel.PurchaseKey request, StreamObserver<ProtoModel.Purchase> responseObserver) {
+    public void getPurchasesByEvent(
+            ProtoModel.PurchaseKey request, StreamObserver<ProtoModel.Purchase> responseObserver) {
         try {
             DataModel.Purchase.Key purchaseKey = ProtoMapper.PURCHASE_KEY.messageToObject(request);
-            localService.getPurchasesByBooth(purchaseKey.booth()).forEach(purchase -> {
-                ProtoModel.Purchase purchaseMsg = ProtoMapper.PURCHASE.objectToMessage(purchase);
-                responseObserver.onNext(purchaseMsg);
-            });
+            localService
+                    .getPurchasesByBooth(purchaseKey.booth())
+                    .forEach(
+                            purchase -> {
+                                ProtoModel.Purchase purchaseMsg =
+                                        ProtoMapper.PURCHASE.objectToMessage(purchase);
+                                responseObserver.onNext(purchaseMsg);
+                            });
             responseObserver.onCompleted();
         } catch (Exception ex) {
             LOGGER.error("Error getting purchases by booth: {}", request, ex);
