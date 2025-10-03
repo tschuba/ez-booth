@@ -20,7 +20,7 @@ public class BoothLocalService implements BoothService {
     private final Repositories.Booth booths;
 
     @Autowired
-    public BoothLocalService(Repositories.Booth booths) {
+    public BoothLocalService(@NonNull Repositories.Booth booths) {
         this.booths = booths;
     }
 
