@@ -6,6 +6,8 @@ package tschuba.ez.booth.services;
 
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import org.slf4j.Logger;
@@ -26,6 +28,15 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BoothGrpcService.class);
 
+    private static final Function<StreamObserver<ProtoModel.Booth>, Consumer<DataModel.Booth>>
+            BOOTH_ITEM_RECEIVER_FACTORY =
+                    responseObserver ->
+                            booth -> {
+                                ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
+                                LOGGER.debug("Returning booth: {}", boothMsg);
+                                responseObserver.onNext(boothMsg);
+                            };
+
     private final BoothLocalService localService;
 
     @Autowired
@@ -37,30 +48,23 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     public void saveBooth(ProtoModel.Booth request, StreamObserver<Empty> responseObserver) {
         try {
             DataModel.Booth booth = ProtoMapper.messageToObject(request);
-            LOGGER.debug("Saving booth: {}", request);
             localService.saveBooth(booth);
-            LOGGER.info("Booth saved: {}", booth);
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (Exception ex) {
-            LOGGER.error("Error saving booth: {}", request, ex);
             responseObserver.onError(ex);
         }
     }
 
     @Override
     public void getAllBooths(Empty request, StreamObserver<ProtoModel.Booth> responseObserver) {
+        Consumer<DataModel.Booth> boothItemReceiver =
+                BOOTH_ITEM_RECEIVER_FACTORY.apply(responseObserver);
         try {
-            Stream<DataModel.Booth> allEvents = localService.getAllBooths();
-            allEvents.forEach(
-                    booth -> {
-                        ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
-                        LOGGER.debug("Returning booth: {}", boothMsg);
-                        responseObserver.onNext(boothMsg);
-                    });
+            Stream<DataModel.Booth> allBooths = localService.getAllBooths();
+            allBooths.forEach(boothItemReceiver);
             responseObserver.onCompleted();
         } catch (Exception ex) {
-            LOGGER.error("Error getting all events", ex);
             responseObserver.onError(ex);
         }
     }
@@ -68,19 +72,13 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     @Override
     public void getBooth(
             ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
+        Consumer<DataModel.Booth> boothItemReceiver =
+                BOOTH_ITEM_RECEIVER_FACTORY.apply(responseObserver);
         try {
-            DataModel.Booth.Key eventKey = ProtoMapper.messageToObject(request);
-            localService
-                    .getBooth(eventKey)
-                    .ifPresent(
-                            booth -> {
-                                ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
-                                LOGGER.debug("Returning booth: {}", boothMsg);
-                                responseObserver.onNext(boothMsg);
-                            });
+            DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
+            localService.getBooth(key).ifPresent(boothItemReceiver);
             responseObserver.onCompleted();
         } catch (Exception ex) {
-            LOGGER.error("Error getting booth: {}", request, ex);
             responseObserver.onError(ex);
         }
     }
@@ -90,14 +88,11 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
             ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
             DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
-            LOGGER.debug("Closing booth: {}", request);
             DataModel.Booth booth = localService.closeBooth(key);
             ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
-            LOGGER.info("Booth closed: {}", boothMsg);
             responseObserver.onNext(boothMsg);
             responseObserver.onCompleted();
         } catch (Exception ex) {
-            LOGGER.error("Error closing booth: {}", request, ex);
             responseObserver.onError(ex);
         }
     }
@@ -106,15 +101,12 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     public void openBooth(
             ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
-            DataModel.Booth.Key event = ProtoMapper.messageToObject(request);
-            LOGGER.debug("Opening booth: {}", request);
-            DataModel.Booth booth = localService.openBooth(event);
+            DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
+            DataModel.Booth booth = localService.openBooth(key);
             ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
-            LOGGER.info("Booth opened: {}", boothMsg);
             responseObserver.onNext(boothMsg);
             responseObserver.onCompleted();
         } catch (Exception ex) {
-            LOGGER.error("Error opening booth: {}", request, ex);
             responseObserver.onError(ex);
         }
     }
@@ -123,11 +115,9 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     public void deleteBooth(ProtoModel.BoothKey request, StreamObserver<Empty> responseObserver) {
         try {
             DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
-            LOGGER.debug("Deleting booth: {}", key);
             localService.deleteBooth(key);
             responseObserver.onCompleted();
         } catch (Exception ex) {
-            LOGGER.error("Error deleting booth: {}", request, ex);
             responseObserver.onError(ex);
         }
     }

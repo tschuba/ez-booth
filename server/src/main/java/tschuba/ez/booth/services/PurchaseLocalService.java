@@ -4,7 +4,15 @@
  */
 package tschuba.ez.booth.services;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import lombok.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tschuba.ez.booth.data.*;
@@ -12,19 +20,14 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
 /**
  * Local service implementation for purchase processing.
  * This class provides the core business logic for handling purchases.
  */
 @Service
 public class PurchaseLocalService implements PurchaseService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PurchaseLocalService.class);
 
     private final BoothRepository booths;
     private final PurchaseRepository purchases;
@@ -58,7 +61,7 @@ public class PurchaseLocalService implements PurchaseService {
                         .orElse(BigDecimal.ZERO);
         DataModel.Purchase.Key purchaseKey =
                 DataModel.Purchase.Key.builder().booth(booth).purchaseId(Ids.UUID()).build();
-        DataModel.Purchase purchase =
+        DataModel.Purchase purchaseData =
                 DataModel.Purchase.builder()
                         .key(purchaseKey)
                         .value(purchaseValue)
@@ -78,12 +81,16 @@ public class PurchaseLocalService implements PurchaseService {
                 items.stream().map(EntitiesMapper::objectToEntity);
 
         if (!unregisteredVendors.isEmpty()) {
+            LOGGER.debug("Registering new vendors: {}", unregisteredVendors);
             vendors.saveAll(unregisteredVendors);
         }
+        LOGGER.debug("Saving purchase items: {}", itemEntities);
         purchaseItems.saveAll(itemEntities.toList());
-        purchases.save(EntitiesMapper.objectToEntity(purchase));
-
-        throw new UnsupportedOperationException("Not implemented yet");
+        LOGGER.debug("Saving purchase: {}", purchaseData);
+        EntityModel.Purchase purchaseEntity =
+                purchases.save(EntitiesMapper.objectToEntity(purchaseData));
+        LOGGER.info("Checkout completed: {}", purchaseKey);
+        return EntitiesMapper.entityToObject(purchaseEntity);
     }
 
     @Override
