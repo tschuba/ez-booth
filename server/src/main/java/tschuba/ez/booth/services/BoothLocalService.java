@@ -1,8 +1,11 @@
 package tschuba.ez.booth.services;
 
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.model.EntitiesMapper;
+import tschuba.ez.booth.model.Repositories;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -13,19 +16,27 @@ import java.util.stream.Stream;
  */
 @Service
 public class BoothLocalService implements BoothService {
+
+    private final Repositories.Booth booths;
+
+    @Autowired
+    public BoothLocalService(Repositories.Booth booths) {
+        this.booths = booths;
+    }
+
     @Override
     public void save(DataModel.@NonNull Booth booth) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        booths.save(EntitiesMapper.objectToEntity(booth));
     }
 
     @Override
     public @NonNull Stream<DataModel.Booth> getAll() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return booths.findAll().stream().map(EntitiesMapper::entityToObject);
     }
 
     @Override
     public @NonNull Optional<DataModel.Booth> get(@NonNull DataModel.Booth.Key booth) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return booths.findById(EntitiesMapper.objectToEntity(booth)).map(EntitiesMapper::entityToObject);
     }
 
     @Override
@@ -40,6 +51,6 @@ public class BoothLocalService implements BoothService {
 
     @Override
     public void delete(@NonNull DataModel.Booth.Key booth) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        booths.deleteById(EntitiesMapper.objectToEntity(booth));
     }
 }
