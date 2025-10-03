@@ -112,7 +112,11 @@ public class EntityModel {
         @Column(nullable = false, name = "purchased_on")
         private LocalDateTime purchasedOn;
 
-        @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
+        @OneToMany
+        @JoinColumns({
+                @JoinColumn(name = "booth_id", referencedColumnName = "booth_id"),
+                @JoinColumn(name = "purchase_id", referencedColumnName = "purchase_id")
+        })
         private List<PurchaseItem> items = new ArrayList<>();
 
         @Embeddable
@@ -144,15 +148,8 @@ public class EntityModel {
         @EqualsAndHashCode.Include
         private Key key;
 
-        @ManyToOne
-        @JoinColumns({
-                @JoinColumn(name = "booth", referencedColumnName = "booth"),
-                @JoinColumn(name = "purchase_id", referencedColumnName = "purchase_id")
-        })
-        private Purchase purchase;
-
-        @Embedded
-        private Vendor.Key vendor;
+        @Column(name = "vendor_id", nullable = false)
+        private String vendorId;
 
         @Column(nullable = false, name = "price")
         private BigDecimal price;

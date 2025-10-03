@@ -33,16 +33,12 @@ public class EntitiesMapper {
 
     @NonNull
     public static EntityModel.Booth.Key objectToEntity(@NonNull DataModel.Booth.Key key) {
-        return EntityModel.Booth.Key.builder()
-                .boothId(key.boothId())
-                .build();
+        return BOOTH_KEY.objectToEntity(key);
     }
 
     @NonNull
     public static DataModel.Booth.Key entityToObject(@NonNull EntityModel.Booth.Key key) {
-        return DataModel.Booth.Key.builder()
-                .boothId(key.getBoothId())
-                .build();
+        return BOOTH_KEY.entityToObject(key);
     }
 
     /**
@@ -90,36 +86,12 @@ public class EntitiesMapper {
 
     @NonNull
     public static EntityModel.Booth objectToEntity(@NonNull DataModel.Booth booth) {
-        EntityModel.Booth.BoothBuilder builder = EntityModel.Booth.builder();
-        if (booth.key() != null) {
-            builder.key(BOOTH_KEY.objectToEntity(booth.key()));
-        }
-        return builder
-                .description(booth.description())
-                .date(booth.date())
-                .participationFee(booth.participationFee())
-                .salesFee(booth.salesFee())
-                .feesRoundingStep(booth.feesRoundingStep())
-                .closed(booth.closed())
-                .closedOn(booth.closedOn())
-                .build();
+        return BOOTH.objectToEntity(booth);
     }
 
     @NonNull
     public static DataModel.Booth entityToObject(@NonNull EntityModel.Booth booth) {
-        DataModel.Booth.BoothBuilder builder = DataModel.Booth.builder();
-        if (booth.getKey() != null) {
-            builder.key(BOOTH_KEY.entityToObject(booth.getKey()));
-        }
-        return builder
-                .description(booth.getDescription())
-                .date(booth.getDate())
-                .participationFee(booth.getParticipationFee())
-                .salesFee(booth.getSalesFee())
-                .feesRoundingStep(booth.getFeesRoundingStep())
-                .closed(booth.isClosed())
-                .closedOn(booth.getClosedOn())
-                .build();
+        return BOOTH.entityToObject(booth);
     }
 
     /**
@@ -155,24 +127,12 @@ public class EntitiesMapper {
 
     @NonNull
     public static EntityModel.Vendor.Key objectToEntity(@NonNull DataModel.Vendor.Key key) {
-        EntityModel.Vendor.Key.KeyBuilder builder = EntityModel.Vendor.Key.builder();
-        if (key.booth() != null) {
-            builder.booth(BOOTH_KEY.objectToEntity(key.booth()));
-        }
-        return builder
-                .vendorId(key.vendorId())
-                .build();
+        return VENDOR_KEY.objectToEntity(key);
     }
 
     @NonNull
     public static DataModel.Vendor.Key entityToObject(@NonNull EntityModel.Vendor.Key key) {
-        DataModel.Vendor.Key.KeyBuilder builder = DataModel.Vendor.Key.builder();
-        if (key.getBooth() != null) {
-            builder.booth(BOOTH_KEY.entityToObject(key.getBooth()));
-        }
-        return builder
-                .vendorId(key.getVendorId())
-                .build();
+        return VENDOR_KEY.entityToObject(key);
     }
 
     /**
@@ -204,20 +164,12 @@ public class EntitiesMapper {
 
     @NonNull
     public static EntityModel.Vendor objectToEntity(@NonNull DataModel.Vendor vendor) {
-        EntityModel.Vendor.VendorBuilder builder = EntityModel.Vendor.builder();
-        if (vendor.key() != null) {
-            builder.key(VENDOR_KEY.objectToEntity(vendor.key()));
-        }
-        return builder.build();
+        return VENDOR.objectToEntity(vendor);
     }
 
     @NonNull
     public static DataModel.Vendor entityToObject(@NonNull EntityModel.Vendor vendor) {
-        DataModel.Vendor.VendorBuilder builder = DataModel.Vendor.builder();
-        if (vendor.getKey() != null) {
-            builder.key(VENDOR_KEY.entityToObject(vendor.getKey()));
-        }
-        return builder.build();
+        return VENDOR.entityToObject(vendor);
     }
 
     /**
@@ -253,24 +205,12 @@ public class EntitiesMapper {
 
     @NonNull
     public static EntityModel.Purchase.Key objectToEntity(@NonNull DataModel.Purchase.Key key) {
-        EntityModel.Purchase.Key.KeyBuilder builder = EntityModel.Purchase.Key.builder();
-        if (key.booth() != null) {
-            builder.booth(BOOTH_KEY.objectToEntity(key.booth()));
-        }
-        return builder
-                .purchaseId(key.purchaseId())
-                .build();
+        return PURCHASE_KEY.objectToEntity(key);
     }
 
     @NonNull
     public static DataModel.Purchase.Key entityToObject(@NonNull EntityModel.Purchase.Key key) {
-        DataModel.Purchase.Key.KeyBuilder builder = DataModel.Purchase.Key.builder();
-        if (key.getBooth() != null) {
-            builder.booth(BOOTH_KEY.entityToObject(key.getBooth()));
-        }
-        return builder
-                .purchaseId(key.getPurchaseId())
-                .build();
+        return PURCHASE_KEY.entityToObject(key);
     }
 
     /**
@@ -281,6 +221,9 @@ public class EntitiesMapper {
         public @NonNull Function<DataModel.PurchaseItem.Key, EntityModel.PurchaseItem.Key> objectToEntity() {
             return input -> {
                 EntityModel.PurchaseItem.Key.KeyBuilder builder = EntityModel.PurchaseItem.Key.builder();
+                if (input.purchase() != null) {
+                    builder.purchase(PURCHASE_KEY.objectToEntity(input.purchase()));
+                }
                 return builder
                         .itemId(input.itemId())
                         .build();
@@ -303,21 +246,12 @@ public class EntitiesMapper {
 
     @NonNull
     public static EntityModel.PurchaseItem.Key objectToEntity(@NonNull DataModel.PurchaseItem.Key key) {
-        EntityModel.PurchaseItem.Key.KeyBuilder builder = EntityModel.PurchaseItem.Key.builder();
-        return builder
-                .itemId(key.itemId())
-                .build();
+        return PURCHASE_ITEM_KEY.objectToEntity(key);
     }
 
     @NonNull
     public static DataModel.PurchaseItem.Key entityToObject(@NonNull EntityModel.PurchaseItem.Key key) {
-        DataModel.PurchaseItem.Key.KeyBuilder builder = DataModel.PurchaseItem.Key.builder();
-        if (key.getPurchase() != null) {
-            builder.purchase(PURCHASE_KEY.entityToObject(key.getPurchase()));
-        }
-        return builder
-                .itemId(key.getItemId())
-                .build();
+        return PURCHASE_ITEM_KEY.entityToObject(key);
     }
 
     /**
@@ -332,7 +266,7 @@ public class EntitiesMapper {
                     builder.key(PURCHASE_ITEM_KEY.objectToEntity(input.key()));
                 }
                 if (input.vendor() != null) {
-                    builder.vendor(VENDOR_KEY.objectToEntity(input.vendor()));
+                    builder.vendorId(input.vendor().vendorId());
                 }
                 return builder
                         .price(input.price())
@@ -345,11 +279,18 @@ public class EntitiesMapper {
         public @NonNull Function<EntityModel.PurchaseItem, DataModel.PurchaseItem> entityToObject() {
             return entity -> {
                 DataModel.PurchaseItem.PurchaseItemBuilder builder = DataModel.PurchaseItem.builder();
+                DataModel.PurchaseItem.Key key = null;
                 if (entity.getKey() != null) {
-                    builder.key(PURCHASE_ITEM_KEY.entityToObject(entity.getKey()));
+                    key = PURCHASE_ITEM_KEY.entityToObject(entity.getKey());
+                    builder.key(key);
                 }
-                if (entity.getVendor() != null) {
-                    builder.vendor(VENDOR_KEY.entityToObject(entity.getVendor()));
+                if (entity.getVendorId() != null) {
+                    DataModel.Vendor.Key.KeyBuilder vendorKeyBuilder = DataModel.Vendor.Key.builder()
+                            .vendorId(entity.getVendorId());
+                    if (key != null && key.purchase() != null) {
+                        vendorKeyBuilder.booth(key.purchase().booth());
+                    }
+                    builder.vendor(vendorKeyBuilder.build());
                 }
                 return builder
                         .price(entity.getPrice())
@@ -361,32 +302,12 @@ public class EntitiesMapper {
 
     @NonNull
     public static EntityModel.PurchaseItem objectToEntity(@NonNull DataModel.PurchaseItem item) {
-        EntityModel.PurchaseItem.PurchaseItemBuilder builder = EntityModel.PurchaseItem.builder();
-        if (item.key() != null) {
-            builder.key(PURCHASE_ITEM_KEY.objectToEntity(item.key()));
-        }
-        if (item.vendor() != null) {
-            builder.vendor(VENDOR_KEY.objectToEntity(item.vendor()));
-        }
-        return builder
-                .price(item.price())
-                .purchasedOn(item.purchasedOn())
-                .build();
+        return PURCHASE_ITEM.objectToEntity(item);
     }
 
     @NonNull
     public static DataModel.PurchaseItem entityToObject(@NonNull EntityModel.PurchaseItem item) {
-        DataModel.PurchaseItem.PurchaseItemBuilder builder = DataModel.PurchaseItem.builder();
-        if (item.getKey() != null) {
-            builder.key(PURCHASE_ITEM_KEY.entityToObject(item.getKey()));
-        }
-        if (item.getVendor() != null) {
-            builder.vendor(VENDOR_KEY.entityToObject(item.getVendor()));
-        }
-        return builder
-                .price(item.getPrice())
-                .purchasedOn(item.getPurchasedOn())
-                .build();
+        return PURCHASE_ITEM.entityToObject(item);
     }
 
     /**
@@ -432,34 +353,12 @@ public class EntitiesMapper {
 
     @NonNull
     public static EntityModel.Purchase objectToEntity(@NonNull DataModel.Purchase purchase) {
-        EntityModel.Purchase.PurchaseBuilder builder = EntityModel.Purchase.builder();
-        if (purchase.key() != null) {
-            builder.key(PURCHASE_KEY.objectToEntity(purchase.key()));
-        }
-        if (purchase.items() != null) {
-            List<EntityModel.PurchaseItem> items = purchase.items().stream().map(PURCHASE_ITEM::objectToEntity).toList();
-            builder.items(items);
-        }
-        return builder
-                .value(purchase.value())
-                .purchasedOn(purchase.purchasedOn())
-                .build();
+        return PURCHASE.objectToEntity(purchase);
     }
 
     @NonNull
     public static DataModel.Purchase entityToObject(@NonNull EntityModel.Purchase purchase) {
-        DataModel.Purchase.PurchaseBuilder builder = DataModel.Purchase.builder();
-        if (purchase.getKey() != null) {
-            builder.key(PURCHASE_KEY.entityToObject(purchase.getKey()));
-        }
-        if (purchase.getItems() != null) {
-            List<DataModel.PurchaseItem> items = purchase.getItems().stream().map(PURCHASE_ITEM::entityToObject).toList();
-            builder.items(items);
-        }
-        return builder
-                .value(purchase.getValue())
-                .purchasedOn(purchase.getPurchasedOn())
-                .build();
+        return PURCHASE.entityToObject(purchase);
     }
 
     /**

@@ -55,7 +55,13 @@ public class ModelTestData {
                 .key(VENDOR_KEY)
                 .build();
 
+        public static final DataModel.Purchase.Key PURCHASE_KEY = DataModel.Purchase.Key.builder()
+                .booth(BOOTH_KEY)
+                .purchaseId(PURCHASE_ID)
+                .build();
+
         public static final DataModel.PurchaseItem.Key PURCHASE_ITEM_KEY = DataModel.PurchaseItem.Key.builder()
+                .purchase(PURCHASE_KEY)
                 .itemId(ITEM_ID)
                 .build();
 
@@ -64,11 +70,6 @@ public class ModelTestData {
                 .vendor(VENDOR_KEY)
                 .purchasedOn(ITEM_PURCHASED_ON)
                 .price(ITEM_PRICE)
-                .build();
-
-        public static final DataModel.Purchase.Key PURCHASE_KEY = DataModel.Purchase.Key.builder()
-                .booth(BOOTH_KEY)
-                .purchaseId(PURCHASE_ID)
                 .build();
 
         public static final DataModel.Purchase PURCHASE = DataModel.Purchase.builder()
@@ -163,20 +164,21 @@ public class ModelTestData {
                 .key(VENDOR_KEY)
                 .build();
 
+        public static final EntityModel.Purchase.Key PURCHASE_KEY = EntityModel.Purchase.Key.builder()
+                .booth(BOOTH_KEY)
+                .purchaseId(PURCHASE_ID)
+                .build();
+
         public static final EntityModel.PurchaseItem.Key PURCHASE_ITEM_KEY = EntityModel.PurchaseItem.Key.builder()
+                .purchase(PURCHASE_KEY)
                 .itemId(ITEM_ID)
                 .build();
 
         public static final EntityModel.PurchaseItem PURCHASE_ITEM = EntityModel.PurchaseItem.builder()
                 .key(PURCHASE_ITEM_KEY)
-                .vendor(VENDOR_KEY)
+                .vendorId(VENDOR_ID)
                 .purchasedOn(ITEM_PURCHASED_ON)
                 .price(ITEM_PRICE)
-                .build();
-
-        public static final EntityModel.Purchase.Key PURCHASE_KEY = EntityModel.Purchase.Key.builder()
-                .booth(BOOTH_KEY)
-                .purchaseId(PURCHASE_ID)
                 .build();
 
         public static final EntityModel.Purchase PURCHASE = EntityModel.Purchase.builder()
