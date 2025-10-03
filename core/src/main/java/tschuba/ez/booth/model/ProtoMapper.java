@@ -1,10 +1,12 @@
-package tschuba.ez.booth.proto;
+package tschuba.ez.booth.model;
 
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
 import jakarta.annotation.Nullable;
 import lombok.NonNull;
-import tschuba.ez.booth.DataModel;
+import tschuba.ez.booth.proto.ProtoCore;
+import tschuba.ez.booth.proto.ProtoModel;
+import tschuba.ez.booth.proto.ProtoServices;
 import tschuba.ez.booth.services.ServiceModel;
 
 import java.math.BigDecimal;

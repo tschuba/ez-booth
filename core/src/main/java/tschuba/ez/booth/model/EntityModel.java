@@ -1,4 +1,4 @@
-package tschuba.ez.booth;
+package tschuba.ez.booth.model;
 
 import jakarta.persistence.*;
 import lombok.*;

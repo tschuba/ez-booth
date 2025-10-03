@@ -1,4 +1,4 @@
-package tschuba.ez.booth;
+package tschuba.ez.booth.model;
 
 import com.google.protobuf.Timestamp;
 import tschuba.ez.booth.proto.ProtoModel;
@@ -12,18 +12,17 @@ import java.util.List;
  * Test data for model and proto classes.
  */
 public class ModelTestData {
-
-    private static final String BOOTH_ID = "test-booth";
-    private static final String BOOTH_DESCRIPTION = "Test Booth";
-    private static final LocalDateTime BOOTH_CLOSED_ON = LocalDateTime.of(2025, 10, 2, 17, 30, 44);
-    private static final float FEES_ROUNDING_STEP = .5f;
-    private static final float PARTICIPATION_FEE = 10;
-    private static final float SALES_FEE = .05f;
-    private static final String VENDOR_ID = "test-vendor";
-    private static final String ITEM_ID = "test-item";
-    private static final LocalDateTime ITEM_PURCHASED_ON = LocalDateTime.of(2025, 10, 2, 19, 12, 27);
-    private static final BigDecimal ITEM_PRICE = BigDecimal.valueOf(19.99);
-    private static final String PURCHASE_ID = "test-purchase";
+    public static final String BOOTH_ID = "test-booth";
+    public static final String BOOTH_DESCRIPTION = "Test Booth";
+    public static final LocalDateTime BOOTH_CLOSED_ON = LocalDateTime.of(2025, 10, 2, 17, 30, 44);
+    public static final float FEES_ROUNDING_STEP = .5f;
+    public static final float PARTICIPATION_FEE = 10;
+    public static final float SALES_FEE = .05f;
+    public static final String VENDOR_ID = "test-vendor";
+    public static final String ITEM_ID = "test-item";
+    public static final LocalDateTime ITEM_PURCHASED_ON = LocalDateTime.of(2025, 10, 2, 19, 12, 27);
+    public static final BigDecimal ITEM_PRICE = BigDecimal.valueOf(19.99);
+    public static final String PURCHASE_ID = "test-purchase";
 
     private ModelTestData() {
     }
@@ -192,5 +191,4 @@ public class ModelTestData {
         private Entities() {
         }
     }
-
 }

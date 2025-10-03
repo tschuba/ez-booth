@@ -4,8 +4,12 @@ import io.grpc.stub.StreamObserver;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.springframework.grpc.server.service.GrpcService;
-import tschuba.ez.booth.DataModel;
-import tschuba.ez.booth.proto.*;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.model.ProtoMapper;
+import tschuba.ez.booth.proto.ProtoCore;
+import tschuba.ez.booth.proto.ProtoModel;
+import tschuba.ez.booth.proto.ProtoServices;
+import tschuba.ez.booth.proto.ReportingServiceGrpc;
 
 import java.net.URI;
 

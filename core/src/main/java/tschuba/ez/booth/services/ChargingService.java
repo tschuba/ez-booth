@@ -1,7 +1,7 @@
 package tschuba.ez.booth.services;
 
 import lombok.NonNull;
-import tschuba.ez.booth.DataModel;
+import tschuba.ez.booth.model.DataModel;
 
 public interface ChargingService {
 

@@ -1,11 +1,11 @@
-package tschuba.ez.booth.proto;
+package tschuba.ez.booth.model;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tschuba.ez.booth.ModelTestData.Messages;
-import static tschuba.ez.booth.ModelTestData.Objects;
+import static tschuba.ez.booth.model.ModelTestData.Messages;
+import static tschuba.ez.booth.model.ModelTestData.Objects;
 
 /**
  * Unit tests for {@link ProtoMapper}.

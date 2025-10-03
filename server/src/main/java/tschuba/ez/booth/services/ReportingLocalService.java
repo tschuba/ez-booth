@@ -2,7 +2,7 @@ package tschuba.ez.booth.services;
 
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
-import tschuba.ez.booth.DataModel;
+import tschuba.ez.booth.model.DataModel;
 
 import java.net.URI;
 

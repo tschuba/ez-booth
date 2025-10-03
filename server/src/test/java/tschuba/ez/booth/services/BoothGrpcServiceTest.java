@@ -5,9 +5,9 @@ import io.grpc.stub.StreamObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-import tschuba.ez.booth.DataModel;
-import tschuba.ez.booth.proto.ModelMocks;
-import tschuba.ez.booth.proto.ProtoMapper;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.model.ModelMocks;
+import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.ProtoModel;
 
 import java.util.Optional;

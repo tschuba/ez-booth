@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.grpc.server.service.GrpcService;
-import tschuba.ez.booth.DataModel;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.ChargingServiceGrpc;
-import tschuba.ez.booth.proto.ProtoMapper;
 import tschuba.ez.booth.proto.ProtoModel;
 import tschuba.ez.booth.proto.ProtoServices;
 

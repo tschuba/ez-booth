@@ -1,9 +1,9 @@
-package tschuba.ez.booth;
+package tschuba.ez.booth.model;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import tschuba.ez.booth.ModelTestData.Entities;
-import tschuba.ez.booth.ModelTestData.Objects;
+import tschuba.ez.booth.model.ModelTestData.Entities;
+import tschuba.ez.booth.model.ModelTestData.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

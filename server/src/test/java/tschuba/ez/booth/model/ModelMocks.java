@@ -1,7 +1,7 @@
-package tschuba.ez.booth.proto;
+package tschuba.ez.booth.model;
 
 import org.mockito.MockedStatic;
-import tschuba.ez.booth.DataModel;
+import tschuba.ez.booth.proto.ProtoModel;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;

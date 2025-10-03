@@ -2,7 +2,7 @@ package tschuba.ez.booth.services;
 
 import lombok.Builder;
 import lombok.NonNull;
-import tschuba.ez.booth.DataModel;
+import tschuba.ez.booth.model.DataModel;
 
 import java.math.BigDecimal;
 import java.util.List;
