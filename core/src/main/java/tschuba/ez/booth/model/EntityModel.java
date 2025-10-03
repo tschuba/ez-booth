@@ -5,13 +5,11 @@
 package tschuba.ez.booth.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import lombok.*;
 
 /**
  * JPA entities for {@link DataModel}.
@@ -113,7 +111,7 @@ public class EntityModel {
             @JoinColumn(name = "booth_id", referencedColumnName = "booth_id"),
             @JoinColumn(name = "purchase_id", referencedColumnName = "purchase_id")
         })
-        private List<PurchaseItem> items = new ArrayList<>();
+        private List<PurchaseItem> items;
 
         @Embeddable
         @Builder

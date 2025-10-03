@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 import "google/protobuf/empty.proto";
-import "google/protobuf/timestamp.proto";
 import "core.proto";
 import "model.proto";
 
@@ -15,12 +14,12 @@ message CheckoutInput {
 }
 
 service BoothService {
-  rpc Save(Booth) returns (google.protobuf.Empty);
-  rpc GetAll(google.protobuf.Empty) returns (stream Booth);
-  rpc Get(BoothKey) returns (Booth);
-  rpc Close(BoothKey) returns (Booth);
-  rpc Open(BoothKey) returns (Booth);
-  rpc Delete(BoothKey) returns (google.protobuf.Empty);
+  rpc SaveBooth(Booth) returns (google.protobuf.Empty);
+  rpc GetAllBooths(google.protobuf.Empty) returns (stream Booth);
+  rpc GetBooth(BoothKey) returns (Booth);
+  rpc CloseBooth(BoothKey) returns (Booth);
+  rpc OpenBooth(BoothKey) returns (Booth);
+  rpc DeleteBooth(BoothKey) returns (google.protobuf.Empty);
 }
 
 service PurchaseService {

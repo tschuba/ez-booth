@@ -34,7 +34,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     }
 
     @Override
-    public void save(ProtoModel.Booth request, StreamObserver<Empty> responseObserver) {
+    public void saveBooth(ProtoModel.Booth request, StreamObserver<Empty> responseObserver) {
         try {
             DataModel.Booth booth = ProtoMapper.messageToObject(request);
             LOGGER.debug("Saving booth: {}", request);
@@ -49,7 +49,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     }
 
     @Override
-    public void getAll(Empty request, StreamObserver<ProtoModel.Booth> responseObserver) {
+    public void getAllBooths(Empty request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
             Stream<DataModel.Booth> allEvents = localService.getAll();
             allEvents.forEach(
@@ -66,7 +66,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     }
 
     @Override
-    public void get(
+    public void getBooth(
             ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
             DataModel.Booth.Key eventKey = ProtoMapper.messageToObject(request);
@@ -86,7 +86,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     }
 
     @Override
-    public void close(
+    public void closeBooth(
             ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
             DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
@@ -103,7 +103,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     }
 
     @Override
-    public void open(
+    public void openBooth(
             ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
             DataModel.Booth.Key event = ProtoMapper.messageToObject(request);
@@ -120,7 +120,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     }
 
     @Override
-    public void delete(ProtoModel.BoothKey request, StreamObserver<Empty> responseObserver) {
+    public void deleteBooth(ProtoModel.BoothKey request, StreamObserver<Empty> responseObserver) {
         try {
             DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
             LOGGER.debug("Deleting booth: {}", key);
