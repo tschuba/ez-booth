@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.model.EntityModel;
 
 /**
  * Service model classes for various service operations.
@@ -60,6 +61,19 @@ public final class ServiceModel {
                     .participationFee(booth.participationFee())
                     .salesFee(booth.salesFee())
                     .roundingStep(booth.feesRoundingStep())
+                    .build();
+        }
+
+        /**
+         * Create a {@link ChargingConfig} from the given booth entity.
+         * @param booth the booth entity to create the config from
+         * @return the created config
+         */
+        public static ChargingConfig of(@NonNull EntityModel.Booth booth) {
+            return ChargingConfig.builder()
+                    .participationFee(booth.getParticipationFee())
+                    .salesFee(booth.getSalesFee())
+                    .roundingStep(booth.getFeesRoundingStep())
                     .build();
         }
 
@@ -115,5 +129,9 @@ public final class ServiceModel {
     public record VendorReportData(
             @NonNull DataModel.Vendor vendor,
             @NonNull DataModel.Booth booth,
-            @NonNull List<DataModel.PurchaseItem> items) {}
+            @NonNull List<DataModel.PurchaseItem> items,
+            @NonNull BigDecimal salesSum,
+            @NonNull BigDecimal participationFee,
+            @NonNull BigDecimal salesFee,
+            @NonNull BigDecimal totalRevenue) {}
 }

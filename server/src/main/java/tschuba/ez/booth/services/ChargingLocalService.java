@@ -64,8 +64,7 @@ public class ChargingLocalService implements ChargingService {
                 vendorItemsSum,
                 booth);
 
-        return ServiceModel.ChargingConfig.of(EntitiesMapper.entityToObject(booth))
-                .calculateFees(vendorItemsSum);
+        return ServiceModel.ChargingConfig.of(booth).calculateFees(vendorItemsSum);
     }
 
     @Override
