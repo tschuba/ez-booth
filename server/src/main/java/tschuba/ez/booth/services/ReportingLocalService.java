@@ -5,9 +5,17 @@
 package tschuba.ez.booth.services;
 
 import jakarta.transaction.Transactional;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +27,9 @@ import tschuba.ez.booth.data.VendorRepository;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
+import tschuba.ez.booth.reporting.ReportingConfig;
+import tschuba.ez.booth.reporting.ReportingException;
+import tschuba.ez.booth.reporting.VendorReportTemplate;
 
 /**
  * Local service implementation for reporting.
@@ -34,15 +45,19 @@ public class ReportingLocalService implements ReportingService {
     private final PurchaseItemRepository purchaseItems;
     private final ChargingService chargingService;
 
+    private final ReportingConfig config;
+
     public ReportingLocalService(
             @NonNull BoothRepository booths,
             @NonNull VendorRepository vendors,
             @NonNull PurchaseItemRepository purchaseItems,
-            @NonNull ChargingService chargingService) {
+            @NonNull ChargingService chargingService,
+            @NonNull ReportingConfig config) {
         this.booths = booths;
         this.vendors = vendors;
         this.purchaseItems = purchaseItems;
         this.chargingService = chargingService;
+        this.config = config;
     }
 
     @Override
@@ -103,6 +118,51 @@ public class ReportingLocalService implements ReportingService {
 
     @Override
     public @NonNull URI generateVendorReport(@NonNull DataModel.Vendor.Key... vendors) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Optional<URI> result =
+                CompletableFuture.supplyAsync(() -> tryGenerateVendorReport(vendors))
+                        .orTimeout(config.timeout().toMillis(), TimeUnit.MILLISECONDS)
+                        .join();
+        return result.orElseThrow(() -> new ReportingException("Report generation failed!"));
+    }
+
+    /**
+     * Tries to generate a vendor report and returns the URI of the generated report file if successful.
+     *
+     * @param vendors the vendor keys for which to generate the report
+     * @return an Optional containing the URI of the generated report file, or empty if generation failed
+     */
+    Optional<URI> tryGenerateVendorReport(@NonNull DataModel.Vendor.Key... vendors) {
+        String reportFileName = VendorReportTemplate.reportFileName();
+        Path reportOutputPath = config.htmlOutputPath(reportFileName);
+
+        try {
+            Path outputDir = reportOutputPath.getParent();
+            if (!Files.exists(outputDir)) {
+                Files.createDirectories(outputDir);
+            }
+
+            if (!Files.exists(reportOutputPath)) {
+                Files.createFile(reportOutputPath);
+            }
+        } catch (IOException ex) {
+            LOGGER.error("Failed to create report output file: {}", reportOutputPath, ex);
+            throw new ReportingException("Failed to create report output file", ex);
+        }
+
+        List<ServiceModel.VendorReportData> vendorReportData =
+                Arrays.stream(vendors).parallel().map(this::createVendorReportData).toList();
+
+        VendorReportTemplate template = new VendorReportTemplate();
+        try (FileWriter fileWriter = new FileWriter(reportOutputPath.toFile())) {
+            template.render(fileWriter, vendorReportData);
+        } catch (IOException ex) {
+            LOGGER.error("Failed to write report to file {}!", reportOutputPath, ex);
+            return Optional.empty();
+        } catch (ReportingException ex) {
+            LOGGER.error("Failed to render report!", ex);
+            return Optional.empty();
+        }
+
+        return Optional.of(reportOutputPath.toUri());
     }
 }

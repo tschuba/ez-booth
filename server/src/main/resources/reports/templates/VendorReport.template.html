@@ -1,0 +1,64 @@
+<html xmlns:th="http://www.thymeleaf.org" char>
+
+<head>
+    <title>Verkäufer-Bericht - basar</title>
+    <meta charset="UTF-8"/>
+    <link type="text/css" rel="stylesheet" href="../styles/default.css"/>
+</head>
+<body>
+<main class="p-m"
+      th:classappend="${iteration.size > 1 && !iteration.last} ? 'page-break-after' : ''"
+      th:each="report, iteration: ${reportData}">
+    <!-- PAGE HEADER -->
+    <h2 class="pt-s pb-s">
+        <span>Verkäufer-Quittung</span>
+        <br/>
+        <span class="text-secondary text-s"
+              th:text="${report.event.description} + ' (' + ${#temporals.format(report.event.date, 'dd.MM.YYYY') + ')'}">Basar (24.12.2024)</span>
+    </h2>
+
+    <!-- REPORT HEADER -->
+    <div class="flex justify-between mt-m p-m">
+        <div>
+            <span class="pr-s">Verkäufer-Nr.:</span>
+            <span th:text="'#' + ${report.vendor.key.id}">#10</span>
+        </div>
+        <div class="flex flex-col">
+            <div class="flex flex-row justify-between">
+                <span class="pr-s">Gesamtsumme:</span>
+                <span th:text="${#numbers.formatCurrency(report.salesSum)}">45,00 €</span>
+            </div>
+            <div class="flex flex-row justify-between">
+                <span class="pr-s">Teilnahmegebühr:</span>
+                <span th:text="${#numbers.formatCurrency(report.participationFee * -1)}">-4.00 €</span>
+            </div>
+            <div class="flex flex-row justify-between">
+                <span class="pr-s">Umsatzgebühren:</span>
+                <span th:text="${#numbers.formatCurrency(report.salesFee * -1)}">-2,48 €</span>
+            </div>
+            <div class="flex flex-row justify-between pt-s">
+                <span class="pr-s font-semibold">Auszahlung:</span>
+                <span class="font-semibold" th:text="${#numbers.formatCurrency(report.totalRevenue)}">38,52 €</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIST OF REPORT ITEMS -->
+    <div class="mb-l text-secondary">
+        <div class="border-b p-m mb-l">
+            <span>Einzelposten</span>
+            <div class="text-s pl-s">
+                <span>Anzahl verkaufter Teile:</span>
+                <span th:text="${report.items.size()}">0</span>
+            </div>
+        </div>
+        <div class="grid grid-cols-9 gap-m">
+            <div class="flex flex-col-reverse items-end" th:each="item: ${report.items}">
+                <span class="text-2xs" th:text="${#temporals.format(item.dateTime, 'HH:mm')}"></span>
+                <span class="text-s font-medium" th:text="${#numbers.formatCurrency(item.price)}"></span>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

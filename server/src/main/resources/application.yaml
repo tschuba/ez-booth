@@ -2,11 +2,16 @@ spring:
   datasource:
     url: jdbc:sqlite:${user.home}/Documents/tschuba/ez-booth/booth.db
     driverClassName: org.sqlite.JDBC
-  sql:
-    init:
-      mode: always
   jpa:
     database-platform: org.hibernate.community.dialect.SQLiteDialect
     hibernate:
       ddl-auto: validate
       show_sql: true
+  mvc:
+    static-path-pattern: /resources/**
+  sql:
+    init:
+      mode: always
+  web:
+    resources:
+      static-locations: file:${user.home}/Documents/tschuba/ez-booth/static-content
