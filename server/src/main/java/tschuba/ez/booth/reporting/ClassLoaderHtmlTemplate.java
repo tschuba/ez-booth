@@ -35,7 +35,7 @@ public class ClassLoaderHtmlTemplate<T> implements ReportTemplate<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassLoaderHtmlTemplate.class);
 
-    private static final String RESOLVER_PREFIX = "templates/reports/";
+    private static final String RESOLVER_PREFIX = "reports/templates/";
     private static final String RESOLVER_SUFFIX = ".template.html";
     private static final String REPORT_DATA_CONTEXT_VAR = "reportData";
 
