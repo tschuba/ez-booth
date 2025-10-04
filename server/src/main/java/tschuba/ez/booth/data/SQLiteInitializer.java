@@ -4,15 +4,15 @@
  */
 package tschuba.ez.booth.data;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * Initializes the SQLite database file path if it does not exist.
@@ -27,7 +27,7 @@ public class SQLiteInitializer implements ApplicationListener<ApplicationEnviron
     private static final String JDBC_SQLITE_SCHEMA = "jdbc:sqlite:";
 
     @Override
-    public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+    public void onApplicationEvent(@NonNull ApplicationEnvironmentPreparedEvent event) {
         ConfigurableEnvironment environment = event.getEnvironment();
         String dataSourceUrl = environment.getProperty(SPRING_DATASOURCE_URL);
         if (dataSourceUrl == null) {
