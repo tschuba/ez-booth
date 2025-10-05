@@ -6,13 +6,13 @@ package tschuba.ez.booth.services;
 
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
-import java.util.stream.Stream;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.DataExchangeServiceGrpc;
+import tschuba.ez.booth.proto.ProtoModel;
 import tschuba.ez.booth.proto.ProtoServices;
 
 /**
@@ -31,10 +31,12 @@ public class DataExchangeGrpcService extends DataExchangeServiceGrpc.DataExchang
 
     @Override
     public void exportLocalData(
-            Empty request, StreamObserver<ProtoServices.ExchangeData> responseObserver) {
+            ProtoModel.BoothKey booth,
+            StreamObserver<ProtoServices.ExchangeData> responseObserver) {
         try {
-            Stream<ServiceModel.ExchangeData> dataStream = localService.exportLocalData();
-            dataStream.map(ProtoMapper::objectToMessage).forEach(responseObserver::onNext);
+            ServiceModel.ExchangeData data =
+                    localService.exportLocalData(ProtoMapper.messageToObject(booth));
+            responseObserver.onNext(ProtoMapper.objectToMessage(data));
             responseObserver.onCompleted();
         } catch (Exception ex) {
             LOGGER.error("Error exporting local data", ex);
@@ -62,5 +64,21 @@ public class DataExchangeGrpcService extends DataExchangeServiceGrpc.DataExchang
                 LOGGER.info("Completed importing remote data");
             }
         };
+    }
+
+    @Override
+    public void subscribeForExchange(
+            ProtoServices.ExchangeReceiver request,
+            StreamObserver<ProtoServices.ExchangeSubscription> responseObserver) {
+        try {
+            ServiceModel.ExchangeReceiver receiver = ProtoMapper.messageToObject(request);
+            ServiceModel.ExchangeSubscription subscription =
+                    localService.subscribeForExchange(receiver);
+            responseObserver.onNext(ProtoMapper.objectToMessage(subscription));
+            responseObserver.onCompleted();
+        } catch (Exception ex) {
+            LOGGER.error("Error subscribing for data exchange", ex);
+            responseObserver.onError(ex);
+        }
     }
 }

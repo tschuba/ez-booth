@@ -139,9 +139,31 @@ public final class ServiceModel {
             @NonNull BigDecimal salesFee,
             @NonNull BigDecimal totalRevenue) {}
 
+    /**
+     * Data for data exchange operations.
+     * @param booth the booth information
+     * @param vendors the list of vendors
+     * @param purchases the list of purchases
+     */
     @Builder
     public record ExchangeData(
             @NonNull DataModel.Booth booth,
             @NonNull List<DataModel.Vendor> vendors,
             @NonNull List<DataModel.Purchase> purchases) {}
+
+    /**
+     * Receiver information for data exchange operations.
+     * @param name the name of the receiver
+     * @param endpoint the endpoint of the receiver
+     */
+    @Builder
+    public record ExchangeReceiver(@NonNull String name, @NonNull String endpoint) {}
+
+    /**
+     * Subscription information for data exchange operations.
+     * @param id the subscription id
+     * @param booth the booth key
+     */
+    @Builder
+    public record ExchangeSubscription(@NonNull String id, @NonNull DataModel.Booth.Key booth) {}
 }

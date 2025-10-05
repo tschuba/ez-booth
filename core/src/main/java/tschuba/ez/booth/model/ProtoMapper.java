@@ -884,6 +884,108 @@ public class ProtoMapper {
     }
 
     /**
+     * Mapper for {@link ServiceModel.ExchangeReceiver} and {@link ProtoServices.ExchangeReceiver}.
+     */
+    public static final Mappable<ServiceModel.ExchangeReceiver, ProtoServices.ExchangeReceiver>
+            EXCHANGE_RECEIVER =
+                    new Mappable<>() {
+                        @Override
+                        @NonNull
+                        public Function<
+                                        ServiceModel.ExchangeReceiver,
+                                        ProtoServices.ExchangeReceiver>
+                                objectToMessage() {
+                            return receiver ->
+                                    ProtoServices.ExchangeReceiver.newBuilder()
+                                            .setName(receiver.name())
+                                            .setEndpoint(receiver.endpoint())
+                                            .build();
+                        }
+
+                        @Override
+                        @NonNull
+                        public Function<
+                                        ProtoServices.ExchangeReceiver,
+                                        ServiceModel.ExchangeReceiver>
+                                messageToObject() {
+                            return receiver ->
+                                    ServiceModel.ExchangeReceiver.builder()
+                                            .name(receiver.getName())
+                                            .endpoint(receiver.getEndpoint())
+                                            .build();
+                        }
+                    };
+
+    /**
+     * Mapper for {@link ServiceModel.ExchangeReceiver} and {@link ProtoServices.ExchangeReceiver}.
+     */
+    public static ProtoServices.ExchangeReceiver objectToMessage(
+            @NonNull ServiceModel.ExchangeReceiver object) {
+        return EXCHANGE_RECEIVER.objectToMessage(object);
+    }
+
+    /**
+     * Mapper for {@link ServiceModel.ExchangeReceiver} and {@link ProtoServices.ExchangeReceiver}.
+     */
+    public static ServiceModel.ExchangeReceiver messageToObject(
+            @NonNull ProtoServices.ExchangeReceiver message) {
+        return EXCHANGE_RECEIVER.messageToObject(message);
+    }
+
+    /**
+     * Mapper for {@link ServiceModel.ExchangeSubscription} and {@link ProtoServices.ExchangeSubscription}.
+     */
+    public static final Mappable<
+                    ServiceModel.ExchangeSubscription, ProtoServices.ExchangeSubscription>
+            EXCHANGE_SUBSCRIPTION =
+                    new Mappable<>() {
+                        @Override
+                        @NonNull
+                        public Function<
+                                        ServiceModel.ExchangeSubscription,
+                                        ProtoServices.ExchangeSubscription>
+                                objectToMessage() {
+                            return subscription ->
+                                    ProtoServices.ExchangeSubscription.newBuilder()
+                                            .setId(subscription.id())
+                                            .setBooth(
+                                                    BOOTH_KEY.objectToMessage(subscription.booth()))
+                                            .build();
+                        }
+
+                        @Override
+                        @NonNull
+                        public Function<
+                                        ProtoServices.ExchangeSubscription,
+                                        ServiceModel.ExchangeSubscription>
+                                messageToObject() {
+                            return subscription ->
+                                    ServiceModel.ExchangeSubscription.builder()
+                                            .id(subscription.getId())
+                                            .booth(
+                                                    BOOTH_KEY.messageToObject(
+                                                            subscription.getBooth()))
+                                            .build();
+                        }
+                    };
+
+    /**
+     * Mapper for {@link ServiceModel.ExchangeSubscription} and {@link ProtoServices.ExchangeSubscription}.
+     */
+    public static ServiceModel.ExchangeSubscription messageToObject(
+            @NonNull ProtoServices.ExchangeSubscription message) {
+        return EXCHANGE_SUBSCRIPTION.messageToObject(message);
+    }
+
+    /**
+     * Mapper for {@link ServiceModel.ExchangeSubscription} and {@link ProtoServices.ExchangeSubscription}.
+     */
+    public static ProtoServices.ExchangeSubscription objectToMessage(
+            @NonNull ServiceModel.ExchangeSubscription object) {
+        return EXCHANGE_SUBSCRIPTION.objectToMessage(object);
+    }
+
+    /**
      * Interface for implementations of mapping between object and protobuf message.
      *
      * @param <T>

@@ -4,8 +4,8 @@
  */
 package tschuba.ez.booth.services;
 
-import java.util.stream.Stream;
 import lombok.NonNull;
+import tschuba.ez.booth.model.DataModel;
 
 /**
  * Service for data exchange operations.
@@ -16,11 +16,19 @@ public interface DataExchangeService {
      * @return the exported data object
      */
     @NonNull
-    Stream<ServiceModel.ExchangeData> exportLocalData();
+    ServiceModel.ExchangeData exportLocalData(DataModel.Booth.Key boothId);
 
     /**
      * Import remote data from the given data object.
      * @param data the data object to import from
      */
     void importRemoteData(@NonNull ServiceModel.ExchangeData data);
+
+    /**
+     * Subscribe for exchange data using the given receiver.
+     * @param receiver the receiver to use
+     * @return the subscription object
+     */
+    ServiceModel.ExchangeSubscription subscribeForExchange(
+            @NonNull ServiceModel.ExchangeReceiver receiver);
 }

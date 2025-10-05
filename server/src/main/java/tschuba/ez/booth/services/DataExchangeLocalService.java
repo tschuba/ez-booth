@@ -6,13 +6,13 @@ package tschuba.ez.booth.services;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Stream;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.data.PurchaseRepository;
+import tschuba.ez.booth.data.RecordNotFoundException;
 import tschuba.ez.booth.data.VendorRepository;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
@@ -37,8 +37,13 @@ public class DataExchangeLocalService implements DataExchangeService {
     }
 
     @Override
-    public @NonNull Stream<ServiceModel.ExchangeData> exportLocalData() {
-        return booths.findAll().parallelStream().map(this::exportBoothData);
+    public @NonNull ServiceModel.ExchangeData exportLocalData(DataModel.Booth.Key booth) {
+        return booths.findById(EntitiesMapper.objectToEntity(booth))
+                .map(this::exportBoothData)
+                .orElseThrow(
+                        () ->
+                                new RecordNotFoundException(
+                                        "Booth not found: %s".formatted(booth.boothId())));
     }
 
     @Override
@@ -68,6 +73,12 @@ public class DataExchangeLocalService implements DataExchangeService {
         LOGGER.info("Imported data for booth {}", booth.key().boothId());
     }
 
+    @Override
+    public ServiceModel.ExchangeSubscription subscribeForExchange(
+            ServiceModel.@NonNull ExchangeReceiver receiver) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
     /**
      * Export all data related to the given booth.
      *
@@ -75,7 +86,6 @@ public class DataExchangeLocalService implements DataExchangeService {
      * @return the exported data
      */
     private ServiceModel.ExchangeData exportBoothData(EntityModel.Booth booth) {
-
         String boothId = booth.getKey().getBoothId();
         ServiceModel.ExchangeData.ExchangeDataBuilder builder =
                 ServiceModel.ExchangeData.builder().booth(EntitiesMapper.entityToObject(booth));

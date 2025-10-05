@@ -79,7 +79,18 @@ message ExchangeData {
   repeated Purchase purchases = 3;
 }
 
+message ExchangeReceiver {
+  string name = 1;
+  string endpoint = 2;
+}
+
+message ExchangeSubscription {
+  string id = 1;
+  BoothKey booth = 2;
+}
+
 service DataExchangeService {
-  rpc ExportLocalData(google.protobuf.Empty) returns (stream ExchangeData);
+  rpc ExportLocalData(BoothKey) returns (ExchangeData);
   rpc ImportRemoteData(stream ExchangeData) returns (google.protobuf.Empty);
+  rpc SubscribeForExchange(ExchangeReceiver) returns (ExchangeSubscription);
 }
