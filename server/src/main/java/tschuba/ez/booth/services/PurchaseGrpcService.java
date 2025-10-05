@@ -5,6 +5,9 @@
 package tschuba.ez.booth.services;
 
 import io.grpc.stub.StreamObserver;
+import jakarta.transaction.Transactional;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +18,6 @@ import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.ProtoModel;
 import tschuba.ez.booth.proto.ProtoServices;
 import tschuba.ez.booth.proto.PurchaseServiceGrpc;
-
-import java.util.Optional;
 
 /**
  * gRPC service implementation for purchase processing.
@@ -68,18 +69,22 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
     }
 
     @Override
-    public void getPurchasesByEvent(
-            ProtoModel.PurchaseKey request, StreamObserver<ProtoModel.Purchase> responseObserver) {
+    @Transactional
+    public void getPurchasesByBooth(
+            ProtoModel.BoothKey request, StreamObserver<ProtoModel.Purchase> responseObserver) {
         try {
-            DataModel.Purchase.Key purchaseKey = ProtoMapper.messageToObject(request);
+            DataModel.Booth.Key booth = ProtoMapper.messageToObject(request);
+            AtomicInteger count = new AtomicInteger(0);
             localService
-                    .getPurchasesByBooth(purchaseKey.booth())
+                    .getPurchasesByBooth(booth)
                     .forEach(
                             purchase -> {
                                 ProtoModel.Purchase purchaseMsg =
                                         ProtoMapper.objectToMessage(purchase);
                                 responseObserver.onNext(purchaseMsg);
+                                count.incrementAndGet();
                             });
+            LOGGER.debug("Returned {} purchases for booth {}", count.get(), booth);
             responseObserver.onCompleted();
         } catch (Exception ex) {
             LOGGER.error("Error getting purchases by booth: {}", request, ex);

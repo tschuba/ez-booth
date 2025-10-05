@@ -13,9 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,21 +114,25 @@ public class ReportingLocalService implements ReportingService {
     }
 
     @Override
+    @Transactional
     public @NonNull URI generateVendorReport(@NonNull DataModel.Vendor.Key... vendors) {
-        Optional<URI> result =
-                CompletableFuture.supplyAsync(() -> tryGenerateVendorReport(vendors))
-                        .orTimeout(config.timeout().toMillis(), TimeUnit.MILLISECONDS)
-                        .join();
-        return result.orElseThrow(() -> new ReportingException("Report generation failed!"));
-    }
-
-    /**
-     * Tries to generate a vendor report and returns the URI of the generated report file if successful.
-     *
-     * @param vendors the vendor keys for which to generate the report
-     * @return an Optional containing the URI of the generated report file, or empty if generation failed
-     */
-    Optional<URI> tryGenerateVendorReport(@NonNull DataModel.Vendor.Key... vendors) {
+        //        Optional<URI> result =
+        //                CompletableFuture.supplyAsync(() -> tryGenerateVendorReport(vendors))
+        //                        .orTimeout(config.timeout().toMillis(), TimeUnit.MILLISECONDS)
+        //                        .join();
+        //        return result.orElseThrow(() -> new ReportingException("Report generation
+        // failed!"));
+        //    }
+        //
+        //    /**
+        //     * Tries to generate a vendor report and returns the URI of the generated report file
+        // if successful.
+        //     *
+        //     * @param vendors the vendor keys for which to generate the report
+        //     * @return an Optional containing the URI of the generated report file, or empty if
+        // generation failed
+        //     */
+        //    Optional<URI> tryGenerateVendorReport(@NonNull DataModel.Vendor.Key... vendors) {
         String reportFileName = VendorReportTemplate.reportFileName();
         Path reportOutputPath = config.htmlOutputPath(reportFileName);
 
@@ -154,15 +155,19 @@ public class ReportingLocalService implements ReportingService {
 
         VendorReportTemplate template = new VendorReportTemplate();
         try (FileWriter fileWriter = new FileWriter(reportOutputPath.toFile())) {
+            LOGGER.debug("Rendering {} vendor report items", vendorReportData.size());
             template.render(fileWriter, vendorReportData);
         } catch (IOException ex) {
             LOGGER.error("Failed to write report to file {}!", reportOutputPath, ex);
-            return Optional.empty();
+            //            return Optional.empty();
+            throw new ReportingException("Failed to write report to file", ex);
         } catch (ReportingException ex) {
             LOGGER.error("Failed to render report!", ex);
-            return Optional.empty();
+            //            return Optional.empty();
+            throw ex;
         }
 
-        return Optional.of(reportOutputPath.toUri());
+        //        return Optional.of(reportOutputPath.toUri());
+        return reportOutputPath.toUri();
     }
 }

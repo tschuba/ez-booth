@@ -14,14 +14,14 @@
         <span>Verkäufer-Quittung</span>
         <br/>
         <span class="text-secondary text-s"
-              th:text="${report.event.description} + ' (' + ${#temporals.format(report.event.date, 'dd.MM.YYYY') + ')'}">Basar (24.12.2024)</span>
+              th:text="${report.booth.description} + ' (' + ${#temporals.format(report.booth.date, 'dd.MM.YYYY') + ')'}">Basar (24.12.2024)</span>
     </h2>
 
     <!-- REPORT HEADER -->
     <div class="flex justify-between mt-m p-m">
         <div>
             <span class="pr-s">Verkäufer-Nr.:</span>
-            <span th:text="'#' + ${report.vendor.key.id}">#10</span>
+            <span th:text="'#' + ${report.vendor.key.vendorId}">#10</span>
         </div>
         <div class="flex flex-col">
             <div class="flex flex-row justify-between">
@@ -54,7 +54,7 @@
         </div>
         <div class="grid grid-cols-9 gap-m">
             <div class="flex flex-col-reverse items-end" th:each="item: ${report.items}">
-                <span class="text-2xs" th:text="${#temporals.format(item.dateTime, 'HH:mm')}"></span>
+                <span class="text-2xs" th:text="${#temporals.format(item.purchasedOn, 'HH:mm')}"></span>
                 <span class="text-s font-medium" th:text="${#numbers.formatCurrency(item.price)}"></span>
             </div>
         </div>

@@ -38,7 +38,7 @@ public class StaticContentInitializer
         }
 
         for (String location : fileLocations) {
-            Path locationPath = Path.of(location.substring(FILE_PREFIX.length()));
+            Path locationPath = Path.of(location);
             if (!Files.exists(locationPath)) {
                 try {
                     LOGGER.info("Creating static content location: {}", locationPath);

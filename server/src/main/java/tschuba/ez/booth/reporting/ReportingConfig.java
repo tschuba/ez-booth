@@ -11,12 +11,16 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import lombok.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 @Configuration
 public class ReportingConfig {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReportingConfig.class);
 
     private static final String STATIC_LOCATIONS = "spring.web.resources.static-locations";
     private static final String STATIC_LOCATIONS_SEPARATOR = ",";
@@ -40,6 +44,7 @@ public class ReportingConfig {
                                         new ReportingException(
                                                 "No static content locations configured!"));
         targetBasePath = Path.of(targetLocation, REPORTS_PATH);
+        LOGGER.debug("Report target base path: {}", targetBasePath);
     }
 
     /**
@@ -89,6 +94,8 @@ public class ReportingConfig {
                                 locations ->
                                         locations.split(Pattern.quote(STATIC_LOCATIONS_SEPARATOR)))
                         .orElse(new String[0]);
-        return Arrays.stream(contentLocations).filter(location -> location.startsWith(FILE_PREFIX));
+        return Arrays.stream(contentLocations)
+                .filter(location -> location.startsWith(FILE_PREFIX))
+                .map(location -> location.substring(FILE_PREFIX.length()));
     }
 }

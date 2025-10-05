@@ -120,8 +120,7 @@ public class EntityModel {
         @Getter
         @EqualsAndHashCode
         public static class Key {
-            @Column(nullable = false, name = "booth")
-            private Booth.Key booth;
+            @Embedded private Booth.Key booth;
 
             @Column(nullable = false, name = "purchase_id")
             private String purchaseId;
