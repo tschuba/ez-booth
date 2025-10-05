@@ -35,6 +35,7 @@ public final class ServiceModel {
 
         /**
          * Calculate the total fees.
+         *
          * @return the total fees
          */
         public BigDecimal total() {
@@ -53,6 +54,7 @@ public final class ServiceModel {
 
         /**
          * Create a {@link ChargingConfig} from the given booth.
+         *
          * @param booth the booth to create the config from
          * @return the created config
          */
@@ -66,6 +68,7 @@ public final class ServiceModel {
 
         /**
          * Create a {@link ChargingConfig} from the given booth entity.
+         *
          * @param booth the booth entity to create the config from
          * @return the created config
          */
@@ -79,6 +82,7 @@ public final class ServiceModel {
 
         /**
          * Calculate the fees based on the given value.
+         *
          * @param value the value to calculate fees for
          * @return the calculated fees
          */
@@ -134,4 +138,10 @@ public final class ServiceModel {
             @NonNull BigDecimal participationFee,
             @NonNull BigDecimal salesFee,
             @NonNull BigDecimal totalRevenue) {}
+
+    @Builder
+    public record ExchangeData(
+            @NonNull DataModel.Booth booth,
+            @NonNull DataModel.Vendor vendors,
+            @NonNull List<DataModel.Purchase> purchases) {}
 }

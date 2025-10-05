@@ -72,3 +72,13 @@ service ReportingService {
   rpc CreateVendorReportData(VendorKey) returns (VendorReportData);
   rpc GenerateVendorReport(VendorReportInput) returns (URI);
 }
+
+message ExchangeData {
+  Booth booth = 1;
+  repeated Purchase purchases = 2;
+}
+
+service DataExchangeService {
+  rpc ExportLocalData(google.protobuf.Empty) returns (stream ExchangeData);
+  rpc ImportRemoteData(stream ExchangeData) returns (google.protobuf.Empty);
+}
