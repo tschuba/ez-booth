@@ -814,6 +814,75 @@ public class ProtoMapper {
         return URI.messageToObject(message);
     }
 
+    public static Mappable<ServiceModel.ExchangeData, ProtoServices.ExchangeData> EXCHANGE_DATA =
+            new Mappable<>() {
+                @Override
+                @NonNull
+                public Function<ServiceModel.ExchangeData, ProtoServices.ExchangeData>
+                        objectToMessage() {
+                    return exchangeData -> {
+                        ProtoServices.ExchangeData.Builder builder =
+                                ProtoServices.ExchangeData.newBuilder();
+                        ProtoModel.Booth boothMsg =
+                                ProtoMapper.objectToMessage(exchangeData.booth());
+                        builder.setBooth(boothMsg);
+
+                        exchangeData.vendors().stream()
+                                .map(ProtoMapper::objectToMessage)
+                                .forEach(builder::addVendors);
+
+                        exchangeData.purchases().stream()
+                                .map(ProtoMapper::objectToMessage)
+                                .forEach(builder::addPurchases);
+                        return builder.build();
+                    };
+                }
+
+                @Override
+                @NonNull
+                public Function<ProtoServices.ExchangeData, ServiceModel.ExchangeData>
+                        messageToObject() {
+                    return exchangeData -> {
+                        ServiceModel.ExchangeData.ExchangeDataBuilder builder =
+                                ServiceModel.ExchangeData.builder();
+                        if (exchangeData.hasBooth()) {
+                            DataModel.Booth booth =
+                                    ProtoMapper.messageToObject(exchangeData.getBooth());
+                            builder.booth(booth);
+                        }
+
+                        List<DataModel.Vendor> vendors =
+                                exchangeData.getVendorsList().stream()
+                                        .map(ProtoMapper::messageToObject)
+                                        .toList();
+                        builder.vendors(vendors);
+
+                        List<DataModel.Purchase> convertedPurchasesList =
+                                exchangeData.getPurchasesList().stream()
+                                        .map(ProtoMapper::messageToObject)
+                                        .toList();
+                        builder.purchases(convertedPurchasesList);
+                        return builder.build();
+                    };
+                }
+            };
+
+    /**
+     * Mapper for {@link ServiceModel.ExchangeData} and {@link ProtoServices.ExchangeData}.
+     */
+    public static ProtoServices.ExchangeData objectToMessage(
+            @NonNull ServiceModel.ExchangeData object) {
+        return EXCHANGE_DATA.objectToMessage(object);
+    }
+
+    /**
+     * Mapper for {@link ServiceModel.ExchangeData} and {@link ProtoServices.ExchangeData}.
+     */
+    public static ServiceModel.ExchangeData messageToObject(
+            @NonNull ProtoServices.ExchangeData message) {
+        return EXCHANGE_DATA.messageToObject(message);
+    }
+
     /**
      * Interface for implementations of mapping between object and protobuf message.
      *

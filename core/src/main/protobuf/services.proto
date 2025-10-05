@@ -75,7 +75,8 @@ service ReportingService {
 
 message ExchangeData {
   Booth booth = 1;
-  repeated Purchase purchases = 2;
+  repeated Vendor vendors = 2;
+  repeated Purchase purchases = 3;
 }
 
 service DataExchangeService {

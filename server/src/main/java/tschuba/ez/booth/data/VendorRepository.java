@@ -4,7 +4,9 @@
  */
 package tschuba.ez.booth.data;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tschuba.ez.booth.model.EntityModel;
 
@@ -13,4 +15,8 @@ import tschuba.ez.booth.model.EntityModel;
  */
 @Repository
 public interface VendorRepository
-        extends JpaRepository<EntityModel.Vendor, EntityModel.Vendor.Key> {}
+        extends JpaRepository<EntityModel.Vendor, EntityModel.Vendor.Key> {
+
+    @Query("SELECT v FROM Vendor v WHERE v.key.boothId = :boothId")
+    List<EntityModel.Vendor> findAllByBoothId(String boothId);
+}

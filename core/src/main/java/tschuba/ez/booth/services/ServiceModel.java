@@ -142,6 +142,6 @@ public final class ServiceModel {
     @Builder
     public record ExchangeData(
             @NonNull DataModel.Booth booth,
-            @NonNull DataModel.Vendor vendors,
+            @NonNull List<DataModel.Vendor> vendors,
             @NonNull List<DataModel.Purchase> purchases) {}
 }
