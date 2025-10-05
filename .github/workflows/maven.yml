@@ -19,7 +19,8 @@ jobs:
 
     runs-on: ubuntu-latest
     permissions:
-      dependencies: write
+      contents: read
+      security-events: write
 
     steps:
     - uses: actions/checkout@v5
