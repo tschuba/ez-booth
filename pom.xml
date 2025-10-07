@@ -12,6 +12,7 @@
     <modules>
         <module>core</module>
         <module>server</module>
+        <module>vaadin-ui</module>
     </modules>
 
     <properties>
