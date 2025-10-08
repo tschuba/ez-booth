@@ -17,6 +17,6 @@ import tschuba.ez.booth.model.EntityModel;
 public interface VendorRepository
         extends JpaRepository<EntityModel.Vendor, EntityModel.Vendor.Key> {
 
-    @Query("SELECT v FROM Vendor v WHERE v.key.boothId = :boothId")
+    @Query("SELECT v FROM Vendor v WHERE v.key.booth.boothId = :boothId")
     List<EntityModel.Vendor> findAllByBoothId(String boothId);
 }
