@@ -1,15 +1,8 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteConfiguration;
-import com.vaadin.flow.router.RouteParameters;
-import com.vaadin.flow.router.Router;
-import com.vaadin.flow.server.VaadinService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,6 +10,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
+
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteConfiguration;
+import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.router.Router;
+import com.vaadin.flow.server.VaadinService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 public class RoutingTest {
     private static final String URL_EXPECTED = "test-route";
@@ -37,10 +41,13 @@ public class RoutingTest {
         mockedStaticService.when(VaadinService::getCurrent).thenReturn(mockedService);
 
         RouteConfiguration mockedRouteConfig = mock(RouteConfiguration.class);
-        when(mockedRouteConfig.getUrl(eq(RoutingTestView.class), any(RouteParameters.class))).thenReturn(URL_EXPECTED);
+        when(mockedRouteConfig.getUrl(eq(RoutingTestView.class), any(RouteParameters.class)))
+                .thenReturn(URL_EXPECTED);
 
         mockedStaticRouteConfig = mockStatic(RouteConfiguration.class);
-        mockedStaticRouteConfig.when(() -> RouteConfiguration.forRegistry(any())).thenReturn(mockedRouteConfig);
+        mockedStaticRouteConfig
+                .when(() -> RouteConfiguration.forRegistry(any()))
+                .thenReturn(mockedRouteConfig);
     }
 
     @AfterEach
@@ -62,6 +69,5 @@ public class RoutingTest {
     }
 
     @Route("test-route")
-    static class RoutingTestView extends Component {
-    }
+    static class RoutingTestView extends Component {}
 }

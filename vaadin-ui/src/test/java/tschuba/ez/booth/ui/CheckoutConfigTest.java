@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui;
 
 import static org.assertj.core.api.Assertions.*;

@@ -1,5 +1,24 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.i18n;
 
+import static java.lang.String.format;
+import static java.util.Arrays.stream;
+import static java.util.Objects.requireNonNull;
+import static java.util.function.Predicate.not;
+import static java.util.stream.IntStream.range;
+import static java.util.stream.Stream.concat;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.internal.LocaleUtil;
+import com.vaadin.flow.server.VaadinSession;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -14,40 +33,26 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
-
+import lombok.Getter;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.internal.LocaleUtil;
-import com.vaadin.flow.server.VaadinSession;
-import lombok.Getter;
-import lombok.NonNull;
-
-import static java.lang.String.format;
-import static java.util.Arrays.stream;
-import static java.util.Objects.requireNonNull;
-import static java.util.function.Predicate.not;
-import static java.util.stream.IntStream.range;
-import static java.util.stream.Stream.concat;
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 
 public class I18N implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(I18N.class);
 
     private final Map<Locale, I18NSet> sets = new HashMap<>();
     private final I18NSet defaultSet;
-    @Getter
-    private final Locale defaultLocale;
+    @Getter private final Locale defaultLocale;
     private final I18NMapping mapping;
     private final URL rootPath;
 
     public I18N(@NonNull ClassLoader classLoader, @NonNull String mappingFile) {
-        this(requireNonNull(classLoader.getResource(mappingFile), "Resource %s not found!".formatted(mappingFile)));
+        this(
+                requireNonNull(
+                        classLoader.getResource(mappingFile),
+                        "Resource %s not found!".formatted(mappingFile)));
     }
 
     public I18N(@NonNull URL mappingFile) {
@@ -55,14 +60,20 @@ public class I18N implements Serializable {
             rootPath = parentPath(mappingFile);
             mapping = load(mappingFile, I18NMapping.class);
             defaultLocale = parseLocaleString(mapping.getDefaultLocale());
-            defaultSet = loadSet(defaultLocale).orElseThrow(() -> new IllegalStateException("No mapping found for default locale (\"\")"));
+            defaultSet =
+                    loadSet(defaultLocale)
+                            .orElseThrow(
+                                    () ->
+                                            new IllegalStateException(
+                                                    "No mapping found for default locale (\"\")"));
         } catch (IOException ex) {
             throw new RuntimeException(format("Initialization of %s failed!", I18N.class), ex);
         }
     }
 
     public static I18N i18N() {
-        return requireNonNull(VaadinSession.getCurrent().getAttribute(I18N.class),
+        return requireNonNull(
+                VaadinSession.getCurrent().getAttribute(I18N.class),
                 "No I18N instance assigned to current session!");
     }
 
@@ -130,12 +141,22 @@ public class I18N implements Serializable {
         Calendar calendar = Calendar.getInstance(locale);
         int firstDayOfWeek = calendar.getFirstDayOfWeek();
 
-        List<String> monthNames = stream(Month.values()).map(month -> translate(month, locale)).toList();
+        List<String> monthNames =
+                stream(Month.values()).map(month -> translate(month, locale)).toList();
 
-        List<DayOfWeek> weekdays = concat(Stream.of(DayOfWeek.SUNDAY), stream(DayOfWeek.values()).takeWhile(not(DayOfWeek.SUNDAY::equals))).toList();
-        List<String> weekdayNames = concat(range(firstDayOfWeek, 7).mapToObj(weekdays::get), range(0, firstDayOfWeek).mapToObj(weekdays::get))
-                .map(day -> translate(day, locale)).toList();
-        List<String> weekdayNamesShort = weekdayNames.stream().map(day -> StringUtils.left(day, 2)).toList();
+        List<DayOfWeek> weekdays =
+                concat(
+                                Stream.of(DayOfWeek.SUNDAY),
+                                stream(DayOfWeek.values()).takeWhile(not(DayOfWeek.SUNDAY::equals)))
+                        .toList();
+        List<String> weekdayNames =
+                concat(
+                                range(firstDayOfWeek, 7).mapToObj(weekdays::get),
+                                range(0, firstDayOfWeek).mapToObj(weekdays::get))
+                        .map(day -> translate(day, locale))
+                        .toList();
+        List<String> weekdayNamesShort =
+                weekdayNames.stream().map(day -> StringUtils.left(day, 2)).toList();
 
         DatePicker.DatePickerI18n i18n = new DatePicker.DatePickerI18n();
         i18n.setMonthNames(monthNames);
@@ -175,7 +196,10 @@ public class I18N implements Serializable {
         }
 
         try {
-            Locale lookup = Locale.lookup(Locale.LanguageRange.parse(locale.toLanguageTag()), getProvidedLocales());
+            Locale lookup =
+                    Locale.lookup(
+                            Locale.LanguageRange.parse(locale.toLanguageTag()),
+                            getProvidedLocales());
             if (lookup == null) {
                 return defaultSet;
             }
@@ -186,9 +210,11 @@ public class I18N implements Serializable {
                 } catch (IOException ex) {
                     LOGGER.warn(format("Failed to load set file for locale %s", lookup), ex);
                 }
-                set.ifPresentOrElse(i18NSet -> sets.put(locale, i18NSet), () -> sets.put(locale, defaultSet));
+                set.ifPresentOrElse(
+                        i18NSet -> sets.put(locale, i18NSet), () -> sets.put(locale, defaultSet));
             }
-            return set.orElseThrow(() -> new IllegalStateException("Experiencing an unexpected condition!"));
+            return set.orElseThrow(
+                    () -> new IllegalStateException("Experiencing an unexpected condition!"));
         } catch (Exception ex) {
             throw new RuntimeException(format("Failed to load I18N set for %s", locale), ex);
         }
@@ -205,9 +231,10 @@ public class I18N implements Serializable {
     }
 
     private <T> T load(URL file, Class<T> type) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper()
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        ObjectMapper objectMapper =
+                new ObjectMapper()
+                        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                        .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         return objectMapper.readValue(file, type);
     }
 
@@ -222,15 +249,21 @@ public class I18N implements Serializable {
         return mapping.getSupportedLocales().entrySet().stream()
                 .filter(entry -> equalsIgnoreCase(entry.getKey(), localeString))
                 .map(Map.Entry::getValue)
-                .map(fileName -> {
-                    String urlPath = String.format("%s/%s", rootPath.getPath(), fileName);
-                    try {
-                        return new URL(rootPath.getProtocol(), rootPath.getHost(), rootPath.getPort(), urlPath);
-                    } catch (MalformedURLException ex) {
-                        LOGGER.error("Failed to create file path for locale '{}'!", locale, ex);
-                        throw new RuntimeException(ex);
-                    }
-                })
+                .map(
+                        fileName -> {
+                            String urlPath = String.format("%s/%s", rootPath.getPath(), fileName);
+                            try {
+                                return new URL(
+                                        rootPath.getProtocol(),
+                                        rootPath.getHost(),
+                                        rootPath.getPort(),
+                                        urlPath);
+                            } catch (MalformedURLException ex) {
+                                LOGGER.error(
+                                        "Failed to create file path for locale '{}'!", locale, ex);
+                                throw new RuntimeException(ex);
+                            }
+                        })
                 .findFirst();
     }
 }

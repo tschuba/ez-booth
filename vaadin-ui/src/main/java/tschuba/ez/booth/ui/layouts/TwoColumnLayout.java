@@ -1,10 +1,14 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.layouts;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Main;
-
-import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 public class TwoColumnLayout extends BaseLayout {
     private final Main contentContainer;
@@ -13,7 +17,12 @@ public class TwoColumnLayout extends BaseLayout {
 
     public TwoColumnLayout() {
         contentContainer = new Main();
-        contentContainer.addClassNames(Display.GRID, Grid.Column.COLUMNS_2, Gap.XLARGE, AlignItems.START, JustifyContent.CENTER);
+        contentContainer.addClassNames(
+                Display.GRID,
+                Grid.Column.COLUMNS_2,
+                Gap.XLARGE,
+                AlignItems.START,
+                JustifyContent.CENTER);
         super.setContent(contentContainer);
 
         // add initial placeholders

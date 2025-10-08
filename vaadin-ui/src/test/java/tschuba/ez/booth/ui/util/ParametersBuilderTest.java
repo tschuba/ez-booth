@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,8 +16,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import tschuba.basarix.data.model.EventKey;
 import tschuba.basarix.data.model.PurchaseKey;
 import tschuba.basarix.data.model.VendorKey;
-import tschuba.ez.booth.ui.views.CheckoutView;
 import tschuba.ez.booth.ui.views.BoothSelectionView;
+import tschuba.ez.booth.ui.views.CheckoutView;
 import tschuba.ez.booth.ui.views.VendorReportView;
 
 /**
@@ -100,9 +101,11 @@ class ParametersBuilderTest {
     @Test
     void testBuildMethod() {
         assertThat(builderSpy.param(ROUTE_PARAM__BOOTH_ID, EVENT_ID)).isEqualTo(builderSpy);
-        assertThat(builderSpy.build()).satisfies(params -> {
-            assertThat(params.getParameterNames()).containsOnly(EVENT_ID);
-            assertThat(params.get(ROUTE_PARAM__BOOTH_ID)).hasValue(EVENT_ID);
-        });
+        assertThat(builderSpy.build())
+                .satisfies(
+                        params -> {
+                            assertThat(params.getParameterNames()).containsOnly(EVENT_ID);
+                            assertThat(params.get(ROUTE_PARAM__BOOTH_ID)).hasValue(EVENT_ID);
+                        });
     }
 }

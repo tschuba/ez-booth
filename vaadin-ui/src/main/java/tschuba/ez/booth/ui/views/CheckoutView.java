@@ -1,7 +1,13 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.views;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.Display;
+import static com.vaadin.flow.theme.lumo.LumoUtility.FlexDirection;
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
+import static tschuba.ez.booth.ui.i18n.TranslationKeys.CheckoutView.*;
 
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -16,6 +22,8 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.*;
+import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.data.BoothRepository;
@@ -26,22 +34,14 @@ import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.components.checkout.CheckoutItemForm;
 import tschuba.ez.booth.ui.components.checkout.CheckoutKeyPad;
 import tschuba.ez.booth.ui.components.checkout.PurchaseSummary;
-import tschuba.ez.booth.ui.components.event.EventRequired;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
+import tschuba.ez.booth.ui.components.event.EventRequired;
 import tschuba.ez.booth.ui.components.model.PurchaseComparator;
 import tschuba.ez.booth.ui.components.model.PurchaseGrid;
 import tschuba.ez.booth.ui.layouts.TwoColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.renderer.ColumnRenderer;
 import tschuba.ez.booth.ui.util.*;
-
-import java.util.List;
-import java.util.Optional;
-
-import static com.vaadin.flow.theme.lumo.LumoUtility.Display;
-import static com.vaadin.flow.theme.lumo.LumoUtility.FlexDirection;
-import static tschuba.ez.booth.ui.i18n.Formats.formats;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.CheckoutView.*;
 
 @Route(value = "checkout", layout = AppLayoutWithMenu.class)
 @PreserveOnRefresh
@@ -55,9 +55,10 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
     private final PurchaseGrid<Void> purchaseGrid;
     private final CheckoutKeyPad numPad;
 
-    public CheckoutView(@NonNull final BoothRepository booths,
-                        @NonNull final PurchaseService purchaseService,
-                        @NonNull final PurchaseSummary purchaseSummary) {
+    public CheckoutView(
+            @NonNull final BoothRepository booths,
+            @NonNull final PurchaseService purchaseService,
+            @NonNull final PurchaseSummary purchaseSummary) {
         this.booths = booths;
         this.purchaseService = purchaseService;
 
@@ -96,10 +97,14 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
     public void beforeEnter(BeforeEnterEvent enterEvent) {
         super.beforeEnter(enterEvent);
 
-        BoothSelection.get().map(EntitiesMapper::objectToEntity).flatMap(booths::findById).ifPresent(booth -> {
-            checkoutForm.setEnabled(!booth.isClosed());
-            numPad.setEnabled(!booth.isClosed());
-        });
+        BoothSelection.get()
+                .map(EntitiesMapper::objectToEntity)
+                .flatMap(booths::findById)
+                .ifPresent(
+                        booth -> {
+                            checkoutForm.setEnabled(!booth.isClosed());
+                            numPad.setEnabled(!booth.isClosed());
+                        });
     }
 
     @Override
@@ -115,28 +120,59 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
     }
 
     private PurchaseGrid<Void> createPurchaseGrid(PurchaseService purchaseService) {
-        PurchaseComparator dateTimeComparator = PurchaseComparator.builder().ascending(PurchaseComparator.Field.DateTime).build();
+        PurchaseComparator dateTimeComparator =
+                PurchaseComparator.builder().ascending(PurchaseComparator.Field.DateTime).build();
         PurchaseGrid<Void> purchaseGrid = new PurchaseGrid<>(purchaseService);
         purchaseGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COMPACT);
         purchaseGrid.setMinHeight(40, Unit.EM);
         purchaseGrid.setWidth("31rem");
-        Column<DataModel.Purchase> dateTimeColumn = purchaseGrid.addColumn(ColumnRenderer.Purchase.dateTime(formats(), getLocale())).setComparator(dateTimeComparator).setHeader(getTranslation(PURCHASE_GRID__HEADER__DATE_TIME)).setWidth("11rem").setFlexGrow(0);
-        purchaseGrid.addColumn(ColumnRenderer.Purchase.sum(formats(), getLocale())).setHeader(getTranslation(PURCHASE_GRID__HEADER__VALUE)).setWidth("6rem").setFlexGrow(0);
-        purchaseGrid.addColumn(new ComponentRenderer<>(purchase -> {
-            String purchaseId = purchase.key().purchaseId();
-            String purchaseIdShort = "%s...".formatted(purchaseId.split("-")[0]);
-            Span idBadge = Badges.badge().applyTo(new Span(purchaseIdShort));
-            Tooltip.forComponent(idBadge).setText(purchaseId);
-            return idBadge;
-        })).setHeader(getTranslation(PURCHASE_GRID__HEADER__ID)).setWidth("8rem").setFlexGrow(0);
-        purchaseGrid.addColumn(new ComponentRenderer<>(purchase -> {
-            Button printReceiptButton = new Button();
-            printReceiptButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_LARGE, ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
-            printReceiptButton.setIcon(LineAwesomeIcon.RECEIPT_SOLID.create());
-            printReceiptButton.setTooltipText(getTranslation(BUTTON_PRINT_RECEIPT__TOOLTIP));
-            printReceiptButton.addClickListener(event -> openPrintReceiptView(purchase, false));
-            return printReceiptButton;
-        })).setWidth("5rem").setFlexGrow(0);
+        Column<DataModel.Purchase> dateTimeColumn =
+                purchaseGrid
+                        .addColumn(ColumnRenderer.Purchase.dateTime(formats(), getLocale()))
+                        .setComparator(dateTimeComparator)
+                        .setHeader(getTranslation(PURCHASE_GRID__HEADER__DATE_TIME))
+                        .setWidth("11rem")
+                        .setFlexGrow(0);
+        purchaseGrid
+                .addColumn(ColumnRenderer.Purchase.sum(formats(), getLocale()))
+                .setHeader(getTranslation(PURCHASE_GRID__HEADER__VALUE))
+                .setWidth("6rem")
+                .setFlexGrow(0);
+        purchaseGrid
+                .addColumn(
+                        new ComponentRenderer<>(
+                                purchase -> {
+                                    String purchaseId = purchase.key().purchaseId();
+                                    String purchaseIdShort =
+                                            "%s...".formatted(purchaseId.split("-")[0]);
+                                    Span idBadge =
+                                            Badges.badge().applyTo(new Span(purchaseIdShort));
+                                    Tooltip.forComponent(idBadge).setText(purchaseId);
+                                    return idBadge;
+                                }))
+                .setHeader(getTranslation(PURCHASE_GRID__HEADER__ID))
+                .setWidth("8rem")
+                .setFlexGrow(0);
+        purchaseGrid
+                .addColumn(
+                        new ComponentRenderer<>(
+                                purchase -> {
+                                    Button printReceiptButton = new Button();
+                                    printReceiptButton.addThemeVariants(
+                                            ButtonVariant.LUMO_ICON,
+                                            ButtonVariant.LUMO_LARGE,
+                                            ButtonVariant.LUMO_PRIMARY,
+                                            ButtonVariant.LUMO_CONTRAST);
+                                    printReceiptButton.setIcon(
+                                            LineAwesomeIcon.RECEIPT_SOLID.create());
+                                    printReceiptButton.setTooltipText(
+                                            getTranslation(BUTTON_PRINT_RECEIPT__TOOLTIP));
+                                    printReceiptButton.addClickListener(
+                                            event -> openPrintReceiptView(purchase, false));
+                                    return printReceiptButton;
+                                }))
+                .setWidth("5rem")
+                .setFlexGrow(0);
         purchaseGrid.sort(List.of(new GridSortOrder<>(dateTimeColumn, SortDirection.DESCENDING)));
         return purchaseGrid;
     }
@@ -172,10 +208,11 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
     private void onAddItemEvent(CheckoutItemForm.AddItemEvent event) {
         Optional<DataModel.Booth.Key> currentBooth = BoothSelection.get();
         if (currentBooth.isPresent()) {
-            DataModel.Vendor.Key vendor = DataModel.Vendor.Key.builder()
-                    .booth(currentBooth.get())
-                    .vendorId(event.getVendorId())
-                    .build();
+            DataModel.Vendor.Key vendor =
+                    DataModel.Vendor.Key.builder()
+                            .booth(currentBooth.get())
+                            .vendorId(event.getVendorId())
+                            .build();
             purchaseSummary.addItem(vendor, event.getPrice());
         }
     }

@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.i18n;
 
 public interface DefaultKeys {

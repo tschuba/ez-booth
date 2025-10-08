@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui;
 
 import static org.mockito.Mockito.mockStatic;
@@ -16,7 +17,7 @@ class RunnerTest {
     @Test
     void testMainMethod() {
         try (MockedStatic<SpringApplication> mockedStatic = mockStatic(SpringApplication.class)) {
-            String[] args = new String[]{"arg1", "arg2"};
+            String[] args = new String[] {"arg1", "arg2"};
             Runner.main(args);
             mockedStatic.verify(() -> SpringApplication.run(Runner.class, args));
         }

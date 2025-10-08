@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components.event;
 
 import static com.vaadin.flow.component.button.ButtonVariant.*;
@@ -33,7 +34,8 @@ public class BoothListItem extends HorizontalLayout implements Selectable {
     public BoothListItem(DataModel.Booth booth) {
         this.booth = booth;
 
-        boolean equalsCurrentEvent = BoothSelection.get().map(key -> Objects.equals(key, booth.key())).orElse(false);
+        boolean equalsCurrentEvent =
+                BoothSelection.get().map(key -> Objects.equals(key, booth.key())).orElse(false);
         if (equalsCurrentEvent) {
             select();
         } else {
@@ -58,7 +60,9 @@ public class BoothListItem extends HorizontalLayout implements Selectable {
             selectButton.setIcon(LineAwesomeIcon.PERSON_BOOTH_SOLID.create());
             selectButton.addThemeVariants(LUMO_CONTRAST);
             selectButton.addClassName(Border.ALL);
-            selectButton.addClickListener(clickEvent -> fireEvent(new SelectionEvent(this, clickEvent.isFromClient(), booth)));
+            selectButton.addClickListener(
+                    clickEvent ->
+                            fireEvent(new SelectionEvent(this, clickEvent.isFromClient(), booth)));
             Tooltip.forComponent(selectButton).setText(getTranslation(SELECT_BUTTON__TEXT));
         }
         selectButton.addClassNames(Margin.Right.LARGE, Padding.Horizontal.MEDIUM);
@@ -67,29 +71,41 @@ public class BoothListItem extends HorizontalLayout implements Selectable {
         closeButton.addThemeVariants(LUMO_LARGE, LUMO_TERTIARY);
         closeButton.setVisible(!booth.closed());
         closeButton.setDisableOnClick(true);
-        closeButton.addClickListener(enableAfterClick(clickEvent -> fireEvent(new CloseEvent(this, clickEvent.isFromClient(), booth))));
+        closeButton.addClickListener(
+                enableAfterClick(
+                        clickEvent ->
+                                fireEvent(new CloseEvent(this, clickEvent.isFromClient(), booth))));
         Tooltip.forComponent(closeButton).setText(getTranslation(CLOSE_BUTTON__TEXT));
 
         Button reopenButton = new Button(LineAwesomeIcon.LOCK_SOLID.create());
         reopenButton.addThemeVariants(LUMO_LARGE, LUMO_TERTIARY, LUMO_ERROR);
         reopenButton.setVisible(booth.closed());
         reopenButton.setDisableOnClick(true);
-        reopenButton.addClickListener(enableAfterClick(clickEvent -> fireEvent(new ReopenEvent(this, clickEvent.isFromClient(), booth))));
+        reopenButton.addClickListener(
+                enableAfterClick(
+                        clickEvent ->
+                                fireEvent(
+                                        new ReopenEvent(this, clickEvent.isFromClient(), booth))));
         Tooltip.forComponent(reopenButton).setText(getTranslation(OPEN_BUTTON__TEXT));
 
         Button editButton = new Button(LineAwesomeIcon.EDIT.create());
         editButton.addThemeVariants(LUMO_LARGE, LUMO_TERTIARY);
         editButton.addClassNames(Padding.NONE);
-        editButton.addClickListener(clickEvent -> fireEvent(new EditEvent(this, clickEvent.isFromClient(), booth)));
+        editButton.addClickListener(
+                clickEvent -> fireEvent(new EditEvent(this, clickEvent.isFromClient(), booth)));
         editButton.setEnabled(!booth.closed());
         Tooltip.forComponent(editButton).setText(getTranslation(EDIT_BUTTON__TEXT));
 
-        ConfirmativeButton deleteButton = new ConfirmativeButton(LineAwesomeIcon.TRASH_ALT_SOLID.create());
+        ConfirmativeButton deleteButton =
+                new ConfirmativeButton(LineAwesomeIcon.TRASH_ALT_SOLID.create());
         deleteButton.addThemeVariants(LUMO_LARGE, LUMO_PRIMARY, LUMO_ERROR);
         deleteButton.addClassNames(Margin.Left.LARGE);
         deleteButton.setEnabled(booth.closed());
-        deleteButton.addConfirmationListener(confirmEvent -> fireEvent(new DeleteEvent(this, confirmEvent.isFromClient(), booth)));
-        String deleteButtonTextKey = (booth.closed()) ? DELETE_BUTTON__TEXT : DELETE_BUTTON_DISABLED__TEXT;
+        deleteButton.addConfirmationListener(
+                confirmEvent ->
+                        fireEvent(new DeleteEvent(this, confirmEvent.isFromClient(), booth)));
+        String deleteButtonTextKey =
+                (booth.closed()) ? DELETE_BUTTON__TEXT : DELETE_BUTTON_DISABLED__TEXT;
         Tooltip.forComponent(deleteButton).setText(getTranslation(deleteButtonTextKey));
 
         Div actions = new Div(editButton, closeButton, reopenButton, deleteButton);

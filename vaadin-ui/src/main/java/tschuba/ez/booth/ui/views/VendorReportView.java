@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.TIMEOUT;
@@ -28,13 +29,11 @@ import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
-import java.io.File;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +49,8 @@ import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.components.ItemListItem;
 import tschuba.ez.booth.ui.components.VendorCard;
 import tschuba.ez.booth.ui.components.VendorReportCard;
-import tschuba.ez.booth.ui.components.event.EventRequired;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
+import tschuba.ez.booth.ui.components.event.EventRequired;
 import tschuba.ez.booth.ui.components.model.ItemComparator;
 import tschuba.ez.booth.ui.i18n.TranslationKeys;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
@@ -81,10 +80,11 @@ public class VendorReportView extends OneColumnLayout {
     private VendorCard selectedItem;
     private String filterText;
 
-    public VendorReportView(@NonNull VendorRepository vendors,
-                            @NonNull PurchaseItemRepository items,
-                            @NonNull ReportingService reportingService,
-                            @NonNull ReportViewHelper helper) {
+    public VendorReportView(
+            @NonNull VendorRepository vendors,
+            @NonNull PurchaseItemRepository items,
+            @NonNull ReportingService reportingService,
+            @NonNull ReportViewHelper helper) {
         this.vendors = vendors;
         this.items = items;
         this.reportingService = reportingService;
@@ -127,39 +127,64 @@ public class VendorReportView extends OneColumnLayout {
 
         setTitle(getTranslation(TITLE));
 
-        filterField.setPlaceholder(getTranslation(TranslationKeys.VendorReportView.FILTER_FIELD__PLACEHOLDER));
+        filterField.setPlaceholder(
+                getTranslation(TranslationKeys.VendorReportView.FILTER_FIELD__PLACEHOLDER));
 
-        Tooltip.forComponent(printAllButton).withText(getTranslation(BUTTON_PRINT_ALL_RECEIPTS__TOOLTIP));
+        Tooltip.forComponent(printAllButton)
+                .withText(getTranslation(BUTTON_PRINT_ALL_RECEIPTS__TOOLTIP));
 
-        vendorList.setRenderer(new ComponentRenderer<>(vendorData -> {
-            VendorReportCard vendorReportCard = new VendorReportCard(vendorData);
-            vendorReportCard.addClickListener(this::onClickVendorCard);
-            return vendorReportCard;
-        }));
+        vendorList.setRenderer(
+                new ComponentRenderer<>(
+                        vendorData -> {
+                            VendorReportCard vendorReportCard = new VendorReportCard(vendorData);
+                            vendorReportCard.addClickListener(this::onClickVendorCard);
+                            return vendorReportCard;
+                        }));
 
-        itemList.setRenderer(new ComponentRenderer<>(item -> {
-            ItemListItem listItem = new ItemListItem(item);
-            listItem.addClassNames(Padding.Top.XSMALL, Padding.Bottom.XSMALL);
-            return listItem;
-        }));
+        itemList.setRenderer(
+                new ComponentRenderer<>(
+                        item -> {
+                            ItemListItem listItem = new ItemListItem(item);
+                            listItem.addClassNames(Padding.Top.XSMALL, Padding.Bottom.XSMALL);
+                            return listItem;
+                        }));
 
         updateVendorListItems();
         updateItemListItems();
     }
 
     private void updateVendorListItems() {
-        BoothSelection.get().ifPresent(booth -> {
-            Stream<DataModel.Vendor> allVendors = vendors.findAllByBoothId(booth.boothId()).stream().map(EntitiesMapper::entityToObject)
-                    .filter(vendor -> Optional.ofNullable(filterText).map(filter -> containsIgnoreCase(vendor.key().vendorId(), filter)).orElse(true));
-            Stream<ServiceModel.VendorReportData> vendorData = allVendors.parallel().map(vendor -> {
-                try {
-                    return reportingService.createVendorReportData(vendor.key());
-                } catch (ReportingException ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
-            vendorList.setItems(vendorData);
-        });
+        BoothSelection.get()
+                .ifPresent(
+                        booth -> {
+                            Stream<DataModel.Vendor> allVendors =
+                                    vendors.findAllByBoothId(booth.boothId()).stream()
+                                            .map(EntitiesMapper::entityToObject)
+                                            .filter(
+                                                    vendor ->
+                                                            Optional.ofNullable(filterText)
+                                                                    .map(
+                                                                            filter ->
+                                                                                    containsIgnoreCase(
+                                                                                            vendor.key()
+                                                                                                    .vendorId(),
+                                                                                            filter))
+                                                                    .orElse(true));
+                            Stream<ServiceModel.VendorReportData> vendorData =
+                                    allVendors
+                                            .parallel()
+                                            .map(
+                                                    vendor -> {
+                                                        try {
+                                                            return reportingService
+                                                                    .createVendorReportData(
+                                                                            vendor.key());
+                                                        } catch (ReportingException ex) {
+                                                            throw new RuntimeException(ex);
+                                                        }
+                                                    });
+                            vendorList.setItems(vendorData);
+                        });
     }
 
     private void updateItemListItems() {
@@ -167,17 +192,30 @@ public class VendorReportView extends OneColumnLayout {
         try {
             if (selectedItem != null) {
                 DataModel.Vendor vendor = selectedItem.getVendor();
-                ItemComparator comparator = ItemComparator.builder().descending(ItemComparator.Field.DateTime).ascending(ItemComparator.Field.Price).build();
-                ServiceModel.VendorReportData reportData = reportingService.createVendorReportData(vendor.key());
-                List<EntityModel.PurchaseItem.Key> itemIds = reportData.items().stream().map(DataModel.PurchaseItem::key).map(EntitiesMapper::objectToEntity).toList();
-                itemsOfReport = items.findAllById(itemIds).stream().map(EntitiesMapper::entityToObject).sorted(comparator);
+                ItemComparator comparator =
+                        ItemComparator.builder()
+                                .descending(ItemComparator.Field.DateTime)
+                                .ascending(ItemComparator.Field.Price)
+                                .build();
+                ServiceModel.VendorReportData reportData =
+                        reportingService.createVendorReportData(vendor.key());
+                List<EntityModel.PurchaseItem.Key> itemIds =
+                        reportData.items().stream()
+                                .map(DataModel.PurchaseItem::key)
+                                .map(EntitiesMapper::objectToEntity)
+                                .toList();
+                itemsOfReport =
+                        items.findAllById(itemIds).stream()
+                                .map(EntitiesMapper::entityToObject)
+                                .sorted(comparator);
             } else {
                 itemsOfReport = Stream.empty();
             }
             itemList.setItems(itemsOfReport);
         } catch (ReportingException ex) {
             LOGGER.error("Failed to update item-list items!", ex);
-            Notifications.error(getTranslation(TranslationKeys.Notifications.GENERIC_ERROR_MESSAGE), ex);
+            Notifications.error(
+                    getTranslation(TranslationKeys.Notifications.GENERIC_ERROR_MESSAGE), ex);
         }
     }
 
@@ -198,15 +236,21 @@ public class VendorReportView extends OneColumnLayout {
     }
 
     private void onClickPrintAll(ClickEvent<Button> buttonClickEvent) {
-        BoothSelection.get().ifPresent(booth -> {
-            DataModel.Vendor.Key[] allVendors = vendors.findAllByBoothId(booth.boothId()).stream().map(EntityModel.Vendor::getKey).map(EntitiesMapper::entityToObject).toArray(DataModel.Vendor.Key[]::new);
-            try {
-                URI reportFile = reportingService.generateVendorReport(allVendors);
-                URI reportUrl = helper.reportUrl(reportFile);
-                NavigateTo.uri(reportUrl).newWindow();
-            } catch (ReportingException ex) {
-                Notifications.error(ex.getLocalizedMessage(), ex);
-            }
-        });
+        BoothSelection.get()
+                .ifPresent(
+                        booth -> {
+                            DataModel.Vendor.Key[] allVendors =
+                                    vendors.findAllByBoothId(booth.boothId()).stream()
+                                            .map(EntityModel.Vendor::getKey)
+                                            .map(EntitiesMapper::entityToObject)
+                                            .toArray(DataModel.Vendor.Key[]::new);
+                            try {
+                                URI reportFile = reportingService.generateVendorReport(allVendors);
+                                URI reportUrl = helper.reportUrl(reportFile);
+                                NavigateTo.uri(reportUrl).newWindow();
+                            } catch (ReportingException ex) {
+                                Notifications.error(ex.getLocalizedMessage(), ex);
+                            }
+                        });
     }
 }

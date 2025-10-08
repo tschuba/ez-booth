@@ -1,22 +1,27 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.router.RouterLink;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import tschuba.ez.booth.model.DataModel;
 
 public class Routing {
 
-    public static String urlForView(Class<? extends Component> targetView, RouteParameters parameters) {
-        RouterLink routerLink = Optional.ofNullable(parameters)
-                .map(params -> new RouterLink(targetView, params))
-                .orElseGet(() -> new RouterLink(targetView));
+    public static String urlForView(
+            Class<? extends Component> targetView, RouteParameters parameters) {
+        RouterLink routerLink =
+                Optional.ofNullable(parameters)
+                        .map(params -> new RouterLink(targetView, params))
+                        .orElseGet(() -> new RouterLink(targetView));
         return routerLink.getHref();
     }
 
@@ -61,7 +66,11 @@ public class Routing {
                 Optional<DataModel.Booth.Key> boothKey = boothKey();
                 Optional<String> vendorId = vendorId();
                 if (boothKey.isPresent() && vendorId.isPresent()) {
-                    DataModel.Vendor.Key vendorKey = DataModel.Vendor.Key.builder().booth(boothKey.get()).vendorId(vendorId.get()).build();
+                    DataModel.Vendor.Key vendorKey =
+                            DataModel.Vendor.Key.builder()
+                                    .booth(boothKey.get())
+                                    .vendorId(vendorId.get())
+                                    .build();
                     return Optional.of(vendorKey);
                 }
                 return Optional.empty();
@@ -75,10 +84,11 @@ public class Routing {
                 Optional<DataModel.Booth.Key> boothKey = boothKey();
                 Optional<String> purchaseId = purchaseId();
                 if (boothKey.isPresent() && purchaseId.isPresent()) {
-                    DataModel.Purchase.Key purchaseKey = DataModel.Purchase.Key.builder()
-                            .booth(boothKey.get())
-                            .purchaseId(purchaseId.get())
-                            .build();
+                    DataModel.Purchase.Key purchaseKey =
+                            DataModel.Purchase.Key.builder()
+                                    .booth(boothKey.get())
+                                    .purchaseId(purchaseId.get())
+                                    .build();
                     return Optional.of(purchaseKey);
                 }
                 return Optional.empty();
@@ -86,13 +96,16 @@ public class Routing {
 
             @SuppressWarnings("unchecked")
             public Optional<Class<? extends Component>> returnToView() {
-                return parameters.get(ROUTE_PARAM__RETURN_TO_VIEW).map(view -> {
-                    try {
-                        return (Class<? extends Component>) Class.forName(view);
-                    } catch (ClassNotFoundException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
+                return parameters
+                        .get(ROUTE_PARAM__RETURN_TO_VIEW)
+                        .map(
+                                view -> {
+                                    try {
+                                        return (Class<? extends Component>) Class.forName(view);
+                                    } catch (ClassNotFoundException ex) {
+                                        throw new RuntimeException(ex);
+                                    }
+                                });
             }
         }
 

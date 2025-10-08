@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
 import com.vaadin.flow.component.Component;
@@ -15,34 +16,42 @@ import tschuba.ez.booth.ui.i18n.TranslationKeys;
 
 public class UIUtil {
     public static void traverseParents(Component from, Function<Component, Boolean> function) {
-        from.getParent().ifPresent(parent -> {
-            if (function.apply(parent)) {
-                traverseParents(parent, function);
-            }
-        });
+        from.getParent()
+                .ifPresent(
+                        parent -> {
+                            if (function.apply(parent)) {
+                                traverseParents(parent, function);
+                            }
+                        });
     }
 
-    public static <T> void traverseAllOfType(Component component, Class<T> type, Consumer<T> consumer) {
+    public static <T> void traverseAllOfType(
+            Component component, Class<T> type, Consumer<T> consumer) {
         traverseAllOfType(Stream.of(component), type, consumer);
     }
 
-    public static <T> void traverseAllOfType(Stream<Component> components, Class<T> type, Consumer<T> consumer) {
-        components.forEach(component -> {
-            if (type.isAssignableFrom(component.getClass())) {
-                consumer.accept(type.cast(component));
-            }
-            traverseAllOfType(component.getChildren(), type, consumer);
-        });
+    public static <T> void traverseAllOfType(
+            Stream<Component> components, Class<T> type, Consumer<T> consumer) {
+        components.forEach(
+                component -> {
+                    if (type.isAssignableFrom(component.getClass())) {
+                        consumer.accept(type.cast(component));
+                    }
+                    traverseAllOfType(component.getChildren(), type, consumer);
+                });
     }
 
     public static void optimizeViewForPrinting(Component component) {
-        traverseAllOfType(component, HasStyle.class, hasStyle -> {
-            Style style = hasStyle.getStyle();
-            if (!(style instanceof ImmutableEmptyStyle)) {
-                style.setColor("black");
-                style.set("border-color", "black");
-            }
-        });
+        traverseAllOfType(
+                component,
+                HasStyle.class,
+                hasStyle -> {
+                    Style style = hasStyle.getStyle();
+                    if (!(style instanceof ImmutableEmptyStyle)) {
+                        style.setColor("black");
+                        style.set("border-color", "black");
+                    }
+                });
     }
 
     /**

@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
 import static org.assertj.core.api.Assertions.*;
@@ -16,7 +17,9 @@ import org.junit.jupiter.api.Test;
 class IconsTest {
     @Test
     void testLargeShouldThrowIfIconIsNull() {
-        assertThatNullPointerException().isThrownBy(() -> Icons.large(null)).withMessage("icon is marked non-null but is null");
+        assertThatNullPointerException()
+                .isThrownBy(() -> Icons.large(null))
+                .withMessage("icon is marked non-null but is null");
     }
 
     @Test

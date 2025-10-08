@@ -1,7 +1,11 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.*;
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -9,12 +13,8 @@ import lombok.Getter;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.ui.renderer.VendorRenderer;
 
-import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.ui.i18n.Formats.formats;
-
 public class ItemListItem extends Div {
-    @Getter
-    private final DataModel.PurchaseItem item;
+    @Getter private final DataModel.PurchaseItem item;
     private final Span vendorSpan;
 
     public ItemListItem(DataModel.PurchaseItem item) {
@@ -30,7 +30,10 @@ public class ItemListItem extends Div {
 
         vendorSpan = new Span();
         vendorSpan.setVisible(false);
-        String vendorText = VendorRenderer.of(getUI()).keyToString(VendorRenderer.Format.Long).apply(item.vendor());
+        String vendorText =
+                VendorRenderer.of(getUI())
+                        .keyToString(VendorRenderer.Format.Long)
+                        .apply(item.vendor());
         vendorSpan.setText(vendorText);
         vendorSpan.addClassNames(FontSize.XXSMALL);
         add(vendorSpan);
@@ -44,5 +47,4 @@ public class ItemListItem extends Div {
     public void setShowVendor(boolean showVendor) {
         this.vendorSpan.setVisible(showVendor);
     }
-
 }

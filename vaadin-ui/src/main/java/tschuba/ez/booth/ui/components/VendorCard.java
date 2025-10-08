@@ -1,7 +1,10 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -13,8 +16,6 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.ui.renderer.VendorRenderer;
 import tschuba.ez.booth.ui.renderer.VendorRenderer.Format;
 
-import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-
 @Getter
 public class VendorCard extends Div implements Selectable {
     private final DataModel.Vendor vendor;
@@ -24,18 +25,24 @@ public class VendorCard extends Div implements Selectable {
 
     public VendorCard(DataModel.Vendor vendor) {
         this.vendor = vendor;
-        addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.BETWEEN, Padding.SMALL, BorderRadius.MEDIUM);
+        addClassNames(
+                Display.FLEX,
+                AlignItems.CENTER,
+                JustifyContent.BETWEEN,
+                Padding.SMALL,
+                BorderRadius.MEDIUM);
 
         avatar = new Avatar();
         avatar.addThemeVariants(AvatarVariant.LUMO_LARGE);
         avatar.addClassNames(Margin.Right.MEDIUM);
         String vendorId = vendor.key().vendorId();
-        //avatar.setColorIndex(Integer.remainderUnsigned(vendorId, 7));
+        // avatar.setColorIndex(Integer.remainderUnsigned(vendorId, 7));
 
         nameSpan = new Span();
 
         Div contentContainer = new Div(avatar, nameSpan);
-        contentContainer.addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.START, BorderRadius.MEDIUM);
+        contentContainer.addClassNames(
+                Display.FLEX, AlignItems.CENTER, JustifyContent.START, BorderRadius.MEDIUM);
 
         add(contentContainer);
     }
@@ -63,5 +70,4 @@ public class VendorCard extends Div implements Selectable {
         selected = false;
         Selectable.super.unselect();
     }
-
 }

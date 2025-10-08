@@ -1,8 +1,12 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components;
 
-import com.vaadin.flow.component.HasStyle;
-
 import static com.vaadin.flow.theme.lumo.LumoUtility.Background;
+
+import com.vaadin.flow.component.HasStyle;
 
 public interface Selectable extends HasStyle {
     default void select() {

@@ -1,7 +1,12 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components.checkout;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
+import static com.vaadin.flow.theme.lumo.LumoUtility.Padding;
+import static tschuba.ez.booth.ui.i18n.TranslationKeys.CheckoutItemForm.*;
 
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
@@ -14,6 +19,8 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldBase;
+import java.math.BigDecimal;
+import java.util.stream.Stream;
 import lombok.Getter;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.ui.Constraints;
@@ -22,18 +29,9 @@ import tschuba.ez.booth.ui.i18n.I18N;
 import tschuba.ez.booth.ui.util.UIUtil;
 import tschuba.ez.booth.ui.views.CheckoutView;
 
-import java.math.BigDecimal;
-import java.util.stream.Stream;
-
-import static com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
-import static com.vaadin.flow.theme.lumo.LumoUtility.Padding;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.CheckoutItemForm.*;
-
 public class CheckoutItemForm extends Composite<HorizontalLayout> implements HasEnabled {
-    @Getter
-    private final TextField vendorField;
-    @Getter
-    private final BigDecimalField priceField;
+    @Getter private final TextField vendorField;
+    @Getter private final BigDecimalField priceField;
     private final Button historyToggle;
     private final Button clearButton;
 
@@ -60,12 +58,14 @@ public class CheckoutItemForm extends Composite<HorizontalLayout> implements Has
 
         clearButton = new Button();
         clearButton.setIcon(LineAwesomeIcon.UNDO_ALT_SOLID.create());
-        clearButton.addThemeVariants(ButtonVariant.LUMO_LARGE, ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+        clearButton.addThemeVariants(
+                ButtonVariant.LUMO_LARGE, ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
         clearButton.addClickListener(this::onClickClear);
 
         historyToggle = new Button();
         historyToggle.setIcon(LineAwesomeIcon.HISTORY_SOLID.create());
-        historyToggle.addThemeVariants(ButtonVariant.LUMO_LARGE, ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+        historyToggle.addThemeVariants(
+                ButtonVariant.LUMO_LARGE, ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
         historyToggle.addClickListener(this::onHistoryToggleClick);
 
         HorizontalLayout content = getContent();
@@ -120,33 +120,41 @@ public class CheckoutItemForm extends Composite<HorizontalLayout> implements Has
     }
 
     private void onHistoryToggleClick(ClickEvent<Button> event) {
-        UIUtil.traverseParents(this, parent -> {
-            if (parent instanceof CheckoutView) {
-                boolean visible = ((CheckoutView) parent).togglePurchaseHistory();
-                LineAwesomeIcon icon = (visible) ? LineAwesomeIcon.KEYBOARD : LineAwesomeIcon.SCROLL_SOLID;
-                historyToggle.setIcon(icon.create());
-                return false;
-            }
-            return true;
-        });
+        UIUtil.traverseParents(
+                this,
+                parent -> {
+                    if (parent instanceof CheckoutView) {
+                        boolean visible = ((CheckoutView) parent).togglePurchaseHistory();
+                        LineAwesomeIcon icon =
+                                (visible) ? LineAwesomeIcon.KEYBOARD : LineAwesomeIcon.SCROLL_SOLID;
+                        historyToggle.setIcon(icon.create());
+                        return false;
+                    }
+                    return true;
+                });
     }
 
     private void beforeAddItem(Component eventSource) {
         if (eventSource instanceof TextFieldBase<?, ?> textField && textField.isInvalid()) {
             textField.focus();
         } else {
-            Stream.of(vendorField, priceField).filter(HasValidationProperties::isInvalid).findFirst().ifPresentOrElse(Focusable::focus, this::processAddItem);
+            Stream.of(vendorField, priceField)
+                    .filter(HasValidationProperties::isInvalid)
+                    .findFirst()
+                    .ifPresentOrElse(Focusable::focus, this::processAddItem);
         }
     }
 
     private void processAddItem() {
-        BoothSelection.get().ifPresent(eventKey -> {
-            BigDecimal price = priceField.getValue();
-            String vendorId = vendorField.getValue();
-            priceField.clear();
-            vendorField.focus();
-            fireEvent(new AddItemEvent(this, false, vendorId, price));
-        });
+        BoothSelection.get()
+                .ifPresent(
+                        eventKey -> {
+                            BigDecimal price = priceField.getValue();
+                            String vendorId = vendorField.getValue();
+                            priceField.clear();
+                            vendorField.focus();
+                            fireEvent(new AddItemEvent(this, false, vendorId, price));
+                        });
     }
 
     @Getter
@@ -154,11 +162,11 @@ public class CheckoutItemForm extends Composite<HorizontalLayout> implements Has
         private final String vendorId;
         private final BigDecimal price;
 
-        private AddItemEvent(CheckoutItemForm source, boolean fromClient, String vendorId, BigDecimal price) {
+        private AddItemEvent(
+                CheckoutItemForm source, boolean fromClient, String vendorId, BigDecimal price) {
             super(source, fromClient);
             this.vendorId = vendorId;
             this.price = price;
         }
-
     }
 }

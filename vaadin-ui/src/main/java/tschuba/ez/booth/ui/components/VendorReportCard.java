@@ -1,7 +1,11 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.Margin;
+import static tschuba.ez.booth.ui.i18n.TranslationKeys.VendorReportCard.*;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
@@ -16,9 +20,6 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.i18n.Formats;
 import tschuba.ez.booth.ui.views.VendorReportPrintView;
-
-import static com.vaadin.flow.theme.lumo.LumoUtility.Margin;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.VendorReportCard.*;
 
 /**
  * A card component that displays vendor report data, including the total item count,

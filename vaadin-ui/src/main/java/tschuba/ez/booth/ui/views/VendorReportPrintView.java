@@ -1,9 +1,17 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.views;
+
+import static tschuba.ez.booth.ui.i18n.TranslationKeys.VendorReportPrintView.*;
 
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
+import java.net.URI;
+import java.util.Optional;
 import lombok.NonNull;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.reporting.ReportingException;
@@ -11,19 +19,13 @@ import tschuba.ez.booth.services.ReportingService;
 import tschuba.ez.booth.ui.layouts.BaseLayout;
 import tschuba.ez.booth.ui.util.*;
 
-import java.net.URI;
-import java.util.Optional;
-
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.VendorReportPrintView.*;
-
 @Route(value = "reports/vendor/print/:eventId/:vendorId")
 public class VendorReportPrintView extends BaseLayout implements BeforeEnterObserver {
-    @NonNull
-    private final ReportViewHelper helper;
+    @NonNull private final ReportViewHelper helper;
     private final ReportingService reportingService;
 
-    public VendorReportPrintView(@NonNull ReportViewHelper helper,
-                                 @NonNull ReportingService reportingService) {
+    public VendorReportPrintView(
+            @NonNull ReportViewHelper helper, @NonNull ReportingService reportingService) {
         this.helper = helper;
         this.reportingService = reportingService;
 
@@ -32,7 +34,8 @@ public class VendorReportPrintView extends BaseLayout implements BeforeEnterObse
 
     @Override
     public void beforeEnter(BeforeEnterEvent viewEvent) {
-        Optional<DataModel.Vendor.Key> parameter = Routing.Parameters.parser(viewEvent.getRouteParameters()).vendorKey();
+        Optional<DataModel.Vendor.Key> parameter =
+                Routing.Parameters.parser(viewEvent.getRouteParameters()).vendorKey();
         if (parameter.isEmpty()) {
             String message = getTranslation(NOTIFICATION__ILLEGAL_ARGUMENTS);
             Notifications.error(message);
@@ -54,9 +57,7 @@ public class VendorReportPrintView extends BaseLayout implements BeforeEnterObse
     }
 
     public static void newWindowFor(DataModel.Vendor.Key vendorKey) {
-        RouteParameters routeParameters = Routing.Parameters.builder()
-                .vendor(vendorKey)
-                .build();
+        RouteParameters routeParameters = Routing.Parameters.builder().vendor(vendorKey).build();
         NavigateTo.view(VendorReportPrintView.class, routeParameters).newWindow();
     }
 }

@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components.checkout;
 
 import com.vaadin.flow.theme.lumo.LumoUtility;

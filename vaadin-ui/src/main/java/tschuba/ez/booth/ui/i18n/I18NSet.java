@@ -1,12 +1,15 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.i18n;
 
-import java.util.Map;
+import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.util.Map;
 import lombok.Getter;
-
-import static java.util.Objects.requireNonNull;
 
 @Getter
 @JsonDeserialize(builder = I18NSet.Builder.class)
@@ -14,15 +17,13 @@ public class I18NSet {
     private I18NFormat format;
     private Map<String, String> texts;
 
-    private I18NSet() {
-    }
+    private I18NSet() {}
 
     @JsonPOJOBuilder(withPrefix = "set")
     public static class Builder {
         private final I18NSet set = new I18NSet();
 
-        private Builder() {
-        }
+        private Builder() {}
 
         public Builder setFormat(I18NFormat format) {
             set.format = format;

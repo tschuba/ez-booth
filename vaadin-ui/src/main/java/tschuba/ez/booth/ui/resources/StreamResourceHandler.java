@@ -1,7 +1,10 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.resources;
 
 import com.vaadin.flow.server.*;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,17 +25,18 @@ public class StreamResourceHandler {
         StreamRegistration registration = registry.registerResource(resource);
 
         StreamResourceHandler handler = new StreamResourceHandler(registration);
-        writer.addListener(new StreamResourceWriterListener() {
-            @Override
-            public void accepted() {
-                handler.onWriterAccepted();
-            }
+        writer.addListener(
+                new StreamResourceWriterListener() {
+                    @Override
+                    public void accepted() {
+                        handler.onWriterAccepted();
+                    }
 
-            @Override
-            public void failed(StreamResourceWriterFailedEvent event) {
-                handler.onWriterFailed(event);
-            }
-        });
+                    @Override
+                    public void failed(StreamResourceWriterFailedEvent event) {
+                        handler.onWriterFailed(event);
+                    }
+                });
         return handler;
     }
 
@@ -54,7 +58,8 @@ public class StreamResourceHandler {
     }
 
     private void onWriterFailed(StreamResourceWriterFailedEvent event) {
-        StreamResourceFailedEvent resourceEvent = new StreamResourceFailedEvent(registration, event.error());
+        StreamResourceFailedEvent resourceEvent =
+                new StreamResourceFailedEvent(registration, event.error());
         listeners.forEach(listener -> listener.failed(resourceEvent));
     }
 }

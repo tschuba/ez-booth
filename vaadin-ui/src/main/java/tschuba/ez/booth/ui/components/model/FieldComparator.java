@@ -1,11 +1,14 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components.model;
-
-import com.vaadin.flow.component.UI;
-
-import java.util.*;
 
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.FieldComparator.NO_FIELDS__EXCEPTION;
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.FieldComparator.NO_NULL_FIELDS__EXCEPTION;
+
+import com.vaadin.flow.component.UI;
+import java.util.*;
 
 public abstract class FieldComparator<T, F> implements Comparator<T> {
     private final List<SortField<F>> fields;
@@ -28,7 +31,7 @@ public abstract class FieldComparator<T, F> implements Comparator<T> {
         return 0;
     }
 
-    public static abstract class Builder<C, T, F> {
+    public abstract static class Builder<C, T, F> {
         private final List<SortField<F>> fields = new ArrayList<>();
 
         abstract <B extends Builder<C, T, F>> B self();

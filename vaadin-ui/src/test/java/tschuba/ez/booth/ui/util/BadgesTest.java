@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -95,39 +96,56 @@ class BadgesTest {
 
     @Test
     void testBadgeFactoryMethod() {
-        assertThatNoException().isThrownBy(() -> assertThat(tschuba.ez.booth.ui.util.Badges.badge()).isNotNull());
+        assertThatNoException()
+                .isThrownBy(() -> assertThat(tschuba.ez.booth.ui.util.Badges.badge()).isNotNull());
     }
 
     @Test
     void testPrimaryFactoryMethod() {
-        assertThatNoException().isThrownBy(() -> assertThat(tschuba.ez.booth.ui.util.Badges.primary()).isNotNull());
+        assertThatNoException()
+                .isThrownBy(
+                        () -> assertThat(tschuba.ez.booth.ui.util.Badges.primary()).isNotNull());
     }
 
     @Test
     void testAccept() {
-        assertThatNoException().isThrownBy(() -> tschuba.ez.booth.ui.util.Badges.badge().accept(spanMock));
+        assertThatNoException()
+                .isThrownBy(() -> tschuba.ez.booth.ui.util.Badges.badge().accept(spanMock));
     }
 
     @Test
     void testApplyTo() {
-        assertThatNoException().isThrownBy(() -> {
-            Span actualValue = tschuba.ez.booth.ui.util.Badges.badge().applyTo(spanMock);
-            assertThat(actualValue).isEqualTo(spanMock);
-        });
+        assertThatNoException()
+                .isThrownBy(
+                        () -> {
+                            Span actualValue =
+                                    tschuba.ez.booth.ui.util.Badges.badge().applyTo(spanMock);
+                            assertThat(actualValue).isEqualTo(spanMock);
+                        });
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void testBuild(boolean primary) {
-        tschuba.ez.booth.ui.util.Badges builder = (primary) ? tschuba.ez.booth.ui.util.Badges.primary() : tschuba.ez.booth.ui.util.Badges.badge();
+        tschuba.ez.booth.ui.util.Badges builder =
+                (primary)
+                        ? tschuba.ez.booth.ui.util.Badges.primary()
+                        : tschuba.ez.booth.ui.util.Badges.badge();
         Span actualSpan = builder.build();
-        assertThat(actualSpan).isNotNull().extracting(Span::getElement).extracting(Element::getThemeList).satisfies(themeList -> {
-            assertThat(themeList).contains(Badges.BADGE);
-            if (primary) {
-                assertThat(themeList).contains(tschuba.ez.booth.ui.util.Badges.PRIMARY);
-            } else {
-                assertThat(themeList).doesNotContain(tschuba.ez.booth.ui.util.Badges.PRIMARY);
-            }
-        });
+        assertThat(actualSpan)
+                .isNotNull()
+                .extracting(Span::getElement)
+                .extracting(Element::getThemeList)
+                .satisfies(
+                        themeList -> {
+                            assertThat(themeList).contains(Badges.BADGE);
+                            if (primary) {
+                                assertThat(themeList)
+                                        .contains(tschuba.ez.booth.ui.util.Badges.PRIMARY);
+                            } else {
+                                assertThat(themeList)
+                                        .doesNotContain(tschuba.ez.booth.ui.util.Badges.PRIMARY);
+                            }
+                        });
     }
 }

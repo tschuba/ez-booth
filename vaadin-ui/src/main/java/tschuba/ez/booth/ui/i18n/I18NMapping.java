@@ -1,12 +1,15 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.i18n;
 
-import java.util.Map;
+import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.util.Map;
 import lombok.Getter;
-
-import static java.util.Objects.requireNonNull;
 
 @Getter
 @JsonDeserialize(builder = I18NMapping.Builder.class)
@@ -14,8 +17,7 @@ public class I18NMapping {
     private String defaultLocale;
     private Map<String, String> supportedLocales;
 
-    private I18NMapping() {
-    }
+    private I18NMapping() {}
 
     @JsonPOJOBuilder(withPrefix = "set")
     public static class Builder {

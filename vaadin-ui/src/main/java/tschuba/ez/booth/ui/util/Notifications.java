@@ -1,10 +1,13 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.time.Duration;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY_INLINE;
+import static com.vaadin.flow.component.notification.Notification.Position;
+import static com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 
-import org.vaadin.lineawesome.LineAwesomeIcon;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.details.Details;
@@ -13,10 +16,10 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
-import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY_INLINE;
-import static com.vaadin.flow.component.notification.Notification.Position;
-import static com.vaadin.flow.theme.lumo.LumoUtility.Padding;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.time.Duration;
+import org.vaadin.lineawesome.LineAwesomeIcon;
 
 @SuppressWarnings("unused")
 public class Notifications {
@@ -89,12 +92,16 @@ public class Notifications {
 
         Notification notification = createError(text);
         // TODO: localise
-        Details details = new Details("Details", new Div(new Span(errorMessage), new Span(stackTrace)));
-        notification.getChildren().findFirst()
+        Details details =
+                new Details("Details", new Div(new Span(errorMessage), new Span(stackTrace)));
+        notification
+                .getChildren()
+                .findFirst()
                 .filter(child -> child instanceof HasComponents)
-                .ifPresent(content -> {
-                    ((HasComponents) content).add(details);
-                });
+                .ifPresent(
+                        content -> {
+                            ((HasComponents) content).add(details);
+                        });
         return notification;
     }
 }

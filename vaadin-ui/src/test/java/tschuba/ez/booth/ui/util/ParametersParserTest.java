@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,9 +36,11 @@ class ParametersParserTest {
         parserSpy = spy(parser);
 
         when(paramsMock.get(ROUTE_PARAM__BOOTH_ID)).thenReturn(Optional.of(EVENT_ID));
-        when(paramsMock.get(ROUTE_PARAM__VENDOR_ID)).thenReturn(Optional.of(String.valueOf(VENDOR_ID)));
+        when(paramsMock.get(ROUTE_PARAM__VENDOR_ID))
+                .thenReturn(Optional.of(String.valueOf(VENDOR_ID)));
         when(paramsMock.get(ROUTE_PARAM__PURCHASE_ID)).thenReturn(Optional.of(PURCHASE_ID));
-        when(paramsMock.get(ROUTE_PARAM__RETURN_TO_VIEW)).thenReturn(Optional.of(RETURN_TO_VIEW.getName()));
+        when(paramsMock.get(ROUTE_PARAM__RETURN_TO_VIEW))
+                .thenReturn(Optional.of(RETURN_TO_VIEW.getName()));
     }
 
     @Test
@@ -47,7 +50,8 @@ class ParametersParserTest {
 
     @Test
     void testBoothKeyGetter() {
-        assertThat(parser.boothKey()).hasValueSatisfying(key -> assertThat(key.getId()).isEqualTo(EVENT_ID));
+        assertThat(parser.boothKey())
+                .hasValueSatisfying(key -> assertThat(key.getId()).isEqualTo(EVENT_ID));
     }
 
     @Test
@@ -57,10 +61,12 @@ class ParametersParserTest {
 
     @Test
     void testVendorKeyGetter() {
-        assertThat(parser.vendorKey()).hasValueSatisfying(key -> {
-            assertThat(key.getEvent().getId()).isEqualTo(EVENT_ID);
-            assertThat(key.getId()).isEqualTo(VENDOR_ID);
-        });
+        assertThat(parser.vendorKey())
+                .hasValueSatisfying(
+                        key -> {
+                            assertThat(key.getEvent().getId()).isEqualTo(EVENT_ID);
+                            assertThat(key.getId()).isEqualTo(VENDOR_ID);
+                        });
     }
 
     @Test
@@ -70,10 +76,12 @@ class ParametersParserTest {
 
     @Test
     void testPurchaseKeyGetter() {
-        assertThat(parser.purchaseKey()).hasValueSatisfying(key -> {
-            assertThat(key.getEvent().getId()).isEqualTo(EVENT_ID);
-            assertThat(key.getId()).isEqualTo(PURCHASE_ID);
-        });
+        assertThat(parser.purchaseKey())
+                .hasValueSatisfying(
+                        key -> {
+                            assertThat(key.getEvent().getId()).isEqualTo(EVENT_ID);
+                            assertThat(key.getId()).isEqualTo(PURCHASE_ID);
+                        });
     }
 
     @Test

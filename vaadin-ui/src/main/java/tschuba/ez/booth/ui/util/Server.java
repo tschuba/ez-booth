@@ -1,12 +1,15 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
-
-import java.net.*;
-import java.util.Optional;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletContext;
 import com.vaadin.open.Open;
+import java.net.*;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -124,7 +127,8 @@ public class Server {
             VaadinServletContext servletContext = servletContext();
             String contextPath = servletContext.getContext().getContextPath();
             String protocol = Server.this.isSslEnabled() ? "https" : "http";
-            return String.format("%s://localhost:%s%s", protocol, Server.this.getPort(), contextPath);
+            return String.format(
+                    "%s://localhost:%s%s", protocol, Server.this.getPort(), contextPath);
         }
 
         public void launchView(Class<? extends Component> view) {
@@ -135,7 +139,10 @@ public class Server {
                 String targetPath = NavigateTo.view(view).url();
                 String protocol = Server.this.isSslEnabled() ? "https" : "http";
                 String contextPath = servletContext().getContext().getContextPath();
-                String targetUrl = String.format("%s://localhost:%s%s/%s", protocol, Server.this.getPort(), contextPath, targetPath);
+                String targetUrl =
+                        String.format(
+                                "%s://localhost:%s%s/%s",
+                                protocol, Server.this.getPort(), contextPath, targetPath);
                 LOGGER.debug("Launching browser at {}", targetUrl);
                 Open.open(targetUrl);
             } catch (Exception ex) {
@@ -146,9 +153,9 @@ public class Server {
 
         public void launchView(String path) {
             String protocol = Server.this.isSslEnabled() ? "https" : "http";
-            String targetUrl = String.format("%s://localhost:%s/%s", protocol, Server.this.getPort(), path);
+            String targetUrl =
+                    String.format("%s://localhost:%s/%s", protocol, Server.this.getPort(), path);
             Open.open(targetUrl);
         }
     }
-
 }

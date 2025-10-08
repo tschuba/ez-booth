@@ -1,4 +1,10 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components.event;
+
+import static tschuba.ez.booth.ui.i18n.TranslationKeys.UpsertEventDialog.*;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
@@ -9,14 +15,11 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
+import java.util.Optional;
 import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
-
-import java.util.Optional;
-
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.UpsertEventDialog.*;
 
 public class UpsertEventDialog extends Dialog {
     private final UpsertEventForm upsertEventForm;
@@ -43,7 +46,8 @@ public class UpsertEventDialog extends Dialog {
         cancelButton.addClickListener(this::onClickCancel);
 
         Footer footer = new Footer(cancelButton, saveButton);
-        footer.addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.END, Gap.MEDIUM, Margin.Top.MEDIUM);
+        footer.addClassNames(
+                Display.FLEX, AlignItems.CENTER, JustifyContent.END, Gap.MEDIUM, Margin.Top.MEDIUM);
 
         add(upsertEventForm, footer);
     }

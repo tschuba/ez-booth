@@ -1,15 +1,18 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components.checkout;
+
+import static java.util.Optional.ofNullable;
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
+import static tschuba.ez.booth.ui.i18n.TranslationKeys.PurchaseSummary.ITEM_COUNT__TEXT;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
-import lombok.Getter;
-import tschuba.ez.booth.Ids;
-import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.ui.i18n.TranslationKeys;
-
 import java.math.BigDecimal;
 import java.text.Format;
 import java.time.LocalDateTime;
@@ -17,16 +20,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
-
-import static java.util.Optional.ofNullable;
-import static tschuba.ez.booth.ui.i18n.Formats.formats;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.PurchaseSummary.ITEM_COUNT__TEXT;
+import lombok.Getter;
+import tschuba.ez.booth.Ids;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.ui.i18n.TranslationKeys;
 
 public class PurchaseVendorDetails extends Div {
-    @Getter
-    private final DataModel.Vendor.Key vendor;
-    @Getter
-    private Double sumOfItems = 0.0;
+    @Getter private final DataModel.Vendor.Key vendor;
+    @Getter private Double sumOfItems = 0.0;
     private final Span vendorSumSpan;
     private final Div itemsContainer;
     private final Span vendorCountSpan;
@@ -35,14 +36,17 @@ public class PurchaseVendorDetails extends Div {
         this(vendor, new ArrayList<>());
     }
 
-    public PurchaseVendorDetails(DataModel.Vendor.Key vendor, List<DataModel.PurchaseItem> itemList) {
+    public PurchaseVendorDetails(
+            DataModel.Vendor.Key vendor, List<DataModel.PurchaseItem> itemList) {
         super();
         this.vendor = vendor;
 
-        addClassNames(Display.BLOCK, Margin.NONE, Padding.SMALL, Border.TOP, BorderColor.CONTRAST_10);
+        addClassNames(
+                Display.BLOCK, Margin.NONE, Padding.SMALL, Border.TOP, BorderColor.CONTRAST_10);
 
         Span vendorSpan = new Span();
-        String vendorText = getTranslation(TranslationKeys.Vendor.ID__FORMAT_LONG, vendor.vendorId());
+        String vendorText =
+                getTranslation(TranslationKeys.Vendor.ID__FORMAT_LONG, vendor.vendorId());
         vendorSpan.setText(vendorText);
         vendorSpan.addClassNames(FontSize.MEDIUM, FontWeight.BOLD, Margin.Left.XSMALL);
 
@@ -55,42 +59,50 @@ public class PurchaseVendorDetails extends Div {
         vendorCountSpan.addClassNames(FontSize.SMALL, TextColor.BODY);
 
         Div header = new Div();
-        header.addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.BETWEEN, Margin.Bottom.MEDIUM);
+        header.addClassNames(
+                Display.FLEX, AlignItems.CENTER, JustifyContent.BETWEEN, Margin.Bottom.MEDIUM);
         header.add(vendorSpan, vendorCountSpan, vendorSumSpan);
 
         itemsContainer = new Div();
         itemsContainer.addClassNames(Display.BLOCK, Margin.NONE);
         add(header, itemsContainer);
 
-        ofNullable(itemList).stream().flatMap(Collection::stream).forEach(item -> addItem(item.price()));
+        ofNullable(itemList).stream()
+                .flatMap(Collection::stream)
+                .forEach(item -> addItem(item.price()));
 
         updateVendorDetails();
     }
 
     public Stream<DataModel.PurchaseItem> getItems() {
-        return itemsContainer.getChildren().map(component -> (PurchaseItemBadge) component).map(PurchaseItemBadge::getItem);
+        return itemsContainer
+                .getChildren()
+                .map(component -> (PurchaseItemBadge) component)
+                .map(PurchaseItemBadge::getItem);
     }
 
     public void addItem(BigDecimal price) {
 
-        DataModel.Purchase.Key purchaseKey = DataModel.Purchase.Key.builder()
-                .booth(vendor.booth())
-                .build();
-        DataModel.PurchaseItem.Key itemKey = DataModel.PurchaseItem.Key.builder()
-                .purchase(purchaseKey)
-                .itemId(Ids.UUID())
-                .build();
+        DataModel.Purchase.Key purchaseKey =
+                DataModel.Purchase.Key.builder().booth(vendor.booth()).build();
+        DataModel.PurchaseItem.Key itemKey =
+                DataModel.PurchaseItem.Key.builder()
+                        .purchase(purchaseKey)
+                        .itemId(Ids.UUID())
+                        .build();
 
-        DataModel.PurchaseItem item = DataModel.PurchaseItem.builder()
-                .key(itemKey)
-                .vendor(vendor)
-                .price(price)
-                .purchasedOn(LocalDateTime.now())
-                .build();
+        DataModel.PurchaseItem item =
+                DataModel.PurchaseItem.builder()
+                        .key(itemKey)
+                        .vendor(vendor)
+                        .price(price)
+                        .purchasedOn(LocalDateTime.now())
+                        .build();
 
         PurchaseItemBadge itemBadge = new PurchaseItemBadge(item);
         itemBadge.addItemDeletedEventListener(this::onItemDeletedEvent);
-        itemBadge.addClassNames(Padding.SMALL, Margin.NONE, Margin.Right.SMALL, Margin.Bottom.SMALL);
+        itemBadge.addClassNames(
+                Padding.SMALL, Margin.NONE, Margin.Right.SMALL, Margin.Bottom.SMALL);
         itemsContainer.addComponentAsFirst(itemBadge);
 
         updateVendorDetails();
@@ -104,7 +116,12 @@ public class PurchaseVendorDetails extends Div {
 
     private void updateVendorDetails() {
         Format format = formats().currency(getLocale());
-        sumOfItems = getItems().map(DataModel.PurchaseItem::price).reduce(BigDecimal::add).orElse(BigDecimal.ZERO).doubleValue();
+        sumOfItems =
+                getItems()
+                        .map(DataModel.PurchaseItem::price)
+                        .reduce(BigDecimal::add)
+                        .orElse(BigDecimal.ZERO)
+                        .doubleValue();
         vendorSumSpan.setText(format.format(sumOfItems));
         long itemCount = getItems().count();
         vendorCountSpan.setText(getTranslation(ITEM_COUNT__TEXT, itemCount));
@@ -128,10 +145,10 @@ public class PurchaseVendorDetails extends Div {
 
         private final DataModel.PurchaseItem item;
 
-        public ItemsChangedEvent(PurchaseVendorDetails source, boolean fromClient, DataModel.PurchaseItem item) {
+        public ItemsChangedEvent(
+                PurchaseVendorDetails source, boolean fromClient, DataModel.PurchaseItem item) {
             super(source, fromClient);
             this.item = item;
         }
-
     }
 }

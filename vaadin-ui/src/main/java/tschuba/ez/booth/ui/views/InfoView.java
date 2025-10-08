@@ -1,18 +1,21 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.views;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.*;
+import static tschuba.ez.booth.ui.i18n.TranslationKeys.InfoView.*;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.router.Route;
+import java.util.Optional;
 import tschuba.ez.booth.ui.components.Block;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.util.NavigateTo;
-
-import java.util.Optional;
-
-import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.InfoView.*;
 
 @Route(value = "info", layout = AppLayoutWithMenu.class)
 public class InfoView extends OneColumnLayout {
@@ -33,8 +36,9 @@ public class InfoView extends OneColumnLayout {
         homepageBlock.setContent(homepageLink);
         content.add(homepageBlock);
 
-        String appVersion = Optional.ofNullable(getClass().getPackage().getImplementationVersion())
-                .orElseGet(() -> getTranslation(VERSION_UNKNOWN__TEXT));
+        String appVersion =
+                Optional.ofNullable(getClass().getPackage().getImplementationVersion())
+                        .orElseGet(() -> getTranslation(VERSION_UNKNOWN__TEXT));
         Block versionBlock = new Block();
         versionBlock.setTitle(getTranslation(VERSION__LABEL));
         versionBlock.setContent(appVersion);

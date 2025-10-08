@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
@@ -20,7 +21,6 @@ import com.vaadin.flow.router.*;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.lineawesome.LineAwesomeIcon;
@@ -36,20 +36,29 @@ import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.util.*;
 
 @Route(value = "event", layout = AppLayoutWithMenu.class)
-public class BoothSelectionView extends Div implements BeforeEnterObserver, AfterNavigationObserver, HasDynamicTitle {
+public class BoothSelectionView extends Div
+        implements BeforeEnterObserver, AfterNavigationObserver, HasDynamicTitle {
     private final BoothService boothService;
     private final VirtualList<DataModel.Booth> boothList;
     private final UpsertEventDialog editDialog;
     private Class<? extends Component> returnToView;
 
-    public BoothSelectionView(@NonNull @Autowired BoothService boothService,
-                              @NonNull@Autowired BoothRepository booths) {
+    public BoothSelectionView(
+            @NonNull @Autowired BoothService boothService,
+            @NonNull @Autowired BoothRepository booths) {
         this.boothService = boothService;
 
         addClassNames(Display.FLEX, FlexDirection.COLUMN, Flex.GROW_NONE, Height.FULL);
 
         Main container = new Main();
-        container.addClassNames(Display.GRID, Gap.MEDIUM, AlignItems.START, JustifyContent.CENTER, Margin.Horizontal.AUTO, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
+        container.addClassNames(
+                Display.GRID,
+                Gap.MEDIUM,
+                AlignItems.START,
+                JustifyContent.CENTER,
+                Margin.Horizontal.AUTO,
+                Padding.Bottom.LARGE,
+                Padding.Horizontal.LARGE);
         add(container);
 
         editDialog = new UpsertEventDialog(booths);
@@ -74,16 +83,24 @@ public class BoothSelectionView extends Div implements BeforeEnterObserver, Afte
         boothList.addClassNames(Border.TOP, BorderColor.CONTRAST_50);
         boothList.setMinWidth(44, Unit.EM);
         boothList.setMinHeight(60, Unit.EM);
-        boothList.setRenderer(new ComponentRenderer<>(event -> {
-            BoothListItem listItem = new BoothListItem(event);
-            listItem.addClassNames(Padding.SMALL, Border.BOTTOM, BorderColor.CONTRAST_50);
-            listItem.addSelectionListener(selectionEvent -> onBoothSelection(selectionEvent.getBooth()));
-            listItem.addEditListener(editEvent -> editDialog.open(editEvent.getBooth()));
-            listItem.addCloseListener(closeEvent -> onCloseBooth(closeEvent.getBooth()));
-            listItem.addReopenListener(reopenEvent -> onReopenBooth(reopenEvent.getBooth()));
-            listItem.addDeleteListener(deleteEvent -> onDeleteBooth(deleteEvent.getBooth()));
-            return listItem;
-        }));
+        boothList.setRenderer(
+                new ComponentRenderer<>(
+                        event -> {
+                            BoothListItem listItem = new BoothListItem(event);
+                            listItem.addClassNames(
+                                    Padding.SMALL, Border.BOTTOM, BorderColor.CONTRAST_50);
+                            listItem.addSelectionListener(
+                                    selectionEvent -> onBoothSelection(selectionEvent.getBooth()));
+                            listItem.addEditListener(
+                                    editEvent -> editDialog.open(editEvent.getBooth()));
+                            listItem.addCloseListener(
+                                    closeEvent -> onCloseBooth(closeEvent.getBooth()));
+                            listItem.addReopenListener(
+                                    reopenEvent -> onReopenBooth(reopenEvent.getBooth()));
+                            listItem.addDeleteListener(
+                                    deleteEvent -> onDeleteBooth(deleteEvent.getBooth()));
+                            return listItem;
+                        }));
 
         container.add(headerRow, actionBar, boothList);
 
@@ -100,7 +117,8 @@ public class BoothSelectionView extends Div implements BeforeEnterObserver, Afte
 
     private void onBoothSelection(DataModel.Booth booth) {
         BoothSelection.set(booth.key());
-        Class<? extends Component> targetView = (returnToView != null) ? returnToView : CheckoutView.class;
+        Class<? extends Component> targetView =
+                (returnToView != null) ? returnToView : CheckoutView.class;
         if (booth.closed() && CheckoutView.class.isAssignableFrom(targetView)) {
             RouteParameters routeParams = Routing.Parameters.builder().booth(booth.key()).build();
             NavigateTo.view(BoothDetailsView.class, routeParams).currentWindow();
@@ -142,18 +160,30 @@ public class BoothSelectionView extends Div implements BeforeEnterObserver, Afte
     }
 
     private void updateBoothListItems() {
-        Stream<DataModel.Booth> allBooths = boothService.getAllBooths().sorted(Comparator.comparing(DataModel.Booth::closed).reversed().thenComparing(DataModel.Booth::date).reversed());
+        Stream<DataModel.Booth> allBooths =
+                boothService
+                        .getAllBooths()
+                        .sorted(
+                                Comparator.comparing(DataModel.Booth::closed)
+                                        .reversed()
+                                        .thenComparing(DataModel.Booth::date)
+                                        .reversed());
         boothList.setItems(allBooths);
     }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        this.returnToView = Routing.Parameters.parser(event.getRouteParameters()).returnToView().orElse(null);
+        this.returnToView =
+                Routing.Parameters.parser(event.getRouteParameters()).returnToView().orElse(null);
     }
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
-        Optional.ofNullable(this.returnToView).ifPresent(view -> Notifications.warning(getTranslation(NOTIFICATION__NO_EVENT_SELECTED)));
+        Optional.ofNullable(this.returnToView)
+                .ifPresent(
+                        view ->
+                                Notifications.warning(
+                                        getTranslation(NOTIFICATION__NO_EVENT_SELECTED)));
     }
 
     @Override

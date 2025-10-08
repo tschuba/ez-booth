@@ -1,20 +1,21 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.renderer;
-
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.function.ValueProvider;
-import tschuba.ez.booth.model.DataModel;
-
-import java.util.Optional;
 
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.Vendor.ID__FORMAT_LONG;
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.Vendor.ID__FORMAT_SHORT;
 
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.function.ValueProvider;
+import java.util.Optional;
+import tschuba.ez.booth.model.DataModel;
+
 public class VendorRenderer extends HasUI {
     public enum Format {
-        Short, Long
+        Short,
+        Long
     }
 
     public VendorRenderer(UI ui) {

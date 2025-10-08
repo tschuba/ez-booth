@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -16,5 +17,4 @@ import lombok.NoArgsConstructor;
 @Theme(value = "booth")
 @NoArgsConstructor(access = PRIVATE)
 @SuppressWarnings("unused")
-public class AppShell implements AppShellConfigurator {
-}
+public class AppShell implements AppShellConfigurator {}

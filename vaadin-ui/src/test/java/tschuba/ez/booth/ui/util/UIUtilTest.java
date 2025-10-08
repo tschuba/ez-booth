@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +40,8 @@ class UIUtilTest {
         when(parentMock.getParent()).thenReturn(Optional.of(parentOfParentMock));
         when(componentMock.getParent()).thenReturn(Optional.of(parentMock));
 
-        @SuppressWarnings("unchecked") Function<Component, Boolean> traversalFunctionMock = mock(Function.class);
+        @SuppressWarnings("unchecked")
+        Function<Component, Boolean> traversalFunctionMock = mock(Function.class);
         when(traversalFunctionMock.apply(any())).thenReturn(Boolean.TRUE);
 
         UIUtil.traverseParents(componentMock, traversalFunctionMock);
@@ -55,7 +57,8 @@ class UIUtilTest {
         Span spanMock = mock(Span.class);
         when(spanMock.getChildren()).thenReturn(Stream.of(childOfSpanMock));
 
-        @SuppressWarnings("unchecked") Consumer<Span> consumerMock = mock(Consumer.class);
+        @SuppressWarnings("unchecked")
+        Consumer<Span> consumerMock = mock(Consumer.class);
         UIUtil.traverseAllOfType(spanMock, Span.class, consumerMock);
 
         verify(consumerMock).accept(spanMock);
@@ -68,8 +71,10 @@ class UIUtilTest {
         Span spanMock = mock(Span.class);
         when(spanMock.getChildren()).thenReturn(Stream.of(childOfSpanMock));
 
-        @SuppressWarnings("unchecked") Consumer<Span> consumerMock = mock(Consumer.class);
-        UIUtil.traverseAllOfType(Stream.of(mock(Button.class), spanMock, componentMock), Span.class, consumerMock);
+        @SuppressWarnings("unchecked")
+        Consumer<Span> consumerMock = mock(Consumer.class);
+        UIUtil.traverseAllOfType(
+                Stream.of(mock(Button.class), spanMock, componentMock), Span.class, consumerMock);
 
         verify(consumerMock).accept(spanMock);
         verify(consumerMock).accept(childOfSpanMock);
@@ -92,7 +97,9 @@ class UIUtilTest {
         String appTitle = "Some App Title";
         String viewTitle = "Some View Title";
         when(componentMock.getTranslation(TranslationKeys.App.TITLE)).thenReturn(appTitle);
-        when(componentMock.getTranslation("%s.title".formatted(componentMock.getClass().getSimpleName()))).thenReturn(viewTitle);
+        when(componentMock.getTranslation(
+                        "%s.title".formatted(componentMock.getClass().getSimpleName())))
+                .thenReturn(viewTitle);
 
         String actualTitle = UIUtil.pageTitle(componentMock);
         assertThat(actualTitle).isEqualTo("%s - %s".formatted(appTitle, viewTitle));

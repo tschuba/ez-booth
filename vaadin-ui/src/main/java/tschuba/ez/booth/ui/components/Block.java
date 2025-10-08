@@ -1,4 +1,10 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
@@ -7,10 +13,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.dom.Element;
-
 import java.util.stream.Stream;
-
-import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 @Tag(Tag.DIV)
 public class Block extends HtmlComponent {
@@ -19,14 +22,22 @@ public class Block extends HtmlComponent {
 
     public Block() {
         titleContainer = new Div();
-        titleContainer.addClassNames(FontWeight.MEDIUM, Background.CONTRAST_5, BorderRadius.MEDIUM,
-                Padding.Left.SMALL, Padding.Right.SMALL, Padding.Top.XSMALL, Padding.Bottom.XSMALL);
+        titleContainer.addClassNames(
+                FontWeight.MEDIUM,
+                Background.CONTRAST_5,
+                BorderRadius.MEDIUM,
+                Padding.Left.SMALL,
+                Padding.Right.SMALL,
+                Padding.Top.XSMALL,
+                Padding.Bottom.XSMALL);
 
         contentContainer = new Div();
         contentContainer.addClassNames(Padding.SMALL);
 
         Element thisElement = getElement();
-        Stream.of(titleContainer, contentContainer).map(HasElement::getElement).forEach(thisElement::appendChild);
+        Stream.of(titleContainer, contentContainer)
+                .map(HasElement::getElement)
+                .forEach(thisElement::appendChild);
     }
 
     public void setTitle(String title) {

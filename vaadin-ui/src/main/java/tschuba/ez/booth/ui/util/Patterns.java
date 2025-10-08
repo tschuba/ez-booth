@@ -1,14 +1,14 @@
-/* Licensed under MIT
-
-Copyright (c) 2023 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2023-2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
-import lombok.NoArgsConstructor;
+import static lombok.AccessLevel.PRIVATE;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static lombok.AccessLevel.PRIVATE;
+import lombok.NoArgsConstructor;
 
 /** Helper class providing common Regex patterns. */
 @NoArgsConstructor(access = PRIVATE)

@@ -1,9 +1,12 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.resources;
 
 import com.vaadin.flow.server.StreamRegistration;
-import lombok.Getter;
-
 import java.io.Serializable;
+import lombok.Getter;
 
 @Getter
 public class StreamResourceFailedEvent extends StreamResourceEvent implements Serializable {
@@ -13,5 +16,4 @@ public class StreamResourceFailedEvent extends StreamResourceEvent implements Se
         super(registration);
         this.error = error;
     }
-
 }

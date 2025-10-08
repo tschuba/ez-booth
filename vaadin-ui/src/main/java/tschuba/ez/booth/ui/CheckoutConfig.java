@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,8 +12,7 @@ public class CheckoutConfig {
     private final boolean confirmationRequired;
     private final boolean printReceiptChecked;
 
-    public CheckoutConfig(boolean confirmationRequired,
-                          boolean printReceiptChecked) {
+    public CheckoutConfig(boolean confirmationRequired, boolean printReceiptChecked) {
         this.confirmationRequired = confirmationRequired;
         this.printReceiptChecked = printReceiptChecked;
     }

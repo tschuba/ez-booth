@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.layouts.app;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
@@ -54,9 +55,21 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
             tabs.setOrientation(Tabs.Orientation.VERTICAL);
             menuItems.forEach(tabs::add);
 
-            ToggleButton toggleButton = new ToggleButton(Icons.large(LineAwesomeIcon.BARS_SOLID.create()));
-            toggleButton.addThemeVariants(ButtonVariant.LUMO_LARGE, ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_CONTRAST);
-            toggleButton.addClassNames(Padding.XSMALL, Padding.Top.NONE, Margin.XSMALL, Margin.Top.SMALL, Border.BOTTOM, BorderColor.PRIMARY, BorderRadius.NONE);
+            ToggleButton toggleButton =
+                    new ToggleButton(Icons.large(LineAwesomeIcon.BARS_SOLID.create()));
+            toggleButton.addThemeVariants(
+                    ButtonVariant.LUMO_LARGE,
+                    ButtonVariant.LUMO_ICON,
+                    ButtonVariant.LUMO_TERTIARY,
+                    ButtonVariant.LUMO_CONTRAST);
+            toggleButton.addClassNames(
+                    Padding.XSMALL,
+                    Padding.Top.NONE,
+                    Margin.XSMALL,
+                    Margin.Top.SMALL,
+                    Border.BOTTOM,
+                    BorderColor.PRIMARY,
+                    BorderRadius.NONE);
             toggleButton.addClickListener(this::onClickToggle);
             toggleButton.addToggleListener(event -> updateToggleButton(event.getSource()));
             updateToggleButton(toggleButton);
@@ -72,7 +85,11 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
 
         HorizontalLayout topBar = new HorizontalLayout();
         topBar.setWidthFull();
-        topBar.addClassNames(Padding.Horizontal.SMALL, Padding.Vertical.XSMALL, Border.BOTTOM, BorderColor.CONTRAST_10);
+        topBar.addClassNames(
+                Padding.Horizontal.SMALL,
+                Padding.Vertical.XSMALL,
+                Border.BOTTOM,
+                BorderColor.CONTRAST_10);
         topBar.setAlignItems(FlexComponent.Alignment.CENTER);
         subLayout.add(topBar);
 
@@ -83,50 +100,71 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
         }
         topBar.add(appName);
 
-        BoothSelection.get().map(EntitiesMapper::objectToEntity).flatMap(booths::findById).ifPresent(event -> {
-            RouterLink eventLink = new RouterLink();
-            eventLink.setRoute(BoothSelectionView.class);
-            eventLink.addClassNames(Margin.Right.MEDIUM);
+        BoothSelection.get()
+                .map(EntitiesMapper::objectToEntity)
+                .flatMap(booths::findById)
+                .ifPresent(
+                        event -> {
+                            RouterLink eventLink = new RouterLink();
+                            eventLink.setRoute(BoothSelectionView.class);
+                            eventLink.addClassNames(Margin.Right.MEDIUM);
 
-            Span descriptionText = new Span(event.getDescription());
-            descriptionText.addClassNames(FontWeight.MEDIUM);
-            eventLink.add(descriptionText);
+                            Span descriptionText = new Span(event.getDescription());
+                            descriptionText.addClassNames(FontWeight.MEDIUM);
+                            eventLink.add(descriptionText);
 
-            Button detailsButton = new Button();
-            detailsButton.setIcon(LineAwesomeIcon.INFO_CIRCLE_SOLID.create());
-            detailsButton.addClassNames(Padding.NONE);
-            detailsButton.addThemeVariants(ButtonVariant.LUMO_ICON);
-            detailsButton.addClickListener(_ -> {
-                RouteParameters routeParams = Routing.Parameters.builder().booth(EntitiesMapper.entityToObject(event.getKey())).build();
-                NavigateTo.view(BoothDetailsView.class, routeParams).currentWindow();
-            });
-            Tooltip.forComponent(detailsButton).setText(getTranslation(TranslationKeys.EventSelectionView.INFO_BUTTON__TEXT));
+                            Button detailsButton = new Button();
+                            detailsButton.setIcon(LineAwesomeIcon.INFO_CIRCLE_SOLID.create());
+                            detailsButton.addClassNames(Padding.NONE);
+                            detailsButton.addThemeVariants(ButtonVariant.LUMO_ICON);
+                            detailsButton.addClickListener(
+                                    _ -> {
+                                        RouteParameters routeParams =
+                                                Routing.Parameters.builder()
+                                                        .booth(
+                                                                EntitiesMapper.entityToObject(
+                                                                        event.getKey()))
+                                                        .build();
+                                        NavigateTo.view(BoothDetailsView.class, routeParams)
+                                                .currentWindow();
+                                    });
+                            Tooltip.forComponent(detailsButton)
+                                    .setText(
+                                            getTranslation(
+                                                    TranslationKeys.EventSelectionView
+                                                            .INFO_BUTTON__TEXT));
 
-            Tooltip.forComponent(eventLink).withText(getTranslation(EVENT_LINK__TOOLTIP_TEXT)).withPosition(Tooltip.TooltipPosition.END_BOTTOM);
+                            Tooltip.forComponent(eventLink)
+                                    .withText(getTranslation(EVENT_LINK__TOOLTIP_TEXT))
+                                    .withPosition(Tooltip.TooltipPosition.END_BOTTOM);
 
-            topBar.add(eventLink, detailsButton);
-        });
+                            topBar.add(eventLink, detailsButton);
+                        });
 
         Button themeVariantButton = new Button();
         themeVariantButton.setIcon(LineAwesomeIcon.ADJUST_SOLID.create());
-        themeVariantButton.addClickListener(clickEvent -> {
-            ThemeList themeList = UI.getCurrent().getElement().getThemeList();
-            if (themeList.contains(Lumo.DARK)) {
-                themeList.remove(Lumo.DARK);
-            } else {
-                themeList.add(Lumo.DARK);
-            }
-        });
+        themeVariantButton.addClickListener(
+                clickEvent -> {
+                    ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+                    if (themeList.contains(Lumo.DARK)) {
+                        themeList.remove(Lumo.DARK);
+                    } else {
+                        themeList.add(Lumo.DARK);
+                    }
+                });
         topBar.add(themeVariantButton);
 
-        Tooltip.forComponent(themeVariantButton).withText(getTranslation(TOGGLE_THEME_BUTTON__TOOLTIP_TEXT));
+        Tooltip.forComponent(themeVariantButton)
+                .withText(getTranslation(TOGGLE_THEME_BUTTON__TOOLTIP_TEXT));
     }
 
     private void onClickToggle(ClickEvent<Button> clickEvent) {
         ToggleButton toggleButton = (ToggleButton) clickEvent.getSource();
         toggleButton.toggle();
 
-        tabs.getChildren().map(component -> (MainMenuItem) component).forEach(MainMenuItem::toggleText);
+        tabs.getChildren()
+                .map(component -> (MainMenuItem) component)
+                .forEach(MainMenuItem::toggleText);
     }
 
     private void updateToggleButton(ToggleButton button) {
@@ -141,8 +179,13 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
     public void showRouterLayoutContent(HasElement content) {
         Component target = null;
         if (content != null) {
-            target = content.getElement().getComponent().orElseThrow(() -> new IllegalArgumentException(
-                    "AppLayout content must be a Component"));
+            target =
+                    content.getElement()
+                            .getComponent()
+                            .orElseThrow(
+                                    () ->
+                                            new IllegalArgumentException(
+                                                    "AppLayout content must be a Component"));
         }
         setContent(target);
     }
@@ -151,7 +194,10 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
         removeContent();
 
         // select menu item matching content
-        tabs.getChildren().map(tab -> (MainMenuItem) tab).filter(menuItem -> Objects.equals(menuItem.getView(), content.getClass())).forEach(tabs::setSelectedTab);
+        tabs.getChildren()
+                .map(tab -> (MainMenuItem) tab)
+                .filter(menuItem -> Objects.equals(menuItem.getView(), content.getClass()))
+                .forEach(tabs::setSelectedTab);
 
         if (content != null) {
             this.content = content;

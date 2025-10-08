@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -31,7 +32,8 @@ public class Constraints {
 
         @NoArgsConstructor(access = PRIVATE)
         public static class Subscriber {
-            public static final String SYNC_URL_PATTERN = http().url().or(dataSync().encodedHostAddress()).wholeInput().pattern();
+            public static final String SYNC_URL_PATTERN =
+                    http().url().or(dataSync().encodedHostAddress()).wholeInput().pattern();
         }
     }
 }

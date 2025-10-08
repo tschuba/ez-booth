@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.layouts.app;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
@@ -18,12 +19,18 @@ import tschuba.ez.booth.ui.util.Icons;
 public class MainMenuItem extends Tab {
 
     private final Span text;
-    @Getter
-    private final Class<? extends Component> view;
+    @Getter private final Class<? extends Component> view;
 
     public MainMenuItem(I18NTextKey menuTitle, Component icon, Class<? extends Component> view) {
         RouterLink routerLink = new RouterLink();
-        routerLink.addClassNames(Display.FLEX, Gap.XSMALL, Height.MEDIUM, AlignItems.CENTER, Padding.Horizontal.SMALL, Padding.Vertical.MEDIUM, TextColor.BODY);
+        routerLink.addClassNames(
+                Display.FLEX,
+                Gap.XSMALL,
+                Height.MEDIUM,
+                AlignItems.CENTER,
+                Padding.Horizontal.SMALL,
+                Padding.Vertical.MEDIUM,
+                TextColor.BODY);
         this.view = view;
         routerLink.setRoute(this.view);
 
@@ -43,7 +50,8 @@ public class MainMenuItem extends Tab {
         text.setVisible(!visible);
     }
 
-    public static MainMenuItem create(I18NTextKey title, SvgIcon icon, Class<? extends Component> view) {
+    public static MainMenuItem create(
+            I18NTextKey title, SvgIcon icon, Class<? extends Component> view) {
         return new MainMenuItem(title, Icons.large(icon), view);
     }
 }

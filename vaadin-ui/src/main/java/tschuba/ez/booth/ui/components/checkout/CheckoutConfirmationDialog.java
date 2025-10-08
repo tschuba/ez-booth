@@ -1,4 +1,12 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components.checkout;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.*;
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
+import static tschuba.ez.booth.ui.i18n.TranslationKeys.CheckoutConfirmationDialog.*;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
@@ -11,16 +19,10 @@ import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import java.math.BigDecimal;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.CheckoutConfig;
-
-import java.math.BigDecimal;
-import java.util.Optional;
-
-import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.ui.i18n.Formats.formats;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.CheckoutConfirmationDialog.*;
 
 @SpringComponent
 @UIScope
@@ -52,7 +54,8 @@ public class CheckoutConfirmationDialog extends Dialog {
         confirmButton.addClickListener(this::onClickConfirm);
 
         Footer footer = new Footer(cancelButton, checkboxPrintReceipt, confirmButton);
-        footer.addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.BETWEEN, Margin.Top.MEDIUM);
+        footer.addClassNames(
+                Display.FLEX, AlignItems.CENTER, JustifyContent.BETWEEN, Margin.Top.MEDIUM);
 
         add(textSpan, valueSpan, footer);
     }
@@ -71,7 +74,11 @@ public class CheckoutConfirmationDialog extends Dialog {
     private void setCheckout(ServiceModel.Checkout checkout) {
         this.checkout = checkout;
 
-        BigDecimal checkoutSum = checkout.items().stream().map(DataModel.PurchaseItem::price).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+        BigDecimal checkoutSum =
+                checkout.items().stream()
+                        .map(DataModel.PurchaseItem::price)
+                        .reduce(BigDecimal::add)
+                        .orElse(BigDecimal.ZERO);
         valueSpan.setText(formats().currency(checkoutSum, getLocale()));
     }
 
@@ -80,15 +87,15 @@ public class CheckoutConfirmationDialog extends Dialog {
         super.open();
     }
 
-    public void addCheckoutConfirmedListener(ComponentEventListener<CheckoutConfirmedEvent> listener) {
+    public void addCheckoutConfirmedListener(
+            ComponentEventListener<CheckoutConfirmedEvent> listener) {
         this.addListener(CheckoutConfirmedEvent.class, listener);
     }
 
     private void onClickConfirm(ClickEvent<Button> event) {
         try {
-            ServiceModel.Checkout finalCheckout = this.checkout.toBuilder()
-                    .printReceipt(checkboxPrintReceipt.getValue())
-                    .build();
+            ServiceModel.Checkout finalCheckout =
+                    this.checkout.toBuilder().printReceipt(checkboxPrintReceipt.getValue()).build();
             fireEvent(new CheckoutConfirmedEvent(this, event.isFromClient(), finalCheckout));
             this.close();
         } finally {

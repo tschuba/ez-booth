@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components.event;
 
 import com.vaadin.flow.component.ComponentEvent;
@@ -12,5 +16,4 @@ public class BoothListItemEventBase extends ComponentEvent<BoothListItem> {
         super(source, fromClient);
         this.booth = booth;
     }
-
 }

@@ -1,12 +1,15 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.renderer;
 
 import com.vaadin.flow.component.UI;
+import java.util.Optional;
+import java.util.function.Function;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Optional;
-import java.util.function.Function;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)

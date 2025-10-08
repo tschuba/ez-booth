@@ -1,4 +1,11 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components.checkout;
+
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
+import static tschuba.ez.booth.ui.i18n.TranslationKeys.Vendor.ID__FORMAT_SHORT;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEvent;
@@ -10,14 +17,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Background;
 import com.vaadin.flow.theme.lumo.LumoUtility.BorderRadius;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
+import java.text.Format;
 import lombok.Getter;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.model.DataModel;
-
-import java.text.Format;
-
-import static tschuba.ez.booth.ui.i18n.Formats.formats;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.Vendor.ID__FORMAT_SHORT;
 
 @Getter
 public class PurchaseItemBadge extends Button {

@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
 import com.vaadin.flow.component.Component;
@@ -7,7 +11,6 @@ import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.StreamResourceRegistry;
 import com.vaadin.flow.server.VaadinSession;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,8 +18,7 @@ import java.net.URI;
 import java.util.Optional;
 
 public class NavigateTo {
-    private NavigateTo() {
-    }
+    private NavigateTo() {}
 
     public static Target uri(URI uri) {
         return url(uri.toString());
@@ -31,19 +33,24 @@ public class NavigateTo {
     }
 
     public static Target view(Class<? extends Component> targetView, RouteParameters parameters) {
-        String url = Optional.ofNullable(parameters).map(params -> Routing.urlForView(targetView, params))
-                .orElseGet(() -> Routing.urlForView(targetView));
+        String url =
+                Optional.ofNullable(parameters)
+                        .map(params -> Routing.urlForView(targetView, params))
+                        .orElseGet(() -> Routing.urlForView(targetView));
         return url(url);
     }
 
     public static Target file(final File file) {
-        StreamResource fileResource = new StreamResource(file.getName(), () -> {
-            try {
-                return new FileInputStream(file);
-            } catch (FileNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        StreamResource fileResource =
+                new StreamResource(
+                        file.getName(),
+                        () -> {
+                            try {
+                                return new FileInputStream(file);
+                            } catch (FileNotFoundException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        });
         StreamResourceRegistry resourceRegistry = VaadinSession.getCurrent().getResourceRegistry();
         StreamRegistration fileStream = resourceRegistry.registerResource(fileResource);
         return uri(fileStream.getResourceUri());

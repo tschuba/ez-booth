@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
 import com.vaadin.flow.component.html.Span;
@@ -93,7 +94,9 @@ public class Badges implements Consumer<Span> {
         String shape = pill ? PILL : null;
         String size = small ? SMALL : null;
         ThemeList themeList = span.getElement().getThemeList();
-        Stream.of(BADGE, variant, contrasted, emphasis, shape, size).filter(Objects::nonNull).forEach(themeList::add);
+        Stream.of(BADGE, variant, contrasted, emphasis, shape, size)
+                .filter(Objects::nonNull)
+                .forEach(themeList::add);
     }
 
     public Span applyTo(@NonNull Span span) {

@@ -1,4 +1,13 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components;
+
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_LARGE;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_SMALL;
+import static com.vaadin.flow.component.menubar.MenuBarVariant.LUMO_ICON;
+import static org.vaadin.lineawesome.LineAwesomeIcon.TIMES_SOLID;
 
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
@@ -12,19 +21,14 @@ import com.vaadin.flow.component.shared.HasThemeVariant;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.theme.lumo.LumoUtility.Background;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
-import lombok.NonNull;
-import org.vaadin.lineawesome.LineAwesomeIcon;
-
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
+import lombok.NonNull;
+import org.vaadin.lineawesome.LineAwesomeIcon;
 
-import static com.vaadin.flow.component.button.ButtonVariant.LUMO_LARGE;
-import static com.vaadin.flow.component.button.ButtonVariant.LUMO_SMALL;
-import static com.vaadin.flow.component.menubar.MenuBarVariant.LUMO_ICON;
-import static org.vaadin.lineawesome.LineAwesomeIcon.TIMES_SOLID;
-
-public class ConfirmativeButton extends Composite<HorizontalLayout> implements HasEnabled, HasThemeVariant<ButtonVariant> {
+public class ConfirmativeButton extends Composite<HorizontalLayout>
+        implements HasEnabled, HasThemeVariant<ButtonVariant> {
     private static final LineAwesomeIcon CONFIRMATION_ICON = LineAwesomeIcon.CHECK_SOLID;
     private static final LineAwesomeIcon CANCEL_ICON = LineAwesomeIcon.BAN_SOLID;
 
@@ -57,9 +61,15 @@ public class ConfirmativeButton extends Composite<HorizontalLayout> implements H
 
         confirmationMenu.setVisible(false);
         confirmationMenu.addThemeVariants(LUMO_ICON);
-        MenuItem cancelItem = confirmationMenu.addItem(TIMES_SOLID.create(), clickEvent -> onMenuClick(clickEvent, this::onCancellation));
+        MenuItem cancelItem =
+                confirmationMenu.addItem(
+                        TIMES_SOLID.create(),
+                        clickEvent -> onMenuClick(clickEvent, this::onCancellation));
         cancelItem.addClassNames(TextColor.ERROR);
-        MenuItem confirmationItem = confirmationMenu.addItem(CONFIRMATION_ICON.create(), clickEvent -> onMenuClick(clickEvent, this::onConfirmation));
+        MenuItem confirmationItem =
+                confirmationMenu.addItem(
+                        CONFIRMATION_ICON.create(),
+                        clickEvent -> onMenuClick(clickEvent, this::onConfirmation));
         confirmationItem.addClassNames(Background.SUCCESS, TextColor.SUCCESS_CONTRAST);
 
         HorizontalLayout container = super.initContent();
@@ -102,7 +112,8 @@ public class ConfirmativeButton extends Composite<HorizontalLayout> implements H
         confirmationMenu.setVisible(true);
     }
 
-    private void onMenuClick(ClickEvent<MenuItem> clickEvent, Consumer<ClickEvent<MenuItem>> action) {
+    private void onMenuClick(
+            ClickEvent<MenuItem> clickEvent, Consumer<ClickEvent<MenuItem>> action) {
         try {
             action.accept(clickEvent);
         } finally {
@@ -123,9 +134,16 @@ public class ConfirmativeButton extends Composite<HorizontalLayout> implements H
         confirmationMenu.setVisible(false);
     }
 
-    private static void applyButtonVariants(Consumer<MenuBarVariant> menuBarVariantConsumer, ButtonVariant... buttonVariants) {
-        Map<ButtonVariant, MenuBarVariant> variantsMapping = Map.of(LUMO_LARGE, MenuBarVariant.LUMO_LARGE, LUMO_SMALL, MenuBarVariant.LUMO_SMALL);
-        Arrays.stream(buttonVariants).filter(variantsMapping::containsKey)
+    private static void applyButtonVariants(
+            Consumer<MenuBarVariant> menuBarVariantConsumer, ButtonVariant... buttonVariants) {
+        Map<ButtonVariant, MenuBarVariant> variantsMapping =
+                Map.of(
+                        LUMO_LARGE,
+                        MenuBarVariant.LUMO_LARGE,
+                        LUMO_SMALL,
+                        MenuBarVariant.LUMO_SMALL);
+        Arrays.stream(buttonVariants)
+                .filter(variantsMapping::containsKey)
                 .map(variantsMapping::get)
                 .forEach(menuBarVariantConsumer);
     }
@@ -147,5 +165,4 @@ public class ConfirmativeButton extends Composite<HorizontalLayout> implements H
             super(source, clickEvent);
         }
     }
-
 }

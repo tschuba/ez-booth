@@ -1,12 +1,15 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import static com.vaadin.flow.component.Unit.PIXELS;
 
 import com.vaadin.flow.component.Unit;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import lombok.Getter;
-
-import static com.vaadin.flow.component.Unit.PIXELS;
 
 @Getter
 public class CssUnit {

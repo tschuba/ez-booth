@@ -1,5 +1,12 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.i18n;
 
+import static java.util.Objects.requireNonNull;
+
+import com.vaadin.flow.server.VaadinSession;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.Format;
@@ -8,10 +15,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-
-import com.vaadin.flow.server.VaadinSession;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * Utility class to format numbers and dates according to the current locale.
@@ -29,7 +32,8 @@ public class Formats {
     }
 
     public static Formats formats() {
-        return requireNonNull(VaadinSession.getCurrent().getAttribute(Formats.class),
+        return requireNonNull(
+                VaadinSession.getCurrent().getAttribute(Formats.class),
                 "No formats instance assigned to current session!");
     }
 

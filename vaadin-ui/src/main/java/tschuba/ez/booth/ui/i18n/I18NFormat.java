@@ -1,10 +1,14 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.i18n;
+
+import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Getter;
-
-import static java.util.Objects.requireNonNull;
 
 @Getter
 @JsonDeserialize(builder = I18NFormat.Builder.class)
@@ -14,15 +18,13 @@ public class I18NFormat {
     private String date;
     private String decimal;
 
-    private I18NFormat() {
-    }
+    private I18NFormat() {}
 
     @JsonPOJOBuilder(withPrefix = "set")
     public static class Builder {
         private final I18NFormat format = new I18NFormat();
 
-        public Builder() {
-        }
+        public Builder() {}
 
         public Builder setCurrencyCode(String currencyCode) {
             this.format.currencyCode = currencyCode;

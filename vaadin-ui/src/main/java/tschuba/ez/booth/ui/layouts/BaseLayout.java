@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.layouts;
 
 import static com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
@@ -27,7 +28,12 @@ public class BaseLayout extends Composite<Div> implements BeforeEnterObserver, H
 
     public BaseLayout() {
         Div root = getContent();
-        root.addClassNames(Display.FLEX, FlexDirection.COLUMN, Flex.GROW_NONE, JustifyContent.START, Height.FULL);
+        root.addClassNames(
+                Display.FLEX,
+                FlexDirection.COLUMN,
+                Flex.GROW_NONE,
+                JustifyContent.START,
+                Height.FULL);
 
         contentContainer = new Div();
         contentContainer.addClassNames(Display.GRID, AlignItems.START, JustifyContent.CENTER);
@@ -46,7 +52,10 @@ public class BaseLayout extends Composite<Div> implements BeforeEnterObserver, H
     }
 
     public void setTitle(String title, Component titleSuffix) {
-        this.titleContainer.getChildren().filter(child -> !Objects.equals(child, this.title)).forEach(Component::removeFromParent);
+        this.titleContainer
+                .getChildren()
+                .filter(child -> !Objects.equals(child, this.title))
+                .forEach(Component::removeFromParent);
         setTitle(title);
         this.titleContainer.add(titleSuffix);
     }

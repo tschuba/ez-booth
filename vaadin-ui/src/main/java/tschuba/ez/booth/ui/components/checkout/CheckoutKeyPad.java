@@ -1,4 +1,11 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components.checkout;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.*;
+import static org.vaadin.lineawesome.LineAwesomeIcon.*;
 
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
@@ -9,16 +16,12 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.IntegerField;
-import tschuba.ez.booth.ui.i18n.TranslationKeys;
-
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.IntStream;
-
-import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static org.vaadin.lineawesome.LineAwesomeIcon.*;
+import tschuba.ez.booth.ui.i18n.TranslationKeys;
 
 public class CheckoutKeyPad extends Div implements HasEnabled {
     public static final char DECIMAL_SEPARATOR = '.';
@@ -28,73 +31,101 @@ public class CheckoutKeyPad extends Div implements HasEnabled {
     private boolean decimalZeroPending = false;
 
     public CheckoutKeyPad(CheckoutItemForm checkoutForm) {
-        addClassNames(Display.FLEX, FlexDirection.COLUMN, Gap.LARGE, BorderRadius.LARGE, Background.CONTRAST_5,
-                Padding.Vertical.LARGE, Padding.Horizontal.XLARGE, Margin.Horizontal.XLARGE);
+        addClassNames(
+                Display.FLEX,
+                FlexDirection.COLUMN,
+                Gap.LARGE,
+                BorderRadius.LARGE,
+                Background.CONTRAST_5,
+                Padding.Vertical.LARGE,
+                Padding.Horizontal.XLARGE,
+                Margin.Horizontal.XLARGE);
 
         Div inputGrid = new Div();
         inputGrid.addClassNames(Display.GRID, Grid.Column.COLUMNS_3, Grid.Row.ROWS_4, Gap.SMALL);
-        IntStream.of(2, 1, 0).forEach(row -> IntStream.of(1, 2, 3)
-                .map(col -> (row * 3) + col)
-                .mapToObj(this::createDigitButton)
-                .forEach(inputGrid::add));
+        IntStream.of(2, 1, 0)
+                .forEach(
+                        row ->
+                                IntStream.of(1, 2, 3)
+                                        .map(col -> (row * 3) + col)
+                                        .mapToObj(this::createDigitButton)
+                                        .forEach(inputGrid::add));
 
-        Button backButton = createButton(
-                button -> {
-                    button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-                    button.setIcon(BACKSPACE_SOLID.create());
-                },
-                clickEvent -> {
-                    boolean setSeparatorPending = Optional.of(focusField).map(fieldAdapter -> {
-                        String value = fieldAdapter.getValueAsString();
-                        return value != null && value.length() > 2 && value.charAt(value.length() - 2) == DECIMAL_SEPARATOR;
-                    }).orElse(false);
-                    updateBoundField(ValueModifiers.removeLastChar());
-                    decimalSeparatorPending = setSeparatorPending;
-                });
+        Button backButton =
+                createButton(
+                        button -> {
+                            button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+                            button.setIcon(BACKSPACE_SOLID.create());
+                        },
+                        clickEvent -> {
+                            boolean setSeparatorPending =
+                                    Optional.of(focusField)
+                                            .map(
+                                                    fieldAdapter -> {
+                                                        String value =
+                                                                fieldAdapter.getValueAsString();
+                                                        return value != null
+                                                                && value.length() > 2
+                                                                && value.charAt(value.length() - 2)
+                                                                        == DECIMAL_SEPARATOR;
+                                                    })
+                                            .orElse(false);
+                            updateBoundField(ValueModifiers.removeLastChar());
+                            decimalSeparatorPending = setSeparatorPending;
+                        });
         inputGrid.add(backButton);
 
         inputGrid.add(createDigitButton(0));
 
-        Button separatorButton = createButton(
-                button -> {
-                    button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-                    button.setText(",");
-                },
-                clickEvent -> CheckoutKeyPad.this.decimalSeparatorPending = true);
+        Button separatorButton =
+                createButton(
+                        button -> {
+                            button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+                            button.setText(",");
+                        },
+                        clickEvent -> CheckoutKeyPad.this.decimalSeparatorPending = true);
         inputGrid.add(separatorButton);
 
         Div actionGrid = new Div();
         actionGrid.addClassNames(Display.GRID, Grid.Column.COLUMNS_2, Gap.SMALL);
 
-        Button clearButton = createButton(
-                button -> {
-                    button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-                    button.setIcon(TIMES_SOLID.create());
-                    String text = getTranslation(TranslationKeys.CheckoutKeyPad.CLEAR_BUTTON__TEXT);
-                    Tooltip.forComponent(button).setText(text);
-                },
-                clickEvent -> {
-                    if (focusField != null) {
-                        focusField.setEmptyValue();
-                    }
-                });
+        Button clearButton =
+                createButton(
+                        button -> {
+                            button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+                            button.setIcon(TIMES_SOLID.create());
+                            String text =
+                                    getTranslation(
+                                            TranslationKeys.CheckoutKeyPad.CLEAR_BUTTON__TEXT);
+                            Tooltip.forComponent(button).setText(text);
+                        },
+                        clickEvent -> {
+                            if (focusField != null) {
+                                focusField.setEmptyValue();
+                            }
+                        });
         actionGrid.add(clearButton);
 
-        Button finishButton = createButton(
-                button -> {
-                    button.setIcon(CHECK_SOLID.create());
-                    String text = getTranslation(TranslationKeys.CheckoutKeyPad.FINISH_BUTTON__TEXT);
-                    Tooltip.forComponent(button).setText(text);
-                    button.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-                },
-                clickEvent -> checkoutForm.valueConfirmed(focusField.field)
-        );
+        Button finishButton =
+                createButton(
+                        button -> {
+                            button.setIcon(CHECK_SOLID.create());
+                            String text =
+                                    getTranslation(
+                                            TranslationKeys.CheckoutKeyPad.FINISH_BUTTON__TEXT);
+                            Tooltip.forComponent(button).setText(text);
+                            button.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+                        },
+                        clickEvent -> checkoutForm.valueConfirmed(focusField.field));
         actionGrid.add(finishButton);
 
         this.add(inputGrid, actionGrid);
 
-        checkoutForm.getPriceField().addFocusListener(event -> focusField = FieldAdapter.bigDecimal(event.getSource()));
-        //checkoutForm.getVendorField().addFocusListener(event -> focusField = FieldAdapter.integer(event.getSource()));
+        checkoutForm
+                .getPriceField()
+                .addFocusListener(event -> focusField = FieldAdapter.bigDecimal(event.getSource()));
+        // checkoutForm.getVendorField().addFocusListener(event -> focusField =
+        // FieldAdapter.integer(event.getSource()));
     }
 
     private Button createDigitButton(int value) {
@@ -103,41 +134,46 @@ public class CheckoutKeyPad extends Div implements HasEnabled {
                     button.setText(Integer.toString(value));
                     button.addClassNames(Background.CONTRAST_10, FontSize.XLARGE);
                 },
-                clickEvent -> updateBoundField(ValueModifiers.append(Character.forDigit(value, 10)))
-        );
+                clickEvent ->
+                        updateBoundField(ValueModifiers.append(Character.forDigit(value, 10))));
     }
 
-    private Button createButton(Consumer<Button> buttonConsumer, Consumer<ClickEvent<Button>> clickHandler) {
+    private Button createButton(
+            Consumer<Button> buttonConsumer, Consumer<ClickEvent<Button>> clickHandler) {
         Button button = new Button();
         buttonConsumer.accept(button);
         button.setDisableOnClick(true);
         button.addClassNames(Height.XLARGE);
         button.addThemeVariants(ButtonVariant.LUMO_LARGE);
-        button.addClickListener(clickEvent -> {
-            try {
-                clickHandler.accept(clickEvent);
-            } finally {
-                clickEvent.getSource().setEnabled(true);
-            }
-        });
+        button.addClickListener(
+                clickEvent -> {
+                    try {
+                        clickHandler.accept(clickEvent);
+                    } finally {
+                        clickEvent.getSource().setEnabled(true);
+                    }
+                });
         return button;
     }
 
     private void updateBoundField(Function<String, String> modifier) {
-        Optional.ofNullable(focusField).ifPresent(field -> {
-            field.getValueAsString();
-            String fieldValue = field.getValueAsString();
-            if (decimalSeparatorPending) {
-                fieldValue = ValueModifiers.append(DECIMAL_SEPARATOR).apply(fieldValue);
-                decimalSeparatorPending = false;
-            }
-            if (decimalZeroPending) {
-                fieldValue = ValueModifiers.append('0').apply(fieldValue);
-                decimalZeroPending = false;
-            }
-            String newValue = modifier.apply(fieldValue);
-            field.setValueFromString(newValue);
-        });
+        Optional.ofNullable(focusField)
+                .ifPresent(
+                        field -> {
+                            field.getValueAsString();
+                            String fieldValue = field.getValueAsString();
+                            if (decimalSeparatorPending) {
+                                fieldValue =
+                                        ValueModifiers.append(DECIMAL_SEPARATOR).apply(fieldValue);
+                                decimalSeparatorPending = false;
+                            }
+                            if (decimalZeroPending) {
+                                fieldValue = ValueModifiers.append('0').apply(fieldValue);
+                                decimalZeroPending = false;
+                            }
+                            String newValue = modifier.apply(fieldValue);
+                            field.setValueFromString(newValue);
+                        });
     }
 
     private interface ValueModifiers {

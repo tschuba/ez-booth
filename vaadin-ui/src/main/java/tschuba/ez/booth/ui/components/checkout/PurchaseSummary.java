@@ -1,7 +1,12 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components.checkout;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.*;
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
+import static tschuba.ez.booth.ui.i18n.TranslationKeys.PurchaseSummary.*;
 
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
@@ -13,6 +18,12 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +31,6 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.CheckoutConfig;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.ui.i18n.Formats.formats;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.PurchaseSummary.*;
 
 @SpringComponent
 @UIScope
@@ -45,11 +45,19 @@ public class PurchaseSummary extends Div {
     private final Span itemCountSpan;
 
     @Autowired
-    public PurchaseSummary(@NonNull CheckoutConfirmationDialog confirmationDialog, @NonNull CheckoutConfig config) {
+    public PurchaseSummary(
+            @NonNull CheckoutConfirmationDialog confirmationDialog,
+            @NonNull CheckoutConfig config) {
         this.config = config;
         this.confirmationDialog = confirmationDialog;
 
-        addClassNames(Display.GRID, Background.CONTRAST_5, BoxSizing.BORDER, Padding.LARGE, BorderRadius.LARGE, Position.STICKY);
+        addClassNames(
+                Display.GRID,
+                Background.CONTRAST_5,
+                BoxSizing.BORDER,
+                Padding.LARGE,
+                BorderRadius.LARGE,
+                Position.STICKY);
 
         Header headerSection = new Header();
         headerSection.addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.BETWEEN);
@@ -64,8 +72,13 @@ public class PurchaseSummary extends Div {
 
         checkoutButton = new Button();
         checkoutButton.setIcon(LineAwesomeIcon.WALLET_SOLID.create());
-        checkoutButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_SUCCESS, ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
-        checkoutButton.addClassNames(FontSize.LARGE, Border.ALL, BorderRadius.MEDIUM, BorderColor.SUCCESS);
+        checkoutButton.addThemeVariants(
+                ButtonVariant.LUMO_ICON,
+                ButtonVariant.LUMO_SUCCESS,
+                ButtonVariant.LUMO_PRIMARY,
+                ButtonVariant.LUMO_LARGE);
+        checkoutButton.addClassNames(
+                FontSize.LARGE, Border.ALL, BorderRadius.MEDIUM, BorderColor.SUCCESS);
         checkoutButton.setAriaLabel(getTranslation(CHECKOUT_BUTTON__TOOLTIP));
         checkoutButton.setDisableOnClick(true);
         checkoutButton.setEnabled(false);
@@ -75,17 +88,23 @@ public class PurchaseSummary extends Div {
         headerSection.add(header, itemCountSpan, checkoutButton);
 
         vendorContainer = new Div();
-        vendorContainer.addClassNames(Display.BLOCK, Margin.Top.MEDIUM, Padding.NONE, Border.BOTTOM, BorderColor.CONTRAST_10);
+        vendorContainer.addClassNames(
+                Display.BLOCK,
+                Margin.Top.MEDIUM,
+                Padding.NONE,
+                Border.BOTTOM,
+                BorderColor.CONTRAST_10);
         vendorContainer.setWidth(72, Unit.EX);
 
         add(headerSection);
 
         this.confirmationDialog.addCheckoutConfirmedListener(this::onCheckoutConfirmedEvent);
-        this.confirmationDialog.addOpenedChangeListener(event -> {
-            if (!event.isOpened()) {
-                checkoutButton.setEnabled(true);
-            }
-        });
+        this.confirmationDialog.addOpenedChangeListener(
+                event -> {
+                    if (!event.isOpened()) {
+                        checkoutButton.setEnabled(true);
+                    }
+                });
         add(this.confirmationDialog);
     }
 
@@ -104,7 +123,8 @@ public class PurchaseSummary extends Div {
             add(vendorContainer);
         }
 
-        PurchaseVendorDetails vendorDetails = findVendorDetails(vendor).orElseGet(() -> createVendorDetails(vendor));
+        PurchaseVendorDetails vendorDetails =
+                findVendorDetails(vendor).orElseGet(() -> createVendorDetails(vendor));
         vendorDetails.removeFromParent();
         vendorContainer.addComponentAsFirst(vendorDetails);
         vendorDetails.addItem(price);
@@ -136,7 +156,9 @@ public class PurchaseSummary extends Div {
     }
 
     private Optional<PurchaseVendorDetails> findVendorDetails(DataModel.Vendor.Key vendor) {
-        return getVendorPanels().filter(panel -> Objects.equals(panel.getVendor(), vendor)).findAny();
+        return getVendorPanels()
+                .filter(panel -> Objects.equals(panel.getVendor(), vendor))
+                .findAny();
     }
 
     private PurchaseVendorDetails createVendorDetails(DataModel.Vendor.Key vendor) {
@@ -166,7 +188,8 @@ public class PurchaseSummary extends Div {
     }
 
     private void updateSum() {
-        double purchaseSum = getVendorPanels().mapToDouble(PurchaseVendorDetails::getSumOfItems).sum();
+        double purchaseSum =
+                getVendorPanels().mapToDouble(PurchaseVendorDetails::getSumOfItems).sum();
         String purchaseSumText = formats().currency(purchaseSum, getLocale());
         purchaseSumSpan.setText(purchaseSumText);
         String tooltipText;
@@ -196,7 +219,8 @@ public class PurchaseSummary extends Div {
         }
 
         DataModel.Booth.Key purchaseBooth = itemList.get(0).key().purchase().booth();
-        ServiceModel.Checkout checkout = ServiceModel.Checkout.builder().booth(purchaseBooth).items(itemList).build();
+        ServiceModel.Checkout checkout =
+                ServiceModel.Checkout.builder().booth(purchaseBooth).items(itemList).build();
         if (config.confirmationRequired()) {
             confirmationDialog.open(checkout);
         } else {
@@ -212,10 +236,10 @@ public class PurchaseSummary extends Div {
     public static class SaveCheckoutEvent extends ComponentEvent<PurchaseSummary> {
         private final ServiceModel.Checkout checkout;
 
-        public SaveCheckoutEvent(PurchaseSummary source, boolean fromClient, ServiceModel.Checkout checkout) {
+        public SaveCheckoutEvent(
+                PurchaseSummary source, boolean fromClient, ServiceModel.Checkout checkout) {
             super(source, fromClient);
             this.checkout = checkout;
         }
-
     }
 }

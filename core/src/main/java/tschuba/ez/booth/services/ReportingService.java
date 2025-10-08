@@ -5,8 +5,6 @@
 package tschuba.ez.booth.services;
 
 import java.net.URI;
-import java.net.URL;
-
 import lombok.NonNull;
 import tschuba.ez.booth.model.DataModel;
 

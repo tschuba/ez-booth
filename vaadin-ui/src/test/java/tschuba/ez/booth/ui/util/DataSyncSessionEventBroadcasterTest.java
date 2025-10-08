@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +36,12 @@ class DataSyncSessionEventBroadcasterTest {
 
     @Test
     void testGetInstance() {
-        assertThatNoException().isThrownBy(() -> assertThat(DataSyncSessionEventBroadcaster.getInstance()).isNotNull().isEqualTo(DataSyncSessionEventBroadcaster.INSTANCE));
+        assertThatNoException()
+                .isThrownBy(
+                        () ->
+                                assertThat(DataSyncSessionEventBroadcaster.getInstance())
+                                        .isNotNull()
+                                        .isEqualTo(DataSyncSessionEventBroadcaster.INSTANCE));
     }
 
     @Test

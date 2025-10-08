@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -85,7 +84,8 @@ public class ReportingLocalService implements ReportingService {
                                 () ->
                                         new RecordNotFoundException(
                                                 "Booth not found: " + vendorKey.booth()));
-        ServiceModel.ChargingConfig chargingConfig = ServiceModel.ChargingConfig.of(booth);
+        ServiceModel.ChargingConfig chargingConfig =
+                ServiceModel.ChargingConfig.of(EntitiesMapper.entityToObject(booth));
 
         ServiceModel.Balance.Input balanceInput =
                 ServiceModel.Balance.Input.builder()

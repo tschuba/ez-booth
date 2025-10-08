@@ -1,8 +1,13 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.lifecycle;
 
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServiceInitListener;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
@@ -10,8 +15,6 @@ import org.springframework.stereotype.Component;
 import tschuba.ez.booth.ui.util.Server;
 import tschuba.ez.booth.ui.util.WithDelay;
 import tschuba.ez.booth.ui.views.EntryView;
-
-import java.time.Duration;
 
 @Component
 @RequiredArgsConstructor

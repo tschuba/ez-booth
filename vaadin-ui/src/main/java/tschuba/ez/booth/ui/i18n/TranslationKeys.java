@@ -1,9 +1,8 @@
-/* Licensed under MIT
-
-Copyright (c) 2023-2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2023-2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.i18n;
-
-import tschuba.ez.booth.ui.util.Notifications;
 
 public interface TranslationKeys {
     interface App {
@@ -42,11 +41,14 @@ public interface TranslationKeys {
         String PARTICIPATION_FEE_FIELD__LABEL = "UpsertEventForm.participationFeeField.label";
         String SALES_FEE_FIELD__LABEL = "UpsertEventForm.salesFeeField.label";
         String FEES_ROUNDING_STEP_FIELD__LABEL = "UpsertEventForm.feesRoundingStepField.label";
-        String NOTIFICATION__INVALID_DESCRIPTION = "UpsertEventForm.notification.invalidDescription";
+        String NOTIFICATION__INVALID_DESCRIPTION =
+                "UpsertEventForm.notification.invalidDescription";
         String NOTIFICATION__INVALID_DATE = "UpsertEventForm.notification.invalidDate";
-        String NOTIFICATION__INVALID_PARTICIPATION_FEE = "UpsertEventForm.notification.invalidParticipationFee";
+        String NOTIFICATION__INVALID_PARTICIPATION_FEE =
+                "UpsertEventForm.notification.invalidParticipationFee";
         String NOTIFICATION__INVALID_SALES_FEE = "UpsertEventForm.notification.invalidSalesFee";
-        String NOTIFICATION__INVALID_FEES_ROUNDING_STEP = "UpsertEventForm.notification.invalidFeesRoundingStep";
+        String NOTIFICATION__INVALID_FEES_ROUNDING_STEP =
+                "UpsertEventForm.notification.invalidFeesRoundingStep";
     }
 
     interface EventSelection {
@@ -125,7 +127,8 @@ public interface TranslationKeys {
         String PURCHASE_GRID__HEADER__ID = "CheckoutView.purchaseGrid.header.id";
         String BUTTON_PRINT_RECEIPT__TOOLTIP = "CheckoutView.buttonPrintReceipt.tooltip";
         String NOTIFICATION__PURCHASE_SUBMITTED = "CheckoutView.notification.purchaseSubmitted";
-        String NOTIFICATION__PURCHASE_SUBMISSION_FAILED = "CheckoutView.notification.purchaseSubmissionFailed";
+        String NOTIFICATION__PURCHASE_SUBMISSION_FAILED =
+                "CheckoutView.notification.purchaseSubmissionFailed";
         String NOTIFICATION__UNSAVED_CHANGES = "CheckoutView.notification.unsavedChanges";
         String NOTIFICATION__PRINT_RECEIPT_TRIGGERED = "CheckoutView.notification.printReceipt";
     }
@@ -142,7 +145,8 @@ public interface TranslationKeys {
         String MENU_ITEM__TEXT = "VendorReportView.menuItem.title";
         String TITLE = "VendorReportView.title";
         String FILTER_FIELD__PLACEHOLDER = "VendorReportView.filterField.placeholder";
-        String BUTTON_PRINT_ALL_RECEIPTS__TOOLTIP = "VendorReportView.buttonPrintAllReceipts.tooltip";
+        String BUTTON_PRINT_ALL_RECEIPTS__TOOLTIP =
+                "VendorReportView.buttonPrintAllReceipts.tooltip";
     }
 
     interface VendorReportCard {
@@ -159,8 +163,10 @@ public interface TranslationKeys {
         String PARTICIPATION_FEE__LABEL = "PurchaseReceiptPrintView.purchaseFee.label";
         String SALES_FEE__LABEL = "PurchaseReceiptPrintView.salesFee.label";
         String TOTAL_REVENUE__LABEL = "PurchaseReceiptPrintView.totalRevenue.label";
-        String NOTIFICATION__ILLEGAL_ARGUMENTS = "VendorReportPrintView.notification.illegalArguments";
-        String NOTIFICATION__REPORT_GENERATION_FAILED = "VendorReportPrintView.notification.reportGenerationFailed";
+        String NOTIFICATION__ILLEGAL_ARGUMENTS =
+                "VendorReportPrintView.notification.illegalArguments";
+        String NOTIFICATION__REPORT_GENERATION_FAILED =
+                "VendorReportPrintView.notification.reportGenerationFailed";
     }
 
     interface PurchaseReceiptPrintView {
@@ -169,8 +175,10 @@ public interface TranslationKeys {
         String DATE_TIME__LABEL = "PurchaseReceiptPrintView.dateTime.label";
         String ITEM_COUNT__LABEL = "PurchaseReceiptPrintView.itemCount.label";
         String SUM__LABEL = "PurchaseReceiptPrintView.sum.label";
-        String NOTIFICATION__ILLEGAL_ARGUMENTS = "PurchaseReceiptPrintView.notification.illegalArguments";
-        String NOTIFICATION__PURCHASE_NOT_FOUND = "PurchaseReceiptPrintView.notification.purchaseNotFound";
+        String NOTIFICATION__ILLEGAL_ARGUMENTS =
+                "PurchaseReceiptPrintView.notification.illegalArguments";
+        String NOTIFICATION__PURCHASE_NOT_FOUND =
+                "PurchaseReceiptPrintView.notification.purchaseNotFound";
     }
 
     interface ExportImportView {
@@ -200,7 +208,8 @@ public interface TranslationKeys {
         String SYNC_URL_LABEL__TEXT = "DataSyncHostFragment.syncUrlLabel.text";
         String SYNC_URL_DESCRIPTION__TEXT = "DataSyncHostFragment.syncUrlDescription.text";
         String SYNC_URL_DIVIDER__TEXT = "DataSyncHostFragment.syncUrlDivider.text";
-        String SYNC_URL_COPIED_TO_CLIPBOARD__NOTIFICATION = "DataSyncHostFragment.syncUrlCopiedToClipboard.notification";
+        String SYNC_URL_COPIED_TO_CLIPBOARD__NOTIFICATION =
+                "DataSyncHostFragment.syncUrlCopiedToClipboard.notification";
         String SYNC_DATA_BUTTON__TEXT = "DataSyncHostFragment.syncDataButton.text";
         String SYNC_DATA_DESCRIPTION__TEXT = "DataSyncHostFragment.syncDataDescription.text";
         String SYNC_IN_PROGRESS__TEXT = "DataSyncHostFragment.syncInProgress.text";
@@ -215,7 +224,8 @@ public interface TranslationKeys {
         String SYNC_URL_HELP__TEXT = "DataSyncSubscriberFragment.syncUrlHelp.text";
         String SYNC_JOIN_DESCRIPTION__TEXT = "DataSyncSubscriberFragment.joinSyncDescription.text";
         String SYNC_JOIN_BUTTON__TEXT = "DataSyncSubscriberFragment.joinSyncButton.text";
-        String SYNC_LEAVE_DESCRIPTION__TEXT = "DataSyncSubscriberFragment.leaveSyncDescription.text";
+        String SYNC_LEAVE_DESCRIPTION__TEXT =
+                "DataSyncSubscriberFragment.leaveSyncDescription.text";
         String SYNC_LEAVE_BUTTON__TEXT = "DataSyncSubscriberFragment.leaveSyncButton.text";
         String SYNC_JOIN_FAILED = "DataSyncSubscriberFragment.notification.joinSyncFailed";
     }

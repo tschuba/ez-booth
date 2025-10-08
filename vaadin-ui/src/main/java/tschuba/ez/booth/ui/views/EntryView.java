@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.views;
 
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -10,8 +14,7 @@ import tschuba.ez.booth.ui.layouts.app.BasicAppLayout;
 
 @Route(value = "", layout = BasicAppLayout.class)
 public class EntryView extends BoothSelectionView {
-    public EntryView(@Autowired BoothService boothService,
-                     @Autowired BoothRepository booths) {
+    public EntryView(@Autowired BoothService boothService, @Autowired BoothRepository booths) {
         super(boothService, booths);
     }
 

@@ -6,14 +6,11 @@ package tschuba.ez.booth.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.URI;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.model.EntityModel;
 
 /**
  * Service model classes for various service operations.
@@ -66,20 +63,6 @@ public final class ServiceModel {
                     .participationFee(booth.participationFee())
                     .salesFee(booth.salesFee())
                     .roundingStep(booth.feesRoundingStep())
-                    .build();
-        }
-
-        /**
-         * Create a {@link ChargingConfig} from the given booth entity.
-         *
-         * @param booth the booth entity to create the config from
-         * @return the created config
-         */
-        public static ChargingConfig of(@NonNull EntityModel.Booth booth) {
-            return ChargingConfig.builder()
-                    .participationFee(booth.getParticipationFee())
-                    .salesFee(booth.getSalesFee())
-                    .roundingStep(booth.getFeesRoundingStep())
                     .build();
         }
 
@@ -148,8 +131,7 @@ public final class ServiceModel {
      * @param relativePath the relative path for download
      */
     @Builder
-    public record ReportFile(@NonNull Path localFile,
-                             @NonNull String relativePath) {}
+    public record ReportFile(@NonNull Path localFile, @NonNull String relativePath) {}
 
     /**
      * Data for data exchange operations.

@@ -1,12 +1,15 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.model;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import tschuba.ez.booth.model.ModelTestData.Entities;
 import tschuba.ez.booth.model.ModelTestData.Objects;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Unit tests for {@link EntitiesMapper}.
@@ -20,8 +23,10 @@ class EntitiesMapperTest {
     class BoothKeyTests {
         @Test
         void testObjectToEntityAndBackShouldReturnEqualData() {
-            assertThat(EntitiesMapper.objectToEntity(Objects.BOOTH_KEY)).isEqualTo(Entities.BOOTH_KEY);
-            assertThat(EntitiesMapper.entityToObject(Entities.BOOTH_KEY)).isEqualTo(Objects.BOOTH_KEY);
+            assertThat(EntitiesMapper.objectToEntity(Objects.BOOTH_KEY))
+                    .isEqualTo(Entities.BOOTH_KEY);
+            assertThat(EntitiesMapper.entityToObject(Entities.BOOTH_KEY))
+                    .isEqualTo(Objects.BOOTH_KEY);
         }
     }
 
@@ -44,8 +49,10 @@ class EntitiesMapperTest {
     class VendorKeyTests {
         @Test
         void testObjectToEntityAndBackShouldReturnEqualData() {
-            assertThat(EntitiesMapper.objectToEntity(Objects.VENDOR_KEY)).isEqualTo(Entities.VENDOR_KEY);
-            assertThat(EntitiesMapper.entityToObject(Entities.VENDOR_KEY)).isEqualTo(Objects.VENDOR_KEY);
+            assertThat(EntitiesMapper.objectToEntity(Objects.VENDOR_KEY))
+                    .isEqualTo(Entities.VENDOR_KEY);
+            assertThat(EntitiesMapper.entityToObject(Entities.VENDOR_KEY))
+                    .isEqualTo(Objects.VENDOR_KEY);
         }
     }
 
@@ -68,8 +75,10 @@ class EntitiesMapperTest {
     class PurchaseItemKeyTests {
         @Test
         void testObjectToEntityAndBackShouldReturnEqualData() {
-            assertThat(EntitiesMapper.objectToEntity(Objects.PURCHASE_ITEM_KEY)).isEqualTo(Entities.PURCHASE_ITEM_KEY);
-            assertThat(EntitiesMapper.entityToObject(Entities.PURCHASE_ITEM_KEY)).isEqualTo(Objects.PURCHASE_ITEM_KEY);
+            assertThat(EntitiesMapper.objectToEntity(Objects.PURCHASE_ITEM_KEY))
+                    .isEqualTo(Entities.PURCHASE_ITEM_KEY);
+            assertThat(EntitiesMapper.entityToObject(Entities.PURCHASE_ITEM_KEY))
+                    .isEqualTo(Objects.PURCHASE_ITEM_KEY);
         }
     }
 
@@ -80,8 +89,10 @@ class EntitiesMapperTest {
     class PurchaseItemTests {
         @Test
         void testObjectToEntityAndBackShouldReturnEqualData() {
-            assertThat(EntitiesMapper.objectToEntity(Objects.PURCHASE_ITEM)).isEqualTo(Entities.PURCHASE_ITEM);
-            assertThat(EntitiesMapper.entityToObject(Entities.PURCHASE_ITEM)).isEqualTo(Objects.PURCHASE_ITEM);
+            assertThat(EntitiesMapper.objectToEntity(Objects.PURCHASE_ITEM))
+                    .isEqualTo(Entities.PURCHASE_ITEM);
+            assertThat(EntitiesMapper.entityToObject(Entities.PURCHASE_ITEM))
+                    .isEqualTo(Objects.PURCHASE_ITEM);
         }
     }
 
@@ -92,8 +103,10 @@ class EntitiesMapperTest {
     class PurchaseKeyTests {
         @Test
         void testObjectToEntityAndBackShouldReturnEqualData() {
-            assertThat(EntitiesMapper.objectToEntity(Objects.PURCHASE_KEY)).isEqualTo(Entities.PURCHASE_KEY);
-            assertThat(EntitiesMapper.entityToObject(Entities.PURCHASE_KEY)).isEqualTo(Objects.PURCHASE_KEY);
+            assertThat(EntitiesMapper.objectToEntity(Objects.PURCHASE_KEY))
+                    .isEqualTo(Entities.PURCHASE_KEY);
+            assertThat(EntitiesMapper.entityToObject(Entities.PURCHASE_KEY))
+                    .isEqualTo(Objects.PURCHASE_KEY);
         }
     }
 
@@ -104,8 +117,10 @@ class EntitiesMapperTest {
     class PurchaseTests {
         @Test
         void testObjectToEntityAndBackShouldReturnEqualData() {
-            assertThat(EntitiesMapper.objectToEntity(Objects.PURCHASE)).isEqualTo(Entities.PURCHASE);
-            assertThat(EntitiesMapper.entityToObject(Entities.PURCHASE)).isEqualTo(Objects.PURCHASE);
+            assertThat(EntitiesMapper.objectToEntity(Objects.PURCHASE))
+                    .isEqualTo(Entities.PURCHASE);
+            assertThat(EntitiesMapper.entityToObject(Entities.PURCHASE))
+                    .isEqualTo(Objects.PURCHASE);
         }
     }
 }

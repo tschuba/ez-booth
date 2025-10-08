@@ -1,6 +1,7 @@
-/* Licensed under MIT
-
-Copyright (c) 2025 Thomas Schulte-Bahrenberg */
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui;
 
 import static org.assertj.core.api.Assertions.*;
@@ -17,7 +18,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 class RefreshEventTest {
     @Test
     void testConstructorShouldThrowIfSourceIsNull() {
-        assertThatIllegalArgumentException().isThrownBy(() -> new RefreshEvent(null, false)).withMessage("null source");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new RefreshEvent(null, false))
+                .withMessage("null source");
     }
 
     @Test
@@ -28,6 +31,7 @@ class RefreshEventTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void testConstructorShouldSucceedForAnyFromClientValue(boolean fromClient) {
-        assertThatNoException().isThrownBy(() -> new RefreshEvent(mock(Component.class), fromClient));
+        assertThatNoException()
+                .isThrownBy(() -> new RefreshEvent(mock(Component.class), fromClient));
     }
 }
