@@ -4,8 +4,8 @@ Copyright (c) 2025 Thomas Schulte-Bahrenberg */
 package tschuba.ez.booth.ui;
 
 import static lombok.AccessLevel.PRIVATE;
-import static tschuba.basarix.common.Patterns.dataSync;
-import static tschuba.basarix.common.Patterns.http;
+import static tschuba.ez.booth.ui.util.Patterns.dataSync;
+import static tschuba.ez.booth.ui.util.Patterns.http;
 
 import lombok.NoArgsConstructor;
 
