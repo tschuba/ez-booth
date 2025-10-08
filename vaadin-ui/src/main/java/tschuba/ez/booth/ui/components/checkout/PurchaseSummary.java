@@ -17,12 +17,11 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.basarix.data.model.EventKey;
-import tschuba.basarix.data.model.Item;
-import tschuba.basarix.data.model.VendorKey;
-import tschuba.basarix.services.dto.Checkout;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.CheckoutConfig;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,8 +29,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.PurchaseSummary.*;
-import static tschuba.commons.vaadin.i18n.Formats.formats;
 
 @SpringComponent
 @UIScope
@@ -100,7 +99,7 @@ public class PurchaseSummary extends Div {
         updateSum();
     }
 
-    public void addItem(VendorKey vendor, Double price) {
+    public void addItem(DataModel.Vendor.Key vendor, BigDecimal price) {
         if (this.getChildren().noneMatch(component -> component.equals(vendorContainer))) {
             add(vendorContainer);
         }
@@ -123,7 +122,7 @@ public class PurchaseSummary extends Div {
         addListener(SaveCheckoutEvent.class, listener);
     }
 
-    private Stream<Item> getAllItems() {
+    private Stream<DataModel.PurchaseItem> getAllItems() {
         return getVendorPanels().flatMap(PurchaseVendorDetails::getItems);
     }
 
@@ -136,11 +135,11 @@ public class PurchaseSummary extends Div {
         return vendorContainer.getChildren().map(panel -> (PurchaseVendorDetails) panel);
     }
 
-    private Optional<PurchaseVendorDetails> findVendorDetails(VendorKey vendor) {
+    private Optional<PurchaseVendorDetails> findVendorDetails(DataModel.Vendor.Key vendor) {
         return getVendorPanels().filter(panel -> Objects.equals(panel.getVendor(), vendor)).findAny();
     }
 
-    private PurchaseVendorDetails createVendorDetails(VendorKey vendor) {
+    private PurchaseVendorDetails createVendorDetails(DataModel.Vendor.Key vendor) {
         PurchaseVendorDetails vendorPanel = new PurchaseVendorDetails(vendor);
         vendorPanel.addItemsChangedListener(this::onVendorItemsChangedListener);
         return vendorPanel;
@@ -181,7 +180,7 @@ public class PurchaseSummary extends Div {
         Tooltip.forComponent(checkoutButton).setText(tooltipText);
     }
 
-    private void completeCheckout(Checkout checkout) {
+    private void completeCheckout(ServiceModel.Checkout checkout) {
         fireEvent(new SaveCheckoutEvent(this, false, checkout));
         clear();
     }
@@ -191,13 +190,13 @@ public class PurchaseSummary extends Div {
     }
 
     private void onClickCheckout(ClickEvent<Button> event) {
-        List<Item> itemList = getAllItems().collect(Collectors.toList());
+        List<DataModel.PurchaseItem> itemList = getAllItems().collect(Collectors.toList());
         if (itemList.isEmpty()) {
             return;
         }
 
-        EventKey purchaseEvent = itemList.get(0).getKey().getEvent();
-        Checkout checkout = Checkout.builder().setEvent(purchaseEvent).setItems(itemList).build();
+        DataModel.Booth.Key purchaseBooth = itemList.get(0).key().purchase().booth();
+        ServiceModel.Checkout checkout = ServiceModel.Checkout.builder().booth(purchaseBooth).items(itemList).build();
         if (config.confirmationRequired()) {
             confirmationDialog.open(checkout);
         } else {
@@ -211,9 +210,9 @@ public class PurchaseSummary extends Div {
 
     @Getter
     public static class SaveCheckoutEvent extends ComponentEvent<PurchaseSummary> {
-        private final Checkout checkout;
+        private final ServiceModel.Checkout checkout;
 
-        public SaveCheckoutEvent(PurchaseSummary source, boolean fromClient, Checkout checkout) {
+        public SaveCheckoutEvent(PurchaseSummary source, boolean fromClient, ServiceModel.Checkout checkout) {
             super(source, fromClient);
             this.checkout = checkout;
         }

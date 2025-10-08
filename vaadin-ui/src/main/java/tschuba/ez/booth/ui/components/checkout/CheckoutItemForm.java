@@ -12,14 +12,15 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.shared.HasValidationProperties;
 import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.BigDecimalField;
-import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldBase;
 import lombok.Getter;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.ez.booth.ui.components.event.EventSelection;
+import tschuba.ez.booth.ui.Constraints;
+import tschuba.ez.booth.ui.components.event.BoothSelection;
+import tschuba.ez.booth.ui.i18n.I18N;
 import tschuba.ez.booth.ui.util.UIUtil;
 import tschuba.ez.booth.ui.views.CheckoutView;
-import tschuba.commons.vaadin.i18n.I18N;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
@@ -30,14 +31,14 @@ import static tschuba.ez.booth.ui.i18n.TranslationKeys.CheckoutItemForm.*;
 
 public class CheckoutItemForm extends Composite<HorizontalLayout> implements HasEnabled {
     @Getter
-    private final IntegerField vendorField;
+    private final TextField vendorField;
     @Getter
     private final BigDecimalField priceField;
     private final Button historyToggle;
     private final Button clearButton;
 
     public CheckoutItemForm() {
-        vendorField = new IntegerField();
+        vendorField = new TextField();
         vendorField.addThemeVariants();
         vendorField.addClassNames(Padding.Top.NONE, FontSize.XLARGE);
         vendorField.setRequiredIndicatorVisible(true);
@@ -45,7 +46,7 @@ public class CheckoutItemForm extends Composite<HorizontalLayout> implements Has
         vendorField.setAutocorrect(true);
         vendorField.setAutofocus(true);
         vendorField.setAutoselect(true);
-        vendorField.setMin(0);
+        vendorField.setAllowedCharPattern(Constraints.Vendors.ALLOWED_CHARS_PATTERN);
         vendorField.addKeyDownListener(Key.ENTER, this::onEnterOnVendorField);
 
         priceField = new BigDecimalField();
@@ -139,21 +140,21 @@ public class CheckoutItemForm extends Composite<HorizontalLayout> implements Has
     }
 
     private void processAddItem() {
-        EventSelection.get().ifPresent(eventKey -> {
+        BoothSelection.get().ifPresent(eventKey -> {
             BigDecimal price = priceField.getValue();
-            Integer vendorId = vendorField.getValue();
+            String vendorId = vendorField.getValue();
             priceField.clear();
             vendorField.focus();
-            fireEvent(new AddItemEvent(this, false, vendorId, price.doubleValue()));
+            fireEvent(new AddItemEvent(this, false, vendorId, price));
         });
     }
 
     @Getter
     public static class AddItemEvent extends ComponentEvent<CheckoutItemForm> {
-        private final Integer vendorId;
-        private final Double price;
+        private final String vendorId;
+        private final BigDecimal price;
 
-        private AddItemEvent(CheckoutItemForm source, boolean fromClient, Integer vendorId, Double price) {
+        private AddItemEvent(CheckoutItemForm source, boolean fromClient, String vendorId, BigDecimal price) {
             super(source, fromClient);
             this.vendorId = vendorId;
             this.price = price;

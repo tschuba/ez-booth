@@ -1,11 +1,10 @@
 package tschuba.ez.booth.ui.i18n;
 
 import com.vaadin.flow.component.upload.UploadI18N;
-import tschuba.commons.vaadin.i18n.I18N;
 
 import java.util.Locale;
 
-import static tschuba.commons.vaadin.i18n.I18N.i18N;
+import static tschuba.ez.booth.ui.i18n.I18N.i18N;
 
 public class Upload {
     public static final String UPLOAD_I18N_SUFFIX_ADD_FILE = "addFile";

@@ -56,8 +56,12 @@ public class ReportingConfig {
         return targetBasePath;
     }
 
+    public Path htmlOutputPath() {
+        return targetBasePath().resolve("html");
+    }
+
     public Path htmlOutputPath(String fileName) {
-        return targetBasePath().resolve("html").resolve(fileName);
+        return htmlOutputPath().resolve(fileName);
     }
 
     /**

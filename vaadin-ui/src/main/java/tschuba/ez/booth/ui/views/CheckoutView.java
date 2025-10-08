@@ -16,51 +16,50 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.*;
+import lombok.NonNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.basarix.data.model.EventKey;
-import tschuba.basarix.data.model.Purchase;
-import tschuba.basarix.data.model.VendorKey;
-import tschuba.basarix.services.CheckoutService;
-import tschuba.basarix.services.EventService;
-import tschuba.basarix.services.dto.Checkout;
+import tschuba.ez.booth.data.BoothRepository;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.model.EntitiesMapper;
+import tschuba.ez.booth.services.PurchaseService;
+import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.components.checkout.CheckoutItemForm;
 import tschuba.ez.booth.ui.components.checkout.CheckoutKeyPad;
 import tschuba.ez.booth.ui.components.checkout.PurchaseSummary;
 import tschuba.ez.booth.ui.components.event.EventRequired;
-import tschuba.ez.booth.ui.components.event.EventSelection;
+import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.components.model.PurchaseComparator;
 import tschuba.ez.booth.ui.components.model.PurchaseGrid;
 import tschuba.ez.booth.ui.layouts.TwoColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.renderer.ColumnRenderer;
-import tschuba.ez.booth.ui.util.BadgeBuilder;
-import tschuba.ez.booth.ui.util.RoutingParameters;
-import tschuba.commons.vaadin.NavigateTo;
-import tschuba.commons.vaadin.Notifications;
+import tschuba.ez.booth.ui.util.*;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.Display;
 import static com.vaadin.flow.theme.lumo.LumoUtility.FlexDirection;
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.CheckoutView.*;
-import static tschuba.commons.vaadin.i18n.Formats.formats;
 
 @Route(value = "checkout", layout = AppLayoutWithMenu.class)
 @PreserveOnRefresh
 @EventRequired
 public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver {
-    private final CheckoutService checkoutService;
-    private final EventService eventService;
+    private final PurchaseService purchaseService;
+    private final BoothRepository booths;
 
     private final PurchaseSummary purchaseSummary;
     private final CheckoutItemForm checkoutForm;
     private final PurchaseGrid<Void> purchaseGrid;
     private final CheckoutKeyPad numPad;
 
-    public CheckoutView(final EventService eventService, final CheckoutService checkoutService, final PurchaseSummary purchaseSummary) {
-        this.eventService = eventService;
-        this.checkoutService = checkoutService;
+    public CheckoutView(@NonNull final BoothRepository booths,
+                        @NonNull final PurchaseService purchaseService,
+                        @NonNull final PurchaseSummary purchaseSummary) {
+        this.booths = booths;
+        this.purchaseService = purchaseService;
 
         this.purchaseSummary = purchaseSummary;
 
@@ -75,7 +74,7 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
         purchaseSummary.addSaveCheckoutEventListener(this::onSaveCheckoutEvent);
         checkoutSection.add(purchaseSummary);
 
-        purchaseGrid = createPurchaseGrid(eventService);
+        purchaseGrid = createPurchaseGrid(purchaseService);
         purchaseGrid.setVisible(false);
 
         numPad = new CheckoutKeyPad(checkoutForm);
@@ -97,9 +96,9 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
     public void beforeEnter(BeforeEnterEvent enterEvent) {
         super.beforeEnter(enterEvent);
 
-        EventSelection.get().flatMap(eventService::byKey).ifPresent(event -> {
-            checkoutForm.setEnabled(!event.isClosed());
-            numPad.setEnabled(!event.isClosed());
+        BoothSelection.get().map(EntitiesMapper::objectToEntity).flatMap(booths::findById).ifPresent(booth -> {
+            checkoutForm.setEnabled(!booth.isClosed());
+            numPad.setEnabled(!booth.isClosed());
         });
     }
 
@@ -115,18 +114,18 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
         return purchaseSummary.itemCount() > 0;
     }
 
-    private PurchaseGrid<Void> createPurchaseGrid(EventService eventService) {
+    private PurchaseGrid<Void> createPurchaseGrid(PurchaseService purchaseService) {
         PurchaseComparator dateTimeComparator = PurchaseComparator.builder().ascending(PurchaseComparator.Field.DateTime).build();
-        PurchaseGrid<Void> purchaseGrid = new PurchaseGrid<>(eventService);
+        PurchaseGrid<Void> purchaseGrid = new PurchaseGrid<>(purchaseService);
         purchaseGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COMPACT);
         purchaseGrid.setMinHeight(40, Unit.EM);
         purchaseGrid.setWidth("31rem");
-        Column<Purchase> dateTimeColumn = purchaseGrid.addColumn(ColumnRenderer.Purchase.dateTime(formats(), getLocale())).setComparator(dateTimeComparator).setHeader(getTranslation(PURCHASE_GRID__HEADER__DATE_TIME)).setWidth("11rem").setFlexGrow(0);
+        Column<DataModel.Purchase> dateTimeColumn = purchaseGrid.addColumn(ColumnRenderer.Purchase.dateTime(formats(), getLocale())).setComparator(dateTimeComparator).setHeader(getTranslation(PURCHASE_GRID__HEADER__DATE_TIME)).setWidth("11rem").setFlexGrow(0);
         purchaseGrid.addColumn(ColumnRenderer.Purchase.sum(formats(), getLocale())).setHeader(getTranslation(PURCHASE_GRID__HEADER__VALUE)).setWidth("6rem").setFlexGrow(0);
         purchaseGrid.addColumn(new ComponentRenderer<>(purchase -> {
-            String purchaseId = purchase.getKey().getId();
+            String purchaseId = purchase.key().purchaseId();
             String purchaseIdShort = "%s...".formatted(purchaseId.split("-")[0]);
-            Span idBadge = BadgeBuilder.badge().apply(new Span(purchaseIdShort));
+            Span idBadge = Badges.badge().applyTo(new Span(purchaseIdShort));
             Tooltip.forComponent(idBadge).setText(purchaseId);
             return idBadge;
         })).setHeader(getTranslation(PURCHASE_GRID__HEADER__ID)).setWidth("8rem").setFlexGrow(0);
@@ -162,8 +161,8 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
         checkoutForm.clear();
     }
 
-    private void openPrintReceiptView(Purchase purchase, boolean showNotification) {
-        RouteParameters parameters = RoutingParameters.builder().purchase(purchase.getKey()).build();
+    private void openPrintReceiptView(DataModel.Purchase purchase, boolean showNotification) {
+        RouteParameters parameters = Routing.Parameters.builder().purchase(purchase.key()).build();
         NavigateTo.view(PurchaseReceiptPrintView.class, parameters).newWindow();
         if (showNotification) {
             Notifications.message(getTranslation(NOTIFICATION__PRINT_RECEIPT_TRIGGERED));
@@ -171,17 +170,20 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
     }
 
     private void onAddItemEvent(CheckoutItemForm.AddItemEvent event) {
-        Optional<EventKey> currentEvent = EventSelection.get();
-        if (currentEvent.isPresent()) {
-            VendorKey vendor = VendorKey.of(currentEvent.get(), event.getVendorId());
+        Optional<DataModel.Booth.Key> currentBooth = BoothSelection.get();
+        if (currentBooth.isPresent()) {
+            DataModel.Vendor.Key vendor = DataModel.Vendor.Key.builder()
+                    .booth(currentBooth.get())
+                    .vendorId(event.getVendorId())
+                    .build();
             purchaseSummary.addItem(vendor, event.getPrice());
         }
     }
 
     private void onSaveCheckoutEvent(PurchaseSummary.SaveCheckoutEvent event) {
         try {
-            Checkout checkout = event.getCheckout();
-            Purchase purchase = checkoutService.save(checkout);
+            ServiceModel.Checkout checkout = event.getCheckout();
+            DataModel.Purchase purchase = purchaseService.checkout(checkout);
             Notifications.success(getTranslation(NOTIFICATION__PURCHASE_SUBMITTED));
             refreshAndClear();
             if (checkout.printReceipt()) {

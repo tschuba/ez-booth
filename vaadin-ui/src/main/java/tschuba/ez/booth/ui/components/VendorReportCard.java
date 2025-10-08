@@ -12,10 +12,10 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import jakarta.annotation.Nonnull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.basarix.data.model.VendorKey;
-import tschuba.basarix.reporting.VendorReportData;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.services.ServiceModel;
+import tschuba.ez.booth.ui.i18n.Formats;
 import tschuba.ez.booth.ui.views.VendorReportPrintView;
-import tschuba.commons.vaadin.i18n.Formats;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.VendorReportCard.*;
@@ -30,7 +30,7 @@ public class VendorReportCard extends VendorCard {
     private final Span revenue = new Span();
     private final Button printButton = new Button();
 
-    public VendorReportCard(@Nonnull VendorReportData<?> vendorData) {
+    public VendorReportCard(@Nonnull ServiceModel.VendorReportData vendorData) {
         super(vendorData.vendor());
 
         itemCount.addClassNames(FontSize.XSMALL);
@@ -57,7 +57,7 @@ public class VendorReportCard extends VendorCard {
     }
 
     private void onClickPrint(ClickEvent<Button> clickEvent) {
-        VendorKey vendorKey = getVendor().getKey();
+        DataModel.Vendor.Key vendorKey = getVendor().key();
         VendorReportPrintView.newWindowFor(vendorKey);
     }
 }

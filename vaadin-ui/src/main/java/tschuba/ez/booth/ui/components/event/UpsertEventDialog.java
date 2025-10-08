@@ -9,8 +9,10 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
-import tschuba.basarix.data.model.Event;
-import tschuba.basarix.services.EventService;
+import tschuba.ez.booth.data.BoothRepository;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.model.EntitiesMapper;
+import tschuba.ez.booth.model.EntityModel;
 
 import java.util.Optional;
 
@@ -18,12 +20,12 @@ import static tschuba.ez.booth.ui.i18n.TranslationKeys.UpsertEventDialog.*;
 
 public class UpsertEventDialog extends Dialog {
     private final UpsertEventForm upsertEventForm;
-    private final EventService eventService;
+    private final BoothRepository booths;
     private final Button saveButton;
 
-    public UpsertEventDialog(EventService eventService) {
+    public UpsertEventDialog(BoothRepository booths) {
         super();
-        this.eventService = eventService;
+        this.booths = booths;
 
         setHeaderTitle(getTranslation(TITLE));
         setCloseOnEsc(true);
@@ -52,13 +54,13 @@ public class UpsertEventDialog extends Dialog {
         upsertEventForm.clear();
     }
 
-    public void open(Event event) {
+    public void open(DataModel.Booth booth) {
         this.open();
-        upsertEventForm.setEvent(event);
+        upsertEventForm.setEvent(booth);
     }
 
-    public void addEventSavedListener(ComponentEventListener<EventSavedEvent> listener) {
-        addListener(EventSavedEvent.class, listener);
+    public void addEventSavedListener(ComponentEventListener<BoothSavedEvent> listener) {
+        addListener(BoothSavedEvent.class, listener);
     }
 
     private void onCreateEventFormSubmitEvent(CreateEventFormSubmitEvent event) {
@@ -71,12 +73,13 @@ public class UpsertEventDialog extends Dialog {
 
     private void onSaveEvent(ComponentEvent<? extends Component> event) {
         saveButton.setEnabled(false);
-        Optional<Event> formData = upsertEventForm.validate(true);
+        Optional<DataModel.Booth> formData = upsertEventForm.validate(true);
         if (formData.isPresent()) {
-            Event eventData = formData.get();
-            eventService.save(eventData);
+            DataModel.Booth boothData = formData.get();
+            EntityModel.Booth entity = EntitiesMapper.objectToEntity(boothData);
+            booths.save(entity);
             close();
-            fireEvent(new EventSavedEvent(this, event.isFromClient(), eventData));
+            fireEvent(new BoothSavedEvent(this, event.isFromClient(), boothData));
         }
         saveButton.setEnabled(true);
     }

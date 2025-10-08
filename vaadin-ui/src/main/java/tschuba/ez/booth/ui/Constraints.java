@@ -22,6 +22,11 @@ public class Constraints {
     }
 
     @NoArgsConstructor(access = PRIVATE)
+    public static class Vendors {
+        public static final String ALLOWED_CHARS_PATTERN = "\\d";
+    }
+
+    @NoArgsConstructor(access = PRIVATE)
     public static class DataSync {
 
         @NoArgsConstructor(access = PRIVATE)

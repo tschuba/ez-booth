@@ -4,14 +4,16 @@
  */
 package tschuba.ez.booth.reporting;
 
-import java.time.LocalDate;
 import lombok.NonNull;
+
+import java.time.LocalDate;
 
 /**
  * Utility class for report generation.
  */
 public class Reports {
-    private Reports() {}
+    private Reports() {
+    }
 
     /**
      * Generates a HTML filename with the given prefix and the current date.

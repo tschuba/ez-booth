@@ -15,7 +15,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import java.util.Objects;
 import tschuba.ez.booth.ui.components.PageTitle;
-import tschuba.ez.booth.ui.components.event.EventSelection;
+import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.util.UIUtil;
 
 public class BaseLayout extends Composite<Div> implements BeforeEnterObserver, HasDynamicTitle {
@@ -62,7 +62,7 @@ public class BaseLayout extends Composite<Div> implements BeforeEnterObserver, H
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        EventSelection.checkBeforeEnter(event, this);
+        BoothSelection.checkBeforeEnter(event, this);
     }
 
     @Override

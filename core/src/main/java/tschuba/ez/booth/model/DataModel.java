@@ -2,10 +2,12 @@ package tschuba.ez.booth.model;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 public final class DataModel {
@@ -28,7 +30,11 @@ public final class DataModel {
         @Builder
         public record Key(
                 String boothId
-        ) {
+        ) implements Comparable<Key> {
+            @Override
+            public int compareTo(@NonNull Key key) {
+                return Comparator.comparing(Key::boothId).compare(this, key);
+            }
         }
 
     }
@@ -46,7 +52,11 @@ public final class DataModel {
         public record Key(
                 Booth.Key booth,
                 String purchaseId
-        ) {
+        ) implements Comparable<Key> {
+            @Override
+            public int compareTo(@NonNull Key key) {
+                return Comparator.comparing(Key::booth).thenComparing(Key::purchaseId).compare(this, key);
+            }
         }
     }
 
@@ -64,7 +74,11 @@ public final class DataModel {
         public record Key(
                 Purchase.Key purchase,
                 String itemId
-        ) {
+        ) implements Comparable<Key> {
+            @Override
+            public int compareTo(@NonNull Key key) {
+                return Comparator.comparing(Key::purchase).thenComparing(Key::itemId).compare(this, key);
+            }
         }
     }
 

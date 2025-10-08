@@ -94,7 +94,7 @@ public class CheckoutKeyPad extends Div implements HasEnabled {
         this.add(inputGrid, actionGrid);
 
         checkoutForm.getPriceField().addFocusListener(event -> focusField = FieldAdapter.bigDecimal(event.getSource()));
-        checkoutForm.getVendorField().addFocusListener(event -> focusField = FieldAdapter.integer(event.getSource()));
+        //checkoutForm.getVendorField().addFocusListener(event -> focusField = FieldAdapter.integer(event.getSource()));
     }
 
     private Button createDigitButton(int value) {

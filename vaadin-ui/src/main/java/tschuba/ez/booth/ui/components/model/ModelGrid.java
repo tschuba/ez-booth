@@ -5,14 +5,13 @@ import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
-import tschuba.basarix.data.model.ModelType;
 
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ModelGrid<TYPE extends ModelType<?>, F extends ModelFilter<TYPE, C>, C> extends Grid<TYPE> {
+public class ModelGrid<TYPE, F extends Filter<TYPE, C>, C> extends Grid<TYPE> {
     private final Supplier<Stream<TYPE>> itemsSupplier;
     private F filter;
 

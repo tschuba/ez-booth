@@ -5,8 +5,8 @@ package tschuba.ez.booth.ui.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static tschuba.ez.booth.ui.util.RoutingParameters.ROUTE_PARAM__EVENT_ID;
-import static tschuba.ez.booth.ui.util.RoutingParameters.ROUTE_PARAM__VENDOR_ID;
+import static tschuba.ez.booth.ui.util.Routing.Parameters.ROUTE_PARAM__BOOTH_ID;
+import static tschuba.ez.booth.ui.util.Routing.Parameters.ROUTE_PARAM__VENDOR_ID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,40 +16,40 @@ import tschuba.basarix.data.model.EventKey;
 import tschuba.basarix.data.model.PurchaseKey;
 import tschuba.basarix.data.model.VendorKey;
 import tschuba.ez.booth.ui.views.CheckoutView;
-import tschuba.ez.booth.ui.views.EventSelectionView;
+import tschuba.ez.booth.ui.views.BoothSelectionView;
 import tschuba.ez.booth.ui.views.VendorReportView;
 
 /**
- * Test class for {@link RoutingParameters.Builder}.
+ * Test class for {@link Routing.Parameters.Builder}.
  */
-class RoutingParametersBuilderTest {
+class ParametersBuilderTest {
 
     private static final String EVENT_ID = "eventId";
     private static final int VENDOR_ID = 4711;
     private static final String PURCHASE_ID = "purchaseId";
 
-    private RoutingParameters.Builder builder;
-    private RoutingParameters.Builder builderSpy;
+    private Routing.Parameters.Builder builder;
+    private Routing.Parameters.Builder builderSpy;
 
     @BeforeEach
     void setUp() {
-        builder = RoutingParameters.builder();
+        builder = Routing.Parameters.builder();
         builderSpy = spy(builder);
     }
 
     @Test
-    void testEventSetter() {
+    void testBoothSetter() {
         EventKey keyMock = mock(EventKey.class);
         when(keyMock.getId()).thenReturn(EVENT_ID);
 
-        assertThat(builderSpy.event(keyMock)).isEqualTo(builderSpy);
-        verify(builderSpy).param(ROUTE_PARAM__EVENT_ID, EVENT_ID);
+        assertThat(builderSpy.booth(keyMock)).isEqualTo(builderSpy);
+        verify(builderSpy).param(ROUTE_PARAM__BOOTH_ID, EVENT_ID);
     }
 
     @Test
-    void testEventIdSetter() {
-        assertThat(builderSpy.eventId(EVENT_ID)).isEqualTo(builderSpy);
-        verify(builderSpy).param(ROUTE_PARAM__EVENT_ID, EVENT_ID);
+    void testBoothIdSetter() {
+        assertThat(builderSpy.boothId(EVENT_ID)).isEqualTo(builderSpy);
+        verify(builderSpy).param(ROUTE_PARAM__BOOTH_ID, EVENT_ID);
     }
 
     @Test
@@ -75,34 +75,34 @@ class RoutingParametersBuilderTest {
         when(keyMock.getId()).thenReturn(PURCHASE_ID);
 
         assertThat(builderSpy.purchase(keyMock)).isEqualTo(builderSpy);
-        verify(builderSpy).param(RoutingParameters.ROUTE_PARAM__PURCHASE_ID, PURCHASE_ID);
+        verify(builderSpy).param(Routing.Parameters.ROUTE_PARAM__PURCHASE_ID, PURCHASE_ID);
     }
 
     @Test
     void testPurchaseIdSetter() {
         assertThat(builderSpy.purchaseId(PURCHASE_ID)).isEqualTo(builderSpy);
-        verify(builderSpy).param(RoutingParameters.ROUTE_PARAM__PURCHASE_ID, PURCHASE_ID);
+        verify(builderSpy).param(Routing.Parameters.ROUTE_PARAM__PURCHASE_ID, PURCHASE_ID);
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {CheckoutView.class, VendorReportView.class, EventSelectionView.class})
+    @ValueSource(classes = {CheckoutView.class, VendorReportView.class, BoothSelectionView.class})
     @SuppressWarnings({"unchecked", "rawtypes"})
     void testReturnToViewSetter(Class view) {
         assertThat(builderSpy.returnToView(view)).isEqualTo(builderSpy);
-        verify(builderSpy).param(RoutingParameters.ROUTE_PARAM__RETURN_TO_VIEW, view.getName());
+        verify(builderSpy).param(Routing.Parameters.ROUTE_PARAM__RETURN_TO_VIEW, view.getName());
     }
 
     @Test
     void testParamSetter() {
-        assertThat(builderSpy.param(ROUTE_PARAM__EVENT_ID, EVENT_ID)).isEqualTo(builderSpy);
+        assertThat(builderSpy.param(ROUTE_PARAM__BOOTH_ID, EVENT_ID)).isEqualTo(builderSpy);
     }
 
     @Test
     void testBuildMethod() {
-        assertThat(builderSpy.param(ROUTE_PARAM__EVENT_ID, EVENT_ID)).isEqualTo(builderSpy);
+        assertThat(builderSpy.param(ROUTE_PARAM__BOOTH_ID, EVENT_ID)).isEqualTo(builderSpy);
         assertThat(builderSpy.build()).satisfies(params -> {
             assertThat(params.getParameterNames()).containsOnly(EVENT_ID);
-            assertThat(params.get(ROUTE_PARAM__EVENT_ID)).hasValue(EVENT_ID);
+            assertThat(params.get(ROUTE_PARAM__BOOTH_ID)).hasValue(EVENT_ID);
         });
     }
 }

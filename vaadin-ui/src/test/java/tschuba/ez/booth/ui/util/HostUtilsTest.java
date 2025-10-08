@@ -24,7 +24,7 @@ class HostUtilsTest {
     void testExternalHostAddress() {
         assertThatNoException().isThrownBy(
                 () -> {
-                    String externalHostAddress = HostUtils.externalHostAddress();
+                    String externalHostAddress = Server.externalHostAddress();
                     assertThat(externalHostAddress).isNotIn("127.0.0.1", "localhost");
                 });
     }
@@ -34,21 +34,21 @@ class HostUtilsTest {
         try (MockedStatic<InetAddress> addressMockedStatic = mockStatic(InetAddress.class)) {
             addressMockedStatic.when(InetAddress::getLocalHost).thenThrow(UnknownHostException.class);
 
-            assertThatExceptionOfType(RuntimeException.class).isThrownBy(HostUtils::externalHostAddress).withMessage("Host unknown!");
+            assertThatExceptionOfType(RuntimeException.class).isThrownBy(Server::externalHostAddress).withMessage("Host unknown!");
         }
     }
 
     @Test
     void testExternalUrlBuilder() {
         withUriBuilder(
-                builder -> assertThatNoException().isThrownBy(() -> assertThat(HostUtils.externalUrlBuilder()).isNotNull()));
+                builder -> assertThatNoException().isThrownBy(() -> assertThat(Server.externalUrlBuilder()).isNotNull()));
     }
 
     @Test
     void testExternalUrl() {
         withUriBuilder(
                 builder -> assertThatNoException().isThrownBy(
-                        () -> assertThat(HostUtils.externalUrl()).isNotNull().extracting(URI::getHost).isNotIn("127.0.0.1", "localhost")));
+                        () -> assertThat(Server.externalUrl()).isNotNull().extracting(URI::getHost).isNotIn("127.0.0.1", "localhost")));
     }
 
     private static void withUriBuilder(Consumer<ServletUriComponentsBuilder> consumer) {

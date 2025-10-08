@@ -3,6 +3,8 @@
 Copyright (c) 2023-2025 Thomas Schulte-Bahrenberg */
 package tschuba.ez.booth.ui.i18n;
 
+import tschuba.ez.booth.ui.util.Notifications;
+
 public interface TranslationKeys {
     interface App {
         String TITLE = "app.title";

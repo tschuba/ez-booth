@@ -29,32 +29,37 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import java.io.File;
+import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.basarix.data.model.Item;
-import tschuba.basarix.data.model.Vendor;
-import tschuba.basarix.data.model.VendorKey;
-import tschuba.basarix.reporting.ReportingException;
-import tschuba.basarix.reporting.VendorReportData;
-import tschuba.basarix.reporting.VendorReportingService;
-import tschuba.basarix.services.ItemService;
-import tschuba.basarix.services.VendorService;
+import tschuba.ez.booth.data.PurchaseItemRepository;
+import tschuba.ez.booth.data.VendorRepository;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.model.EntitiesMapper;
+import tschuba.ez.booth.model.EntityModel;
+import tschuba.ez.booth.reporting.ReportingException;
+import tschuba.ez.booth.services.ReportingService;
+import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.components.ItemListItem;
 import tschuba.ez.booth.ui.components.VendorCard;
 import tschuba.ez.booth.ui.components.VendorReportCard;
 import tschuba.ez.booth.ui.components.event.EventRequired;
-import tschuba.ez.booth.ui.components.event.EventSelection;
+import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.components.model.ItemComparator;
 import tschuba.ez.booth.ui.i18n.TranslationKeys;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
-import tschuba.commons.vaadin.CssUnit;
-import tschuba.commons.vaadin.NavigateTo;
-import tschuba.commons.vaadin.Notifications;
+import tschuba.ez.booth.ui.util.CssUnit;
+import tschuba.ez.booth.ui.util.NavigateTo;
+import tschuba.ez.booth.ui.util.Notifications;
+import tschuba.ez.booth.ui.util.ReportViewHelper;
 
 @Route(value = "reports/vendor", layout = AppLayoutWithMenu.class)
 @EventRequired
@@ -64,20 +69,26 @@ public class VendorReportView extends OneColumnLayout {
     private static final Unit CSS_UNIT = Unit.EM;
     private static final CssUnit MIN_HEIGHT = CssUnit.cssUnit(40, CSS_UNIT);
 
-    private final VendorService vendorService;
-    private final ItemService itemService;
-    private final VendorReportingService reportingService;
-    private final VirtualList<VendorReportData<?>> vendorList;
-    private final VirtualList<Item> itemList;
+    private final VendorRepository vendors;
+    private final PurchaseItemRepository items;
+    private final ReportingService reportingService;
+    private final ReportViewHelper helper;
+
+    private final VirtualList<ServiceModel.VendorReportData> vendorList;
+    private final VirtualList<DataModel.PurchaseItem> itemList;
     private final Button printAllButton;
     private final TextField filterField;
     private VendorCard selectedItem;
     private String filterText;
 
-    public VendorReportView(final ItemService itemService, VendorService vendorService, VendorReportingService reportingService) {
-        this.vendorService = vendorService;
-        this.itemService = itemService;
+    public VendorReportView(@NonNull VendorRepository vendors,
+                            @NonNull PurchaseItemRepository items,
+                            @NonNull ReportingService reportingService,
+                            @NonNull ReportViewHelper helper) {
+        this.vendors = vendors;
+        this.items = items;
         this.reportingService = reportingService;
+        this.helper = helper;
 
         filterField = new TextField();
         filterField.setClearButtonVisible(true);
@@ -137,11 +148,12 @@ public class VendorReportView extends OneColumnLayout {
     }
 
     private void updateVendorListItems() {
-        EventSelection.get().ifPresent(event -> {
-            Stream<Vendor> vendors = vendorService.allVendors(event).filter(vendor -> Optional.ofNullable(filterText).map(filter -> containsIgnoreCase(Integer.toString(vendor.getKey().getId()), filter)).orElse(true));
-            Stream<VendorReportData<?>> vendorData = vendors.parallel().map(vendor -> {
+        BoothSelection.get().ifPresent(booth -> {
+            Stream<DataModel.Vendor> allVendors = vendors.findAllByBoothId(booth.boothId()).stream().map(EntitiesMapper::entityToObject)
+                    .filter(vendor -> Optional.ofNullable(filterText).map(filter -> containsIgnoreCase(vendor.key().vendorId(), filter)).orElse(true));
+            Stream<ServiceModel.VendorReportData> vendorData = allVendors.parallel().map(vendor -> {
                 try {
-                    return reportingService.basicReportData(vendor.getKey());
+                    return reportingService.createVendorReportData(vendor.key());
                 } catch (ReportingException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -151,17 +163,18 @@ public class VendorReportView extends OneColumnLayout {
     }
 
     private void updateItemListItems() {
-        Stream<Item> items;
+        Stream<DataModel.PurchaseItem> itemsOfReport;
         try {
             if (selectedItem != null) {
-                Vendor vendor = selectedItem.getVendor();
+                DataModel.Vendor vendor = selectedItem.getVendor();
                 ItemComparator comparator = ItemComparator.builder().descending(ItemComparator.Field.DateTime).ascending(ItemComparator.Field.Price).build();
-                VendorReportData.Basic reportData = reportingService.basicReportData(vendor.getKey());
-                items = itemService.byKeys(reportData.items()).sorted(comparator);
+                ServiceModel.VendorReportData reportData = reportingService.createVendorReportData(vendor.key());
+                List<EntityModel.PurchaseItem.Key> itemIds = reportData.items().stream().map(DataModel.PurchaseItem::key).map(EntitiesMapper::objectToEntity).toList();
+                itemsOfReport = items.findAllById(itemIds).stream().map(EntitiesMapper::entityToObject).sorted(comparator);
             } else {
-                items = Stream.empty();
+                itemsOfReport = Stream.empty();
             }
-            itemList.setItems(items);
+            itemList.setItems(itemsOfReport);
         } catch (ReportingException ex) {
             LOGGER.error("Failed to update item-list items!", ex);
             Notifications.error(getTranslation(TranslationKeys.Notifications.GENERIC_ERROR_MESSAGE), ex);
@@ -185,11 +198,12 @@ public class VendorReportView extends OneColumnLayout {
     }
 
     private void onClickPrintAll(ClickEvent<Button> buttonClickEvent) {
-        EventSelection.get().ifPresent(event -> {
-            VendorKey[] vendors = vendorService.allVendors(event).map(Vendor::getKey).toArray(VendorKey[]::new);
+        BoothSelection.get().ifPresent(booth -> {
+            DataModel.Vendor.Key[] allVendors = vendors.findAllByBoothId(booth.boothId()).stream().map(EntityModel.Vendor::getKey).map(EntitiesMapper::entityToObject).toArray(DataModel.Vendor.Key[]::new);
             try {
-                File reportFile = reportingService.generateVendorReport(vendors);
-                NavigateTo.file(reportFile).newWindow();
+                URI reportFile = reportingService.generateVendorReport(allVendors);
+                URI reportUrl = helper.reportUrl(reportFile);
+                NavigateTo.uri(reportUrl).newWindow();
             } catch (ReportingException ex) {
                 Notifications.error(ex.getLocalizedMessage(), ex);
             }

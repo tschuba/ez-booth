@@ -7,7 +7,7 @@ import com.vaadin.flow.router.Route;
 import tschuba.ez.booth.ui.components.Block;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
-import tschuba.commons.vaadin.NavigateTo;
+import tschuba.ez.booth.ui.util.NavigateTo;
 
 import java.util.Optional;
 

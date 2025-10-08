@@ -1,10 +1,10 @@
 package tschuba.ez.booth.ui.components.model;
 
-import tschuba.basarix.data.model.Purchase;
+import tschuba.ez.booth.model.DataModel;
 
 import java.util.List;
 
-public class PurchaseComparator extends FieldComparator<Purchase, PurchaseComparator.Field> {
+public class PurchaseComparator extends FieldComparator<DataModel.Purchase, PurchaseComparator.Field> {
     public enum Field {Id, DateTime, Value}
 
     public PurchaseComparator(List<SortField<Field>> sortFields) {
@@ -12,15 +12,15 @@ public class PurchaseComparator extends FieldComparator<Purchase, PurchaseCompar
     }
 
     @Override
-    int compareByField(Purchase purchase, Purchase otherPurchase, SortField<Field> sortField) {
+    int compareByField(DataModel.Purchase purchase, DataModel.Purchase otherPurchase, SortField<Field> sortField) {
         int result = 0;
         Field field = sortField.getField();
         if (field.equals(Field.Id)) {
-            result = purchase.getKey().compareTo(otherPurchase.getKey());
+            result = purchase.key().compareTo(otherPurchase.key());
         } else if (field.equals(Field.DateTime)) {
-            result = purchase.getDateTime().compareTo(otherPurchase.getDateTime());
+            result = purchase.purchasedOn().compareTo(otherPurchase.purchasedOn());
         } else if (field.equals(Field.Value)) {
-            result = purchase.getValue().compareTo(otherPurchase.getValue());
+            result = purchase.value().compareTo(otherPurchase.value());
         }
         if (SortField.Order.Descending.equals(sortField.getOrder())) {
             result *= -1;
@@ -32,12 +32,12 @@ public class PurchaseComparator extends FieldComparator<Purchase, PurchaseCompar
         return new Builder();
     }
 
-    public static class Builder extends FieldComparator.Builder<PurchaseComparator, Purchase, PurchaseComparator.Field> {
+    public static class Builder extends FieldComparator.Builder<PurchaseComparator, DataModel.Purchase, PurchaseComparator.Field> {
         private Builder() {
         }
 
         @Override
-        <B extends FieldComparator.Builder<PurchaseComparator, Purchase, Field>> B self() {
+        <B extends FieldComparator.Builder<PurchaseComparator, DataModel.Purchase, Field>> B self() {
             return (B) this;
         }
 

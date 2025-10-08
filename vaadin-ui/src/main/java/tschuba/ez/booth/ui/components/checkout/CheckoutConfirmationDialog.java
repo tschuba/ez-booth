@@ -11,13 +11,16 @@ import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
-import tschuba.basarix.data.model.Item;
-import tschuba.basarix.services.dto.Checkout;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.CheckoutConfig;
 
+import java.math.BigDecimal;
+import java.util.Optional;
+
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.CheckoutConfirmationDialog.*;
-import static tschuba.commons.vaadin.i18n.Formats.formats;
 
 @SpringComponent
 @UIScope
@@ -27,7 +30,7 @@ public class CheckoutConfirmationDialog extends Dialog {
     private final Checkbox checkboxPrintReceipt;
     private final Button confirmButton;
     private final Button cancelButton;
-    private Checkout checkout;
+    private ServiceModel.Checkout checkout;
 
     public CheckoutConfirmationDialog(final CheckoutConfig config) {
         textSpan = new Span();
@@ -65,14 +68,14 @@ public class CheckoutConfirmationDialog extends Dialog {
         cancelButton.setText(getTranslation(CANCEL_BUTTON__TEXT));
     }
 
-    private void setCheckout(Checkout checkout) {
+    private void setCheckout(ServiceModel.Checkout checkout) {
         this.checkout = checkout;
 
-        double checkoutSum = checkout.items().stream().mapToDouble(Item::getPrice).sum();
+        BigDecimal checkoutSum = checkout.items().stream().map(DataModel.PurchaseItem::price).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
         valueSpan.setText(formats().currency(checkoutSum, getLocale()));
     }
 
-    public void open(Checkout checkout) {
+    public void open(ServiceModel.Checkout checkout) {
         setCheckout(checkout);
         super.open();
     }
@@ -83,8 +86,8 @@ public class CheckoutConfirmationDialog extends Dialog {
 
     private void onClickConfirm(ClickEvent<Button> event) {
         try {
-            Checkout finalCheckout = this.checkout.copy()
-                    .setPrintReceipt(checkboxPrintReceipt.getValue())
+            ServiceModel.Checkout finalCheckout = this.checkout.toBuilder()
+                    .printReceipt(checkboxPrintReceipt.getValue())
                     .build();
             fireEvent(new CheckoutConfirmedEvent(this, event.isFromClient(), finalCheckout));
             this.close();

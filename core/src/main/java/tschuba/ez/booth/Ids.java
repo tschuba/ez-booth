@@ -2,7 +2,7 @@
  * Copyright (c) 2025 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
-package tschuba.ez.booth.data;
+package tschuba.ez.booth;
 
 import java.util.UUID;
 

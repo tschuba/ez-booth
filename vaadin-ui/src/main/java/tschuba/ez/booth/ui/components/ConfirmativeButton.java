@@ -12,8 +12,8 @@ import com.vaadin.flow.component.shared.HasThemeVariant;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.theme.lumo.LumoUtility.Background;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
+import lombok.NonNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.basarix.common.Args;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -36,20 +36,17 @@ public class ConfirmativeButton extends Composite<HorizontalLayout> implements H
         this.actionButton = new Button();
     }
 
-    public ConfirmativeButton(Component actionIcon) {
+    public ConfirmativeButton(@NonNull Component actionIcon) {
         this();
-        Args.nonNull(actionIcon, "actionIcon");
         this.actionButton.setIcon(actionIcon);
     }
 
-    public ConfirmativeButton(Component actionIcon, String text) {
+    public ConfirmativeButton(@NonNull Component actionIcon, String text) {
         this(actionIcon);
-        Args.nonNull(text, "text");
     }
 
-    public ConfirmativeButton(String text) {
+    public ConfirmativeButton(@NonNull String text) {
         this();
-        Args.nonNull(text, "text");
         this.actionButton.setText(text);
     }
 
@@ -134,8 +131,8 @@ public class ConfirmativeButton extends Composite<HorizontalLayout> implements H
     }
 
     private abstract static class EventBase extends ComponentEvent<ConfirmativeButton> {
-        public EventBase(ConfirmativeButton source, ClickEvent<MenuItem> clickEvent) {
-            super(source, Args.nonNull(clickEvent, "clickEvent").isFromClient());
+        public EventBase(ConfirmativeButton source, @NonNull ClickEvent<MenuItem> clickEvent) {
+            super(source, clickEvent.isFromClient());
         }
     }
 

@@ -6,28 +6,28 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.server.VaadinSession;
 import lombok.NonNull;
-import tschuba.basarix.data.model.EventKey;
-import tschuba.ez.booth.ui.util.RoutingParameters;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.ui.util.Notifications;
+import tschuba.ez.booth.ui.util.Routing;
 import tschuba.ez.booth.ui.views.EntryView;
-import tschuba.commons.vaadin.Notifications;
 
 import java.util.Objects;
 import java.util.Optional;
 
+import static tschuba.ez.booth.ui.i18n.I18N.i18N;
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.EventSelection.NOTIFICATION__NO_EVENT_SELECTED;
-import static tschuba.commons.vaadin.i18n.I18N.i18N;
 
-public class EventSelection {
-    public static Optional<EventKey> get() {
+public class BoothSelection {
+    public static Optional<DataModel.Booth.Key> get() {
         return get(session());
     }
 
-    public static Optional<EventKey> get(@NonNull UI ui) {
+    public static Optional<DataModel.Booth.Key> get(@NonNull UI ui) {
         return get(ui.getSession());
     }
 
-    public static Optional<EventKey> get(@NonNull VaadinSession session) {
-        return Optional.ofNullable(session.getAttribute(EventKey.class));
+    public static Optional<DataModel.Booth.Key> get(@NonNull VaadinSession session) {
+        return Optional.ofNullable(session.getAttribute(DataModel.Booth.Key.class));
     }
 
     public static void checkBeforeEnter(BeforeEnterEvent enterEvent, Component origin) {
@@ -35,16 +35,16 @@ public class EventSelection {
         EventRequired eventRequired = originClass.getAnnotation(EventRequired.class);
         if (eventRequired != null && get().isEmpty()) {
             Notifications.warning(i18N().getTranslation(NOTIFICATION__NO_EVENT_SELECTED, UI.getCurrent().getLocale()));
-            RouteParameters rerouteParameters = RoutingParameters.builder().returnToView(originClass).build();
+            RouteParameters rerouteParameters = Routing.Parameters.builder().returnToView(originClass).build();
             enterEvent.rerouteTo(EntryView.class, rerouteParameters);
         }
     }
 
-    public static void set(EventKey key) {
-        session().setAttribute(EventKey.class, key);
+    public static void set(DataModel.Booth.Key key) {
+        session().setAttribute(DataModel.Booth.Key.class, key);
     }
 
-    public static void deleted(EventKey deletedEvent) {
+    public static void deleted(DataModel.Booth.Key deletedEvent) {
         get().ifPresent(selectedEvent -> {
             if (Objects.equals(selectedEvent, deletedEvent)) {
                 set(null);

@@ -7,11 +7,10 @@ import com.vaadin.flow.component.shared.HasValidationProperties;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.basarix.common.Ids;
-import tschuba.basarix.data.model.Event;
-import tschuba.basarix.data.model.EventKey;
+import tschuba.ez.booth.Ids;
+import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.ui.Constraints;
-import tschuba.commons.vaadin.Notifications;
+import tschuba.ez.booth.ui.util.Notifications;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -26,7 +25,7 @@ public class UpsertEventForm extends FormLayout {
     private final BigDecimalField participationFeeField;
     private final BigDecimalField salesFeeField;
     private final BigDecimalField feesRoundingStepField;
-    private Event.Builder eventBuilder;
+    private DataModel.Booth.BoothBuilder boothBuilder;
 
     public UpsertEventForm() {
         descriptionField = new TextField();
@@ -64,7 +63,8 @@ public class UpsertEventForm extends FormLayout {
         salesFeeField.clear();
         feesRoundingStepField.clear();
 
-        eventBuilder = Event.builder().setKey(EventKey.of(Ids.UUID()));
+        DataModel.Booth.Key boothKey = DataModel.Booth.Key.builder().boothId(Ids.UUID()).build();
+        boothBuilder = DataModel.Booth.builder().key(boothKey);
 
         descriptionField.focus();
     }
@@ -74,11 +74,11 @@ public class UpsertEventForm extends FormLayout {
     }
 
     private void onEventToCreate(ComponentEvent<? extends Component> event) {
-        Optional<Event> validation = validate(true);
+        Optional<DataModel.Booth> validation = validate(true);
         validation.ifPresent(newEvent -> fireEvent(new CreateEventFormSubmitEvent(this, event.isFromClient(), newEvent)));
     }
 
-    public Optional<Event> validate(boolean withNotification) {
+    public Optional<DataModel.Booth> validate(boolean withNotification) {
         if (checkFieldNotValidOrEmpty(descriptionField, withNotification, getTranslation(NOTIFICATION__INVALID_DESCRIPTION))
                 || checkFieldNotValidOrEmpty(dateField, withNotification, getTranslation(NOTIFICATION__INVALID_DATE))
                 || checkFieldNotValid(participationFeeField, HasValidationProperties::isInvalid, withNotification, getTranslation(NOTIFICATION__INVALID_PARTICIPATION_FEE))
@@ -87,30 +87,30 @@ public class UpsertEventForm extends FormLayout {
             return Optional.empty();
         }
 
-        Event event = getEvent();
-        return Optional.of(event);
+        DataModel.Booth booth = getBooth();
+        return Optional.of(booth);
     }
 
-    public Event getEvent() {
+    public DataModel.Booth getBooth() {
         BigDecimal participationFee = Optional.ofNullable(participationFeeField.getValue()).orElse(ZERO);
         BigDecimal salesFee = Optional.ofNullable(salesFeeField.getValue()).orElse(ZERO);
         BigDecimal feesRoundingStep = Optional.ofNullable(feesRoundingStepField.getValue()).orElse(ZERO);
-        return eventBuilder
-                .setDescription(descriptionField.getValue())
-                .setDate(dateField.getValue())
-                .setParticipationFee(participationFee)
-                .setSalesFee(salesFee)
-                .setFeesRoundingStep(feesRoundingStep)
+        return boothBuilder
+                .description(descriptionField.getValue())
+                .date(dateField.getValue())
+                .participationFee(participationFee)
+                .salesFee(salesFee)
+                .feesRoundingStep(feesRoundingStep)
                 .build();
     }
 
-    public void setEvent(Event event) {
-        eventBuilder.setKey(event.getKey());
-        descriptionField.setValue(event.getDescription());
-        dateField.setValue(event.getDate());
-        participationFeeField.setValue(event.getParticipationFee());
-        salesFeeField.setValue(event.getSalesFee());
-        feesRoundingStepField.setValue(event.getFeesRoundingStep());
+    public void setEvent(DataModel.Booth booth) {
+        boothBuilder.key(booth.key());
+        descriptionField.setValue(booth.description());
+        dateField.setValue(booth.date());
+        participationFeeField.setValue(booth.participationFee());
+        salesFeeField.setValue(booth.salesFee());
+        feesRoundingStepField.setValue(booth.feesRoundingStep());
     }
 
     private <C extends AbstractField<?, ?>> boolean checkFieldNotValidOrEmpty(C field, boolean withNotification, String message) {

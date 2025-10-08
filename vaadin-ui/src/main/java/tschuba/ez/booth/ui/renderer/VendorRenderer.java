@@ -5,7 +5,7 @@ package tschuba.ez.booth.ui.renderer;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.ValueProvider;
-import tschuba.basarix.data.model.VendorKey;
+import tschuba.ez.booth.model.DataModel;
 
 import java.util.Optional;
 
@@ -33,12 +33,12 @@ public class VendorRenderer extends HasUI {
         return of(Optional.ofNullable(ui), VendorRenderer::new);
     }
 
-    public ValueProvider<VendorKey, String> keyToString(Format format) {
+    public ValueProvider<DataModel.Vendor.Key, String> keyToString(Format format) {
         String translationKey = (format == Format.Short) ? ID__FORMAT_SHORT : ID__FORMAT_LONG;
-        return vendorKey -> getUi().getTranslation(translationKey, vendorKey.getId());
+        return vendorKey -> getUi().getTranslation(translationKey, vendorKey.vendorId());
     }
 
-    public String keyToString(Format format, VendorKey vendor) {
+    public String keyToString(Format format, DataModel.Vendor.Key vendor) {
         return keyToString(format).apply(vendor);
     }
 }

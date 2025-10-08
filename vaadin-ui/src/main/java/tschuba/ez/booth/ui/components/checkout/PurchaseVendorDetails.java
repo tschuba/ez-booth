@@ -6,11 +6,11 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import lombok.Getter;
-import tschuba.basarix.data.model.Item;
-import tschuba.basarix.data.model.ItemKey;
-import tschuba.basarix.data.model.VendorKey;
+import tschuba.ez.booth.Ids;
+import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.ui.i18n.TranslationKeys;
 
+import java.math.BigDecimal;
 import java.text.Format;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,30 +19,30 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.PurchaseSummary.ITEM_COUNT__TEXT;
-import static tschuba.commons.vaadin.i18n.Formats.formats;
 
 public class PurchaseVendorDetails extends Div {
     @Getter
-    private final VendorKey vendor;
+    private final DataModel.Vendor.Key vendor;
     @Getter
     private Double sumOfItems = 0.0;
     private final Span vendorSumSpan;
     private final Div itemsContainer;
     private final Span vendorCountSpan;
 
-    public PurchaseVendorDetails(VendorKey vendor) {
+    public PurchaseVendorDetails(DataModel.Vendor.Key vendor) {
         this(vendor, new ArrayList<>());
     }
 
-    public PurchaseVendorDetails(VendorKey vendor, List<Item> itemList) {
+    public PurchaseVendorDetails(DataModel.Vendor.Key vendor, List<DataModel.PurchaseItem> itemList) {
         super();
         this.vendor = vendor;
 
         addClassNames(Display.BLOCK, Margin.NONE, Padding.SMALL, Border.TOP, BorderColor.CONTRAST_10);
 
         Span vendorSpan = new Span();
-        String vendorText = getTranslation(TranslationKeys.Vendor.ID__FORMAT_LONG, vendor.getId());
+        String vendorText = getTranslation(TranslationKeys.Vendor.ID__FORMAT_LONG, vendor.vendorId());
         vendorSpan.setText(vendorText);
         vendorSpan.addClassNames(FontSize.MEDIUM, FontWeight.BOLD, Margin.Left.XSMALL);
 
@@ -62,21 +62,30 @@ public class PurchaseVendorDetails extends Div {
         itemsContainer.addClassNames(Display.BLOCK, Margin.NONE);
         add(header, itemsContainer);
 
-        ofNullable(itemList).stream().flatMap(Collection::stream).forEach(item -> addItem(item.getPrice()));
+        ofNullable(itemList).stream().flatMap(Collection::stream).forEach(item -> addItem(item.price()));
 
         updateVendorDetails();
     }
 
-    public Stream<Item> getItems() {
+    public Stream<DataModel.PurchaseItem> getItems() {
         return itemsContainer.getChildren().map(component -> (PurchaseItemBadge) component).map(PurchaseItemBadge::getItem);
     }
 
-    public void addItem(Double price) {
-        Item item = Item.builder()
-                .setKey(ItemKey.of(vendor.getEvent()))
-                .setVendor(vendor)
-                .setPrice(price)
-                .setDateTime(LocalDateTime.now())
+    public void addItem(BigDecimal price) {
+
+        DataModel.Purchase.Key purchaseKey = DataModel.Purchase.Key.builder()
+                .booth(vendor.booth())
+                .build();
+        DataModel.PurchaseItem.Key itemKey = DataModel.PurchaseItem.Key.builder()
+                .purchase(purchaseKey)
+                .itemId(Ids.UUID())
+                .build();
+
+        DataModel.PurchaseItem item = DataModel.PurchaseItem.builder()
+                .key(itemKey)
+                .vendor(vendor)
+                .price(price)
+                .purchasedOn(LocalDateTime.now())
                 .build();
 
         PurchaseItemBadge itemBadge = new PurchaseItemBadge(item);
@@ -95,7 +104,7 @@ public class PurchaseVendorDetails extends Div {
 
     private void updateVendorDetails() {
         Format format = formats().currency(getLocale());
-        sumOfItems = getItems().mapToDouble(Item::getPrice).sum();
+        sumOfItems = getItems().map(DataModel.PurchaseItem::price).reduce(BigDecimal::add).orElse(BigDecimal.ZERO).doubleValue();
         vendorSumSpan.setText(format.format(sumOfItems));
         long itemCount = getItems().count();
         vendorCountSpan.setText(getTranslation(ITEM_COUNT__TEXT, itemCount));
@@ -110,16 +119,16 @@ public class PurchaseVendorDetails extends Div {
         fireItemsChangedEvent(event.isFromClient(), event.getSource().getItem());
     }
 
-    private void fireItemsChangedEvent(boolean fromClient, Item item) {
+    private void fireItemsChangedEvent(boolean fromClient, DataModel.PurchaseItem item) {
         fireEvent(new ItemsChangedEvent(this, fromClient, item));
     }
 
     @Getter
     public static class ItemsChangedEvent extends ComponentEvent<PurchaseVendorDetails> {
 
-        private final Item item;
+        private final DataModel.PurchaseItem item;
 
-        public ItemsChangedEvent(PurchaseVendorDetails source, boolean fromClient, Item item) {
+        public ItemsChangedEvent(PurchaseVendorDetails source, boolean fromClient, DataModel.PurchaseItem item) {
             super(source, fromClient);
             this.item = item;
         }

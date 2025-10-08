@@ -11,34 +11,36 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import tschuba.basarix.data.model.Purchase;
-import tschuba.basarix.data.model.PurchaseKey;
-import tschuba.basarix.services.PurchaseService;
+import tschuba.ez.booth.data.PurchaseRepository;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.model.EntitiesMapper;
+import tschuba.ez.booth.model.EntityModel;
 import tschuba.ez.booth.ui.components.checkout.ReportPrintViewItemCard;
 import tschuba.ez.booth.ui.components.model.ItemComparator;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
-import tschuba.ez.booth.ui.util.RoutingParameters;
+import tschuba.ez.booth.ui.util.Notifications;
+import tschuba.ez.booth.ui.util.Routing;
 import tschuba.ez.booth.ui.util.UIUtil;
-import tschuba.commons.vaadin.Notifications;
 
 import java.util.Optional;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.PurchaseReceiptPrintView.*;
-import static tschuba.commons.vaadin.i18n.Formats.formats;
 
 @Route(value = "reports/purchase/receipt/:eventId/:purchaseId")
 public class PurchaseReceiptPrintView extends OneColumnLayout implements BeforeEnterObserver {
     private final Span purchaseIdValue;
     private final Div itemsContainer;
-    private final PurchaseService purchaseService;
+    private final PurchaseRepository purchases;
     private final Span itemCountValue;
     private final Span dateTimeValue;
     private final Span purchaseSumValue;
 
-    public PurchaseReceiptPrintView(@Autowired PurchaseService purchaseService) {
-        this.purchaseService = purchaseService;
+    public PurchaseReceiptPrintView(@Autowired @NonNull PurchaseRepository purchases) {
+        this.purchases = purchases;
 
         setTitle(getTranslation(TITLE));
 
@@ -78,28 +80,28 @@ public class PurchaseReceiptPrintView extends OneColumnLayout implements BeforeE
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<PurchaseKey> purchaseKey = RoutingParameters.parser(event.getRouteParameters()).purchaseKey();
+        Optional<DataModel.Purchase.Key> purchaseKey = Routing.Parameters.parser(event.getRouteParameters()).purchaseKey();
         if (purchaseKey.isEmpty()) {
             String message = getTranslation(NOTIFICATION__ILLEGAL_ARGUMENTS);
             Notifications.error(message);
             return;
         }
 
-        Optional<Purchase> purchaseByKey = purchaseService.byKey(purchaseKey.get());
+        Optional<EntityModel.Purchase> purchaseByKey = purchases.findById(EntitiesMapper.objectToEntity(purchaseKey.get()));
         if (purchaseByKey.isEmpty()) {
             Notifications.warning(getTranslation(NOTIFICATION__PURCHASE_NOT_FOUND, purchaseKey.get()));
             return;
         }
 
-        Purchase purchase = purchaseByKey.get();
-        purchaseIdValue.setText(purchase.getKey().getId());
-        dateTimeValue.setText(formats().dateTime(purchase.getDateTime(), getLocale()));
-        itemCountValue.setText(Integer.toString(purchase.getItems().size()));
-        purchaseSumValue.setText(formats().currency(purchase.getValue()));
+        DataModel.Purchase purchase = purchaseByKey.map(EntitiesMapper::entityToObject).get();
+        purchaseIdValue.setText(purchase.key().purchaseId());
+        dateTimeValue.setText(formats().dateTime(purchase.purchasedOn(), getLocale()));
+        itemCountValue.setText(Integer.toString(purchase.items().size()));
+        purchaseSumValue.setText(formats().currency(purchase.value()));
 
         itemsContainer.removeAll();
         ItemComparator comparator = ItemComparator.builder().ascending(ItemComparator.Field.DateTime).ascending(ItemComparator.Field.Price).build();
-        purchaseService.resolveItems(purchase).sorted(comparator).map(item -> {
+        purchase.items().stream().sorted(comparator).map(item -> {
             ReportPrintViewItemCard itemCard = new ReportPrintViewItemCard(item);
             itemCard.setShowVendor(true);
             return itemCard;

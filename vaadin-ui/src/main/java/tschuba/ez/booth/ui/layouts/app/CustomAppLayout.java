@@ -26,15 +26,16 @@ import com.vaadin.flow.theme.lumo.Lumo;
 import java.util.List;
 import java.util.Objects;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.basarix.services.EventService;
+import tschuba.ez.booth.data.BoothRepository;
+import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.ui.components.ToggleButton;
-import tschuba.ez.booth.ui.components.event.EventSelection;
+import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.i18n.TranslationKeys;
 import tschuba.ez.booth.ui.util.Icons;
-import tschuba.ez.booth.ui.util.RoutingParameters;
-import tschuba.ez.booth.ui.views.EventDetailsView;
-import tschuba.ez.booth.ui.views.EventSelectionView;
-import tschuba.commons.vaadin.NavigateTo;
+import tschuba.ez.booth.ui.util.NavigateTo;
+import tschuba.ez.booth.ui.util.Routing;
+import tschuba.ez.booth.ui.views.BoothDetailsView;
+import tschuba.ez.booth.ui.views.BoothSelectionView;
 
 @Tag("basarix-app-layout")
 public class CustomAppLayout extends Component implements RouterLayout, HasStyle {
@@ -42,7 +43,7 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
     private final Tabs tabs;
     private Component content;
 
-    protected CustomAppLayout(final EventService eventService, final List<MainMenuItem> menuItems) {
+    protected CustomAppLayout(final BoothRepository booths, final List<MainMenuItem> menuItems) {
         Div rootLayout = new Div();
         rootLayout.addClassNames(Display.FLEX, FlexDirection.ROW, Flex.AUTO);
         rootLayout.setHeightFull();
@@ -82,9 +83,9 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
         }
         topBar.add(appName);
 
-        EventSelection.get().flatMap(eventService::byKey).ifPresent(event -> {
+        BoothSelection.get().map(EntitiesMapper::objectToEntity).flatMap(booths::findById).ifPresent(event -> {
             RouterLink eventLink = new RouterLink();
-            eventLink.setRoute(EventSelectionView.class);
+            eventLink.setRoute(BoothSelectionView.class);
             eventLink.addClassNames(Margin.Right.MEDIUM);
 
             Span descriptionText = new Span(event.getDescription());
@@ -95,9 +96,9 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
             detailsButton.setIcon(LineAwesomeIcon.INFO_CIRCLE_SOLID.create());
             detailsButton.addClassNames(Padding.NONE);
             detailsButton.addThemeVariants(ButtonVariant.LUMO_ICON);
-            detailsButton.addClickListener(clickEvent -> {
-                RouteParameters routeParams = RoutingParameters.builder().event(event.getKey()).build();
-                NavigateTo.view(EventDetailsView.class, routeParams).currentWindow();
+            detailsButton.addClickListener(_ -> {
+                RouteParameters routeParams = Routing.Parameters.builder().booth(EntitiesMapper.entityToObject(event.getKey())).build();
+                NavigateTo.view(BoothDetailsView.class, routeParams).currentWindow();
             });
             Tooltip.forComponent(detailsButton).setText(getTranslation(TranslationKeys.EventSelectionView.INFO_BUTTON__TEXT));
 

@@ -12,22 +12,21 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import lombok.Getter;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.basarix.data.model.Item;
-import tschuba.basarix.data.model.VendorKey;
+import tschuba.ez.booth.model.DataModel;
 
 import java.text.Format;
 
+import static tschuba.ez.booth.ui.i18n.Formats.formats;
 import static tschuba.ez.booth.ui.i18n.TranslationKeys.Vendor.ID__FORMAT_SHORT;
-import static tschuba.commons.vaadin.i18n.Formats.formats;
 
 @Getter
 public class PurchaseItemBadge extends Button {
-    private final Item item;
+    private final DataModel.PurchaseItem item;
 
-    public PurchaseItemBadge(Item item) {
+    public PurchaseItemBadge(DataModel.PurchaseItem item) {
         this.item = item;
 
-        VendorKey vendor = item.getVendor();
+        DataModel.Vendor.Key vendor = item.vendor();
 
         addClassNames(BorderRadius.MEDIUM, Background.CONTRAST_5, TextColor.BODY);
         setIcon(LineAwesomeIcon.TRASH_SOLID.create());
@@ -35,14 +34,14 @@ public class PurchaseItemBadge extends Button {
         addClickListener(this::onDeleteButtonClick);
 
         Format decimalFormat = formats().currency(getLocale());
-        setText(decimalFormat.format(item.getPrice()));
+        setText(decimalFormat.format(item.price()));
 
         Span vendorSpan = new Span();
-        String vendorId = getTranslation(ID__FORMAT_SHORT, vendor.getId());
+        String vendorId = getTranslation(ID__FORMAT_SHORT, vendor.vendorId());
         vendorSpan.setText(vendorId);
         vendorSpan.addClassNames(Margin.End.XSMALL);
 
-        Span priceSpan = new Span(decimalFormat.format(item.getPrice()));
+        Span priceSpan = new Span(decimalFormat.format(item.price()));
         priceSpan.addClassNames(Margin.End.SMALL);
 
         Button deleteButton = new Button();

@@ -5,14 +5,13 @@ import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import tschuba.ez.booth.ui.util.Server;
+import tschuba.ez.booth.ui.util.WithDelay;
 import tschuba.ez.booth.ui.views.EntryView;
-import tschuba.commons.core.WithDelay;
-import tschuba.commons.vaadin.Browser;
 
 import java.time.Duration;
-
-import static tschuba.commons.spring.SpringServer.byContext;
 
 @Component
 @RequiredArgsConstructor
@@ -26,7 +25,9 @@ public class LaunchBrowserOnStartupListener implements VaadinServiceInitListener
         final VaadinService service = event.getSource();
         if (config.launch()) {
             Duration delay = Duration.ofSeconds(config.delayInSeconds());
-            WithDelay.execute(delay, () -> Browser.launch(byContext(applicationContext).config(), service, EntryView.class));
+            Environment environment = applicationContext.getEnvironment();
+            Server.Serving launcher = Server.parse(environment).with(service);
+            WithDelay.execute(delay, () -> launcher.launchView(EntryView.class));
         }
     }
 }

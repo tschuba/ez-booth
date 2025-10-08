@@ -11,16 +11,16 @@ import com.vaadin.flow.router.RouteParameters;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test class for {@link RoutingParameters}.
+ * Test class for {@link Routing.Parameters}.
  */
-class RoutingParametersTest {
+class ParametersTest {
     @Test
     void testParserFactoryMethod() {
-        assertThatNoException().isThrownBy(() -> assertThat(RoutingParameters.parser(mock(RouteParameters.class))).isNotNull());
+        assertThatNoException().isThrownBy(() -> assertThat(Routing.Parameters.parser(mock(RouteParameters.class))).isNotNull());
     }
 
     @Test
     void testBuilderFactoryMethod() {
-        assertThatNoException().isThrownBy(() -> assertThat(RoutingParameters.builder()).isNotNull());
+        assertThatNoException().isThrownBy(() -> assertThat(Routing.Parameters.builder()).isNotNull());
     }
 }

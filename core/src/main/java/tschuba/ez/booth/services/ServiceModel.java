@@ -6,6 +6,9 @@ package tschuba.ez.booth.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
@@ -21,7 +24,7 @@ public final class ServiceModel {
     /**
      * Model for checkout operation.
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record Checkout(
             @NonNull DataModel.Booth.Key booth,
             @NonNull List<DataModel.PurchaseItem> items,
@@ -30,7 +33,7 @@ public final class ServiceModel {
     /**
      * Model for charged fees.
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record ChargedFees(@NonNull BigDecimal participationFee, @NonNull BigDecimal salesFee) {
 
         /**
@@ -46,7 +49,7 @@ public final class ServiceModel {
     /**
      * Configuration for charging fees.
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record ChargingConfig(
             @NonNull BigDecimal participationFee,
             @NonNull BigDecimal salesFee,
@@ -108,7 +111,7 @@ public final class ServiceModel {
         /**
          * Input for balance calculation.
          */
-        @Builder
+        @Builder(toBuilder = true)
         public record Input(
                 @NonNull BigDecimal totalSalesAmount,
                 @NonNull ServiceModel.ChargingConfig chargingConfig) {}
@@ -116,20 +119,20 @@ public final class ServiceModel {
         /**
          * Output for balance calculation.
          */
-        @Builder
+        @Builder(toBuilder = true)
         public record Output(@NonNull BigDecimal totalRevenue, @NonNull ChargedFees chargedFees) {}
     }
 
     /**
      * Input for vendor report generation.
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record VendorReportInput(@NonNull DataModel.Vendor.Key... vendors) {}
 
     /**
      * Data for vendor report generation.
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record VendorReportData(
             @NonNull DataModel.Vendor vendor,
             @NonNull DataModel.Booth booth,
@@ -140,12 +143,21 @@ public final class ServiceModel {
             @NonNull BigDecimal totalRevenue) {}
 
     /**
+     * Report file information.
+     * @param localFile the local file path
+     * @param relativePath the relative path for download
+     */
+    @Builder
+    public record ReportFile(@NonNull Path localFile,
+                             @NonNull String relativePath) {}
+
+    /**
      * Data for data exchange operations.
      * @param booth the booth information
      * @param vendors the list of vendors
      * @param purchases the list of purchases
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record ExchangeData(
             @NonNull DataModel.Booth booth,
             @NonNull List<DataModel.Vendor> vendors,
@@ -156,7 +168,7 @@ public final class ServiceModel {
      * @param name the name of the receiver
      * @param endpoint the endpoint of the receiver
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record ExchangeReceiver(@NonNull String name, @NonNull String endpoint) {}
 
     /**
@@ -164,6 +176,6 @@ public final class ServiceModel {
      * @param id the subscription id
      * @param booth the booth key
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record ExchangeSubscription(@NonNull String id, @NonNull DataModel.Booth.Key booth) {}
 }

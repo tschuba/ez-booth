@@ -5,7 +5,7 @@ package tschuba.ez.booth.ui.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static tschuba.ez.booth.ui.util.RoutingParameters.*;
+import static tschuba.ez.booth.ui.util.Routing.Parameters.*;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.RouteParameters;
@@ -15,9 +15,9 @@ import org.junit.jupiter.api.Test;
 import tschuba.ez.booth.ui.views.CheckoutView;
 
 /**
- * Test class for {@link RoutingParameters.Parser}.
+ * Test class for {@link Routing.Parameters.Parser}.
  */
-class RoutingParametersParserTest {
+class ParametersParserTest {
 
     private static final String EVENT_ID = "eventId";
     private static final int VENDOR_ID = 4711;
@@ -25,29 +25,29 @@ class RoutingParametersParserTest {
     private static final Class<? extends Component> RETURN_TO_VIEW = CheckoutView.class;
 
     private RouteParameters paramsMock;
-    private RoutingParameters.Parser parser;
-    private RoutingParameters.Parser parserSpy;
+    private Routing.Parameters.Parser parser;
+    private Routing.Parameters.Parser parserSpy;
 
     @BeforeEach
     void setUp() {
         paramsMock = mock(RouteParameters.class);
-        parser = RoutingParameters.parser(paramsMock);
+        parser = Routing.Parameters.parser(paramsMock);
         parserSpy = spy(parser);
 
-        when(paramsMock.get(ROUTE_PARAM__EVENT_ID)).thenReturn(Optional.of(EVENT_ID));
+        when(paramsMock.get(ROUTE_PARAM__BOOTH_ID)).thenReturn(Optional.of(EVENT_ID));
         when(paramsMock.get(ROUTE_PARAM__VENDOR_ID)).thenReturn(Optional.of(String.valueOf(VENDOR_ID)));
         when(paramsMock.get(ROUTE_PARAM__PURCHASE_ID)).thenReturn(Optional.of(PURCHASE_ID));
         when(paramsMock.get(ROUTE_PARAM__RETURN_TO_VIEW)).thenReturn(Optional.of(RETURN_TO_VIEW.getName()));
     }
 
     @Test
-    void testEventIdGetter() {
-        assertThat(parser.eventId()).hasValue(EVENT_ID);
+    void testBoothIdGetter() {
+        assertThat(parser.boothId()).hasValue(EVENT_ID);
     }
 
     @Test
-    void testEventKeyGetter() {
-        assertThat(parser.eventKey()).hasValueSatisfying(key -> assertThat(key.getId()).isEqualTo(EVENT_ID));
+    void testBoothKeyGetter() {
+        assertThat(parser.boothKey()).hasValueSatisfying(key -> assertThat(key.getId()).isEqualTo(EVENT_ID));
     }
 
     @Test

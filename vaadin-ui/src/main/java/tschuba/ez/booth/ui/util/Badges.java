@@ -9,9 +9,17 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import lombok.NonNull;
-import tschuba.commons.vaadin.components.Badges;
 
-public class BadgeBuilder implements Consumer<Span> {
+/**
+ * Utility class for creating and applying badge styles to Vaadin components.
+ */
+public class Badges implements Consumer<Span> {
+    public static final String BADGE = "badge";
+    public static final String SUCCESS = "success";
+    public static final String WARNING = "warning";
+    public static final String ERROR = "error";
+    public static final String CONTRAST = "contrast";
+
     static final String PRIMARY = "primary";
     static final String PILL = "pill";
     static final String SMALL = "small";
@@ -22,78 +30,78 @@ public class BadgeBuilder implements Consumer<Span> {
     private String variant;
     private boolean small;
 
-    private BadgeBuilder(boolean primary) {
+    private Badges(boolean primary) {
         this.primary = primary;
     }
 
-    public BadgeBuilder success() {
-        return variant(Badges.SUCCESS);
+    public Badges success() {
+        return variant(SUCCESS);
     }
 
-    public BadgeBuilder warning() {
-        return variant(Badges.WARNING);
+    public Badges warning() {
+        return variant(WARNING);
     }
 
-    public BadgeBuilder error() {
-        return variant(Badges.ERROR);
+    public Badges error() {
+        return variant(ERROR);
     }
 
-    public BadgeBuilder contrast(boolean contrast) {
+    public Badges contrast(boolean contrast) {
         this.contrast = contrast;
         return this;
     }
 
-    public BadgeBuilder contrast() {
+    public Badges contrast() {
         return this.contrast(true);
     }
 
-    public BadgeBuilder pill(boolean pill) {
+    public Badges pill(boolean pill) {
         this.pill = pill;
         return this;
     }
 
-    public BadgeBuilder pill() {
+    public Badges pill() {
         return this.pill(true);
     }
 
-    public BadgeBuilder small() {
+    public Badges small() {
         return small(true);
     }
 
-    public BadgeBuilder small(boolean small) {
+    public Badges small(boolean small) {
         this.small = small;
         return this;
     }
 
-    private BadgeBuilder variant(String variant) {
+    private Badges variant(String variant) {
         this.variant = variant;
         return this;
     }
 
-    public static BadgeBuilder badge() {
-        return new BadgeBuilder(false);
+    public static Badges badge() {
+        return new Badges(false);
     }
 
-    public static BadgeBuilder primary() {
-        return new BadgeBuilder(true);
+    public static Badges primary() {
+        return new Badges(true);
     }
 
     @Override
     public void accept(@NonNull Span span) {
         String emphasis = primary ? PRIMARY : null;
-        String contrasted = contrast ? Badges.CONTRAST : null;
+        String contrasted = contrast ? CONTRAST : null;
         String shape = pill ? PILL : null;
         String size = small ? SMALL : null;
         ThemeList themeList = span.getElement().getThemeList();
-        Stream.of(Badges.BADGE, variant, contrasted, emphasis, shape, size).filter(Objects::nonNull).forEach(themeList::add);
+        Stream.of(BADGE, variant, contrasted, emphasis, shape, size).filter(Objects::nonNull).forEach(themeList::add);
     }
 
-    public Span apply(@NonNull Span span) {
+    public Span applyTo(@NonNull Span span) {
         accept(span);
         return span;
     }
 
     public Span build() {
-        return apply(new Span());
+        return applyTo(new Span());
     }
 }

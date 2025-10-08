@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -134,16 +135,15 @@ public class ReportingLocalService implements ReportingService {
         //     */
         //    Optional<URI> tryGenerateVendorReport(@NonNull DataModel.Vendor.Key... vendors) {
         String reportFileName = VendorReportTemplate.reportFileName();
-        Path reportOutputPath = config.htmlOutputPath(reportFileName);
+        Path reportOutputPath = config.htmlOutputPath();
+        Path reportFilePath = reportOutputPath.resolve(reportFileName);
 
         try {
-            Path outputDir = reportOutputPath.getParent();
-            if (!Files.exists(outputDir)) {
-                Files.createDirectories(outputDir);
-            }
-
             if (!Files.exists(reportOutputPath)) {
-                Files.createFile(reportOutputPath);
+                Files.createDirectories(reportOutputPath);
+            }
+            if (!Files.exists(reportFilePath)) {
+                Files.createFile(reportFilePath);
             }
         } catch (IOException ex) {
             LOGGER.error("Failed to create report output file: {}", reportOutputPath, ex);

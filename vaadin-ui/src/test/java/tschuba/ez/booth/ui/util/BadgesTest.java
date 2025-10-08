@@ -15,12 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.verification.VerificationMode;
-import tschuba.commons.vaadin.components.Badges;
 
 /**
- * Test class for {@link BadgeBuilder}.
+ * Test class for {@link tschuba.ez.booth.ui.util.Badges}.
  */
-class BadgeBuilderTest {
+class BadgesTest {
 
     private Span spanMock;
     private ThemeList themeListMock;
@@ -36,83 +35,83 @@ class BadgeBuilderTest {
 
     @Test
     void testSuccess() {
-        BadgeBuilder.badge().success().accept(spanMock);
+        tschuba.ez.booth.ui.util.Badges.badge().success().accept(spanMock);
         verify(themeListMock).add(Badges.SUCCESS);
     }
 
     @Test
     void testWarning() {
-        BadgeBuilder.badge().warning().accept(spanMock);
+        tschuba.ez.booth.ui.util.Badges.badge().warning().accept(spanMock);
         verify(themeListMock).add(Badges.WARNING);
     }
 
     @Test
     void testError() {
-        BadgeBuilder.badge().error().accept(spanMock);
+        tschuba.ez.booth.ui.util.Badges.badge().error().accept(spanMock);
         verify(themeListMock).add(Badges.ERROR);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void testContrast(boolean value) {
-        BadgeBuilder.badge().contrast(value).accept(spanMock);
+        tschuba.ez.booth.ui.util.Badges.badge().contrast(value).accept(spanMock);
         VerificationMode verificationMode = value ? times(1) : never();
         verify(themeListMock, verificationMode).add(Badges.CONTRAST);
     }
 
     @Test
     void testContrast() {
-        BadgeBuilder.badge().contrast().accept(spanMock);
+        tschuba.ez.booth.ui.util.Badges.badge().contrast().accept(spanMock);
         verify(themeListMock).add(Badges.CONTRAST);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void testPill(boolean value) {
-        BadgeBuilder.badge().pill(value).accept(spanMock);
+        tschuba.ez.booth.ui.util.Badges.badge().pill(value).accept(spanMock);
         VerificationMode verificationMode = value ? times(1) : never();
-        verify(themeListMock, verificationMode).add(BadgeBuilder.PILL);
+        verify(themeListMock, verificationMode).add(tschuba.ez.booth.ui.util.Badges.PILL);
     }
 
     @Test
     void testPill() {
-        BadgeBuilder.badge().pill().accept(spanMock);
-        verify(themeListMock).add(BadgeBuilder.PILL);
+        tschuba.ez.booth.ui.util.Badges.badge().pill().accept(spanMock);
+        verify(themeListMock).add(tschuba.ez.booth.ui.util.Badges.PILL);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void testSmall(boolean value) {
-        BadgeBuilder.badge().small(value).accept(spanMock);
+        tschuba.ez.booth.ui.util.Badges.badge().small(value).accept(spanMock);
         VerificationMode verificationMode = value ? times(1) : never();
-        verify(themeListMock, verificationMode).add(BadgeBuilder.SMALL);
+        verify(themeListMock, verificationMode).add(tschuba.ez.booth.ui.util.Badges.SMALL);
     }
 
     @Test
     void testSmall() {
-        BadgeBuilder.badge().small().accept(spanMock);
-        verify(themeListMock).add(BadgeBuilder.SMALL);
+        tschuba.ez.booth.ui.util.Badges.badge().small().accept(spanMock);
+        verify(themeListMock).add(tschuba.ez.booth.ui.util.Badges.SMALL);
     }
 
     @Test
     void testBadgeFactoryMethod() {
-        assertThatNoException().isThrownBy(() -> assertThat(BadgeBuilder.badge()).isNotNull());
+        assertThatNoException().isThrownBy(() -> assertThat(tschuba.ez.booth.ui.util.Badges.badge()).isNotNull());
     }
 
     @Test
     void testPrimaryFactoryMethod() {
-        assertThatNoException().isThrownBy(() -> assertThat(BadgeBuilder.primary()).isNotNull());
+        assertThatNoException().isThrownBy(() -> assertThat(tschuba.ez.booth.ui.util.Badges.primary()).isNotNull());
     }
 
     @Test
     void testAccept() {
-        assertThatNoException().isThrownBy(() -> BadgeBuilder.badge().accept(spanMock));
+        assertThatNoException().isThrownBy(() -> tschuba.ez.booth.ui.util.Badges.badge().accept(spanMock));
     }
 
     @Test
-    void testApply() {
+    void testApplyTo() {
         assertThatNoException().isThrownBy(() -> {
-            Span actualValue = BadgeBuilder.badge().apply(spanMock);
+            Span actualValue = tschuba.ez.booth.ui.util.Badges.badge().applyTo(spanMock);
             assertThat(actualValue).isEqualTo(spanMock);
         });
     }
@@ -120,14 +119,14 @@ class BadgeBuilderTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void testBuild(boolean primary) {
-        BadgeBuilder builder = (primary) ? BadgeBuilder.primary() : BadgeBuilder.badge();
+        tschuba.ez.booth.ui.util.Badges builder = (primary) ? tschuba.ez.booth.ui.util.Badges.primary() : tschuba.ez.booth.ui.util.Badges.badge();
         Span actualSpan = builder.build();
         assertThat(actualSpan).isNotNull().extracting(Span::getElement).extracting(Element::getThemeList).satisfies(themeList -> {
             assertThat(themeList).contains(Badges.BADGE);
             if (primary) {
-                assertThat(themeList).contains(BadgeBuilder.PRIMARY);
+                assertThat(themeList).contains(tschuba.ez.booth.ui.util.Badges.PRIMARY);
             } else {
-                assertThat(themeList).doesNotContain(BadgeBuilder.PRIMARY);
+                assertThat(themeList).doesNotContain(tschuba.ez.booth.ui.util.Badges.PRIMARY);
             }
         });
     }

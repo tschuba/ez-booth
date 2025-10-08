@@ -9,8 +9,7 @@ import com.vaadin.flow.component.avatar.AvatarVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import lombok.Getter;
-import tschuba.basarix.data.model.Vendor;
-import tschuba.basarix.data.model.VendorKey;
+import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.ui.renderer.VendorRenderer;
 import tschuba.ez.booth.ui.renderer.VendorRenderer.Format;
 
@@ -18,20 +17,20 @@ import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 @Getter
 public class VendorCard extends Div implements Selectable {
-    private final Vendor vendor;
+    private final DataModel.Vendor vendor;
     private final Span nameSpan;
     private final Avatar avatar;
     private boolean selected;
 
-    public VendorCard(Vendor vendor) {
+    public VendorCard(DataModel.Vendor vendor) {
         this.vendor = vendor;
         addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.BETWEEN, Padding.SMALL, BorderRadius.MEDIUM);
 
         avatar = new Avatar();
         avatar.addThemeVariants(AvatarVariant.LUMO_LARGE);
         avatar.addClassNames(Margin.Right.MEDIUM);
-        Integer vendorId = vendor.getKey().getId();
-        avatar.setColorIndex(Integer.remainderUnsigned(vendorId, 7));
+        String vendorId = vendor.key().vendorId();
+        //avatar.setColorIndex(Integer.remainderUnsigned(vendorId, 7));
 
         nameSpan = new Span();
 
@@ -46,7 +45,7 @@ public class VendorCard extends Div implements Selectable {
         super.onAttach(attachEvent);
 
         VendorRenderer vendorRenderer = VendorRenderer.of(attachEvent.getUI());
-        VendorKey key = vendor.getKey();
+        DataModel.Vendor.Key key = vendor.key();
 
         nameSpan.setText(vendorRenderer.keyToString(Format.Long, key));
 

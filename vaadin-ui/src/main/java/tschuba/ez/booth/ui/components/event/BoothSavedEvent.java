@@ -5,10 +5,10 @@ import lombok.Getter;
 import tschuba.ez.booth.model.DataModel;
 
 @Getter
-public class CreateEventFormSubmitEvent extends ComponentEvent<UpsertEventForm> {
+public class BoothSavedEvent extends ComponentEvent<UpsertEventDialog> {
     private final DataModel.Booth booth;
 
-    public CreateEventFormSubmitEvent(UpsertEventForm source, boolean fromClient, DataModel.Booth booth) {
+    public BoothSavedEvent(UpsertEventDialog source, boolean fromClient, DataModel.Booth booth) {
         super(source, fromClient);
         this.booth = booth;
     }
