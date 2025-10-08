@@ -6,6 +6,7 @@ package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 import static tschuba.ez.booth.i18n.TranslationKeys.EventSelection.NOTIFICATION__NO_EVENT_SELECTED;
+import static tschuba.ez.booth.i18n.TranslationKeys.EventSelectionView.*;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;

@@ -6,6 +6,7 @@ package tschuba.ez.booth.ui.components.checkout;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 import static tschuba.ez.booth.i18n.Formats.formats;
+import static tschuba.ez.booth.i18n.TranslationKeys.PurchaseSummary.*;
 
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
@@ -217,7 +218,7 @@ public class PurchaseSummary extends Div {
             return;
         }
 
-        DataModel.Booth.Key purchaseBooth = itemList.get(0).key().purchase().booth();
+        DataModel.Booth.Key purchaseBooth = itemList.getFirst().key().purchase().booth();
         ServiceModel.Checkout checkout =
                 ServiceModel.Checkout.builder().booth(purchaseBooth).items(itemList).build();
         if (config.confirmationRequired()) {

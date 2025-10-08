@@ -5,6 +5,7 @@
 package tschuba.ez.booth.ui.components;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.Margin;
+import static tschuba.ez.booth.i18n.TranslationKeys.VendorReportCard.*;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;

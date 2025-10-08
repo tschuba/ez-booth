@@ -6,6 +6,7 @@ package tschuba.ez.booth.ui.components.checkout;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import static com.vaadin.flow.theme.lumo.LumoUtility.Padding;
+import static tschuba.ez.booth.i18n.TranslationKeys.CheckoutItemForm.*;
 
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;

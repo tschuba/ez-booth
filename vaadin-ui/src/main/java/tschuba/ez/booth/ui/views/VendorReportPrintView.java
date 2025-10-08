@@ -17,6 +17,8 @@ import tschuba.ez.booth.services.ReportingService;
 import tschuba.ez.booth.ui.layouts.BaseLayout;
 import tschuba.ez.booth.ui.util.*;
 
+import static tschuba.ez.booth.i18n.TranslationKeys.VendorReportPrintView.*;
+
 @Route(value = "reports/vendor/print/:eventId/:vendorId")
 public class VendorReportPrintView extends BaseLayout implements BeforeEnterObserver {
     @NonNull private final ReportViewHelper helper;

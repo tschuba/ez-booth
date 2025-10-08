@@ -19,6 +19,8 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
 
+import static tschuba.ez.booth.i18n.TranslationKeys.UpsertEventDialog.*;
+
 public class UpsertEventDialog extends Dialog {
     private final UpsertEventForm upsertEventForm;
     private final BoothRepository booths;

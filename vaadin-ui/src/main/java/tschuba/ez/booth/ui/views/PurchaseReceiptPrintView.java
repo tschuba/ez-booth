@@ -6,6 +6,7 @@ package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 import static tschuba.ez.booth.i18n.Formats.formats;
+import static tschuba.ez.booth.i18n.TranslationKeys.PurchaseReceiptPrintView.*;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
