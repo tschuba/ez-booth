@@ -5,7 +5,6 @@
 package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.InfoView.*;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;

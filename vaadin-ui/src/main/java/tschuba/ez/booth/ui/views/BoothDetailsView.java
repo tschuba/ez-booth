@@ -6,8 +6,7 @@ package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.component.button.ButtonVariant.*;
 import static java.util.Optional.empty;
-import static tschuba.ez.booth.ui.i18n.Formats.formats;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.EventDetailsView.*;
+import static tschuba.ez.booth.i18n.Formats.formats;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
@@ -40,7 +39,7 @@ import tschuba.ez.booth.ui.components.ConfirmativeButton;
 import tschuba.ez.booth.ui.components.event.BoothSavedEvent;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.components.event.UpsertEventDialog;
-import tschuba.ez.booth.ui.i18n.TranslationKeys;
+import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.ui.layouts.TwoColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.util.*;

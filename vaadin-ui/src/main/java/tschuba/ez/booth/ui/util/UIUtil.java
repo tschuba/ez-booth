@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import lombok.NonNull;
-import tschuba.ez.booth.ui.i18n.TranslationKeys;
+import tschuba.ez.booth.i18n.TranslationKeys;
 
 public class UIUtil {
     public static void traverseParents(Component from, Function<Component, Boolean> function) {

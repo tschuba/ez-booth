@@ -13,7 +13,7 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.router.RouterLink;
 import lombok.Getter;
-import tschuba.ez.booth.ui.i18n.I18NTextKey;
+import tschuba.ez.booth.i18n.I18NTextKey;
 import tschuba.ez.booth.ui.util.Icons;
 
 public class MainMenuItem extends Tab {

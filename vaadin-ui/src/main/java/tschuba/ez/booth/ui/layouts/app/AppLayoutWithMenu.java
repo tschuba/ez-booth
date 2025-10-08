@@ -9,8 +9,8 @@ import static org.vaadin.lineawesome.LineAwesomeIcon.*;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import tschuba.ez.booth.data.BoothRepository;
-import tschuba.ez.booth.ui.i18n.I18NTextKey;
-import tschuba.ez.booth.ui.i18n.TranslationKeys;
+import tschuba.ez.booth.i18n.I18NTextKey;
+import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.ui.views.*;
 
 public class AppLayoutWithMenu extends CustomAppLayout {

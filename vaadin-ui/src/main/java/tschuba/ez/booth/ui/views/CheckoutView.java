@@ -6,8 +6,7 @@ package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.Display;
 import static com.vaadin.flow.theme.lumo.LumoUtility.FlexDirection;
-import static tschuba.ez.booth.ui.i18n.Formats.formats;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.CheckoutView.*;
+import static tschuba.ez.booth.i18n.Formats.formats;
 
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;

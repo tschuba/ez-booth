@@ -4,8 +4,8 @@
  */
 package tschuba.ez.booth.ui.components.event;
 
-import static tschuba.ez.booth.ui.i18n.I18N.i18N;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.EventSelection.NOTIFICATION__NO_EVENT_SELECTED;
+import static tschuba.ez.booth.i18n.I18N.i18N;
+import static tschuba.ez.booth.i18n.TranslationKeys.EventSelection.NOTIFICATION__NO_EVENT_SELECTED;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;

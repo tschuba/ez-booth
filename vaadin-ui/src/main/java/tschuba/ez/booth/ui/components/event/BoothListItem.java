@@ -6,7 +6,6 @@ package tschuba.ez.booth.ui.components.event;
 
 import static com.vaadin.flow.component.button.ButtonVariant.*;
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.EventSelectionView.*;
 import static tschuba.ez.booth.ui.util.Buttons.enableAfterClick;
 
 import com.vaadin.flow.component.ComponentEventListener;

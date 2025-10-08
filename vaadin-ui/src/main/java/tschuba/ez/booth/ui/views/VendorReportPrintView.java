@@ -4,8 +4,6 @@
  */
 package tschuba.ez.booth.ui.views;
 
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.VendorReportPrintView.*;
-
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;

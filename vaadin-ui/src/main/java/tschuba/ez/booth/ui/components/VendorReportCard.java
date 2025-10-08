@@ -5,7 +5,6 @@
 package tschuba.ez.booth.ui.components;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.Margin;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.VendorReportCard.*;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
@@ -18,7 +17,7 @@ import jakarta.annotation.Nonnull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
-import tschuba.ez.booth.ui.i18n.Formats;
+import tschuba.ez.booth.i18n.Formats;
 import tschuba.ez.booth.ui.views.VendorReportPrintView;
 
 /**

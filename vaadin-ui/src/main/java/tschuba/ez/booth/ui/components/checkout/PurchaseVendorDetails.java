@@ -5,8 +5,8 @@
 package tschuba.ez.booth.ui.components.checkout;
 
 import static java.util.Optional.ofNullable;
-import static tschuba.ez.booth.ui.i18n.Formats.formats;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.PurchaseSummary.ITEM_COUNT__TEXT;
+import static tschuba.ez.booth.i18n.Formats.formats;
+import static tschuba.ez.booth.i18n.TranslationKeys.PurchaseSummary.ITEM_COUNT__TEXT;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import lombok.Getter;
 import tschuba.ez.booth.Ids;
 import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.ui.i18n.TranslationKeys;
+import tschuba.ez.booth.i18n.TranslationKeys;
 
 public class PurchaseVendorDetails extends Div {
     @Getter private final DataModel.Vendor.Key vendor;

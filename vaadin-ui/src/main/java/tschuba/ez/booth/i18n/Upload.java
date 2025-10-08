@@ -2,9 +2,9 @@
  * Copyright (c) 2025 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
-package tschuba.ez.booth.ui.i18n;
+package tschuba.ez.booth.i18n;
 
-import static tschuba.ez.booth.ui.i18n.I18N.i18N;
+import static tschuba.ez.booth.i18n.I18N.i18N;
 
 import com.vaadin.flow.component.upload.UploadI18N;
 import java.util.Locale;

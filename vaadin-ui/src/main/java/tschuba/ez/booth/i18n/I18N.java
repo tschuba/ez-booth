@@ -2,7 +2,7 @@
  * Copyright (c) 2025 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
-package tschuba.ez.booth.ui.i18n;
+package tschuba.ez.booth.i18n;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;

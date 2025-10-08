@@ -9,7 +9,7 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import java.util.Locale;
 import lombok.NonNull;
 import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.ui.i18n.Formats;
+import tschuba.ez.booth.i18n.Formats;
 
 public class ColumnRenderer {
 

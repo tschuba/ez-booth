@@ -6,7 +6,6 @@ package tschuba.ez.booth.ui.components.checkout;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import static com.vaadin.flow.theme.lumo.LumoUtility.Padding;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.CheckoutItemForm.*;
 
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
@@ -25,7 +24,7 @@ import lombok.Getter;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.ui.Constraints;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
-import tschuba.ez.booth.ui.i18n.I18N;
+import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.ui.util.UIUtil;
 import tschuba.ez.booth.ui.views.CheckoutView;
 

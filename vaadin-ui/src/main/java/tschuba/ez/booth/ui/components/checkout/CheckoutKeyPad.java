@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.IntStream;
-import tschuba.ez.booth.ui.i18n.TranslationKeys;
+import tschuba.ez.booth.i18n.TranslationKeys;
 
 public class CheckoutKeyPad extends Div implements HasEnabled {
     public static final char DECIMAL_SEPARATOR = '.';

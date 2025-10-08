@@ -5,9 +5,9 @@
 package tschuba.ez.booth.ui.layouts.app;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.App.TITLE;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.AppLayout.EVENT_LINK__TOOLTIP_TEXT;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.AppLayout.TOGGLE_THEME_BUTTON__TOOLTIP_TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.App.TITLE;
+import static tschuba.ez.booth.i18n.TranslationKeys.AppLayout.EVENT_LINK__TOOLTIP_TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.AppLayout.TOGGLE_THEME_BUTTON__TOOLTIP_TEXT;
 
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
@@ -31,7 +31,7 @@ import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.ui.components.ToggleButton;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
-import tschuba.ez.booth.ui.i18n.TranslationKeys;
+import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.ui.util.Icons;
 import tschuba.ez.booth.ui.util.NavigateTo;
 import tschuba.ez.booth.ui.util.Routing;

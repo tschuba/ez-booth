@@ -5,8 +5,7 @@
 package tschuba.ez.booth.ui.components.checkout;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.ui.i18n.Formats.formats;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.PurchaseSummary.*;
+import static tschuba.ez.booth.i18n.Formats.formats;
 
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;

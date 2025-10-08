@@ -4,8 +4,8 @@
  */
 package tschuba.ez.booth.ui.renderer;
 
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.Vendor.ID__FORMAT_LONG;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.Vendor.ID__FORMAT_SHORT;
+import static tschuba.ez.booth.i18n.TranslationKeys.Vendor.ID__FORMAT_LONG;
+import static tschuba.ez.booth.i18n.TranslationKeys.Vendor.ID__FORMAT_SHORT;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.ValueProvider;

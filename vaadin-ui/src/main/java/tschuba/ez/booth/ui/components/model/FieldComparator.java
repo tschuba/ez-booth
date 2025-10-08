@@ -4,8 +4,8 @@
  */
 package tschuba.ez.booth.ui.components.model;
 
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.FieldComparator.NO_FIELDS__EXCEPTION;
-import static tschuba.ez.booth.ui.i18n.TranslationKeys.FieldComparator.NO_NULL_FIELDS__EXCEPTION;
+import static tschuba.ez.booth.i18n.TranslationKeys.FieldComparator.NO_FIELDS__EXCEPTION;
+import static tschuba.ez.booth.i18n.TranslationKeys.FieldComparator.NO_NULL_FIELDS__EXCEPTION;
 
 import com.vaadin.flow.component.UI;
 import java.util.*;
