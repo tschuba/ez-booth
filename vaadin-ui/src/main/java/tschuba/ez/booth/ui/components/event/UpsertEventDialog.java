@@ -4,6 +4,8 @@
  */
 package tschuba.ez.booth.ui.components.event;
 
+import static tschuba.ez.booth.i18n.TranslationKeys.UpsertEventDialog.*;
+
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
@@ -18,8 +20,6 @@ import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
-
-import static tschuba.ez.booth.i18n.TranslationKeys.UpsertEventDialog.*;
 
 public class UpsertEventDialog extends Dialog {
     private final UpsertEventForm upsertEventForm;

@@ -6,7 +6,6 @@ package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.Display;
 import static com.vaadin.flow.theme.lumo.LumoUtility.FlexDirection;
-import static tschuba.ez.booth.i18n.Formats.formats;
 import static tschuba.ez.booth.i18n.TranslationKeys.CheckoutView.*;
 
 import com.vaadin.flow.component.Unit;
@@ -27,6 +26,7 @@ import java.util.Optional;
 import lombok.NonNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.data.BoothRepository;
+import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.services.PurchaseService;
@@ -120,6 +120,9 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
     }
 
     private PurchaseGrid<Void> createPurchaseGrid(PurchaseService purchaseService) {
+
+        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+
         PurchaseComparator dateTimeComparator =
                 PurchaseComparator.builder().ascending(PurchaseComparator.Field.DateTime).build();
         PurchaseGrid<Void> purchaseGrid = new PurchaseGrid<>(purchaseService);
@@ -128,13 +131,13 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
         purchaseGrid.setWidth("31rem");
         Column<DataModel.Purchase> dateTimeColumn =
                 purchaseGrid
-                        .addColumn(ColumnRenderer.Purchase.dateTime(formats(), getLocale()))
+                        .addColumn(ColumnRenderer.Purchase.dateTime(format))
                         .setComparator(dateTimeComparator)
                         .setHeader(getTranslation(PURCHASE_GRID__HEADER__DATE_TIME))
                         .setWidth("11rem")
                         .setFlexGrow(0);
         purchaseGrid
-                .addColumn(ColumnRenderer.Purchase.sum(formats(), getLocale()))
+                .addColumn(ColumnRenderer.Purchase.sum(format))
                 .setHeader(getTranslation(PURCHASE_GRID__HEADER__VALUE))
                 .setWidth("6rem")
                 .setFlexGrow(0);

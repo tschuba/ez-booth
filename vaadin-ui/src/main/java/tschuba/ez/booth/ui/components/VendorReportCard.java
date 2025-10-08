@@ -16,9 +16,9 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import jakarta.annotation.Nonnull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
+import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
-import tschuba.ez.booth.i18n.Formats;
 import tschuba.ez.booth.ui.views.VendorReportPrintView;
 
 /**
@@ -38,7 +38,8 @@ public class VendorReportCard extends VendorCard {
         itemCount.setText(Integer.toString(vendorData.items().size()));
 
         revenue.addClassNames(FontSize.XSMALL);
-        revenue.setText(Formats.formats().currency(vendorData.salesSum(), getLocale()));
+        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        revenue.setText(format.currency(vendorData.salesSum()));
 
         printButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
         printButton.addClassNames(Margin.NONE);

@@ -6,7 +6,6 @@ package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.component.button.ButtonVariant.*;
 import static java.util.Optional.empty;
-import static tschuba.ez.booth.i18n.Formats.formats;
 import static tschuba.ez.booth.i18n.TranslationKeys.EventDetailsView.*;
 
 import com.vaadin.flow.component.button.Button;
@@ -21,7 +20,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -29,6 +27,8 @@ import lombok.NonNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.data.VendorRepository;
+import tschuba.ez.booth.i18n.I18N;
+import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
@@ -40,7 +40,6 @@ import tschuba.ez.booth.ui.components.ConfirmativeButton;
 import tschuba.ez.booth.ui.components.event.BoothSavedEvent;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.components.event.UpsertEventDialog;
-import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.ui.layouts.TwoColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.util.*;
@@ -246,21 +245,20 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                                     report.totalRevenue(), BigDecimal::add);
                         });
 
-        Locale locale = getLocale();
+        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+
         description.setContent(booth.description());
-        date.setContent(formats().date(booth.date(), locale));
-        participationFee.setContent(formats().currency(booth.participationFee(), locale));
-        salesFee.setContent(
-                String.format("%s %%", formats().decimalNumber(booth.salesFee(), locale)));
-        feesRoundingStep.setContent(formats().currency(booth.feesRoundingStep(), locale));
+        date.setContent(format.date(booth.date()));
+        participationFee.setContent(format.currency(booth.participationFee()));
+        salesFee.setContent(String.format("%s %%", format.decimalNumber(booth.salesFee())));
+        feesRoundingStep.setContent(format.currency(booth.feesRoundingStep()));
 
         totalVendorCount.setContent(Integer.toString(allVendors.size()));
         totalItemCount.setContent(Long.toString(itemCount.get()));
-        totalItemSum.setContent(formats().currency(aggregatedItemSum.get(), locale));
-        totalParticipationFee.setContent(
-                formats().currency(aggregatedParticipationFee.get(), locale));
-        totalSalesFee.setContent(formats().currency(aggregatedSalesFee.get(), locale));
-        totalRevenue.setContent(formats().currency(aggregatedRevenue.get(), locale));
+        totalItemSum.setContent(format.currency(aggregatedItemSum.get()));
+        totalParticipationFee.setContent(format.currency(aggregatedParticipationFee.get()));
+        totalSalesFee.setContent(format.currency(aggregatedSalesFee.get()));
+        totalRevenue.setContent(format.currency(aggregatedRevenue.get()));
 
         editButton.setEnabled(!booth.closed());
         String editButtonText =

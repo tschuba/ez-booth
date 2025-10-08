@@ -5,11 +5,11 @@
 package tschuba.ez.booth.ui.components;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.i18n.Formats.formats;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import lombok.Getter;
+import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.ui.renderer.VendorRenderer;
 
@@ -24,7 +24,8 @@ public class ItemListItem extends Div {
         addClassNames(Padding.Horizontal.SMALL);
 
         Span dateTimeSpan = new Span();
-        dateTimeSpan.setText(formats().dateTime(item.purchasedOn(), getLocale()));
+        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        dateTimeSpan.setText(format.dateTime(item.purchasedOn()));
         dateTimeSpan.addClassNames(FontSize.XXSMALL);
         add(dateTimeSpan);
 
@@ -40,7 +41,7 @@ public class ItemListItem extends Div {
 
         Span priceSpan = new Span();
         priceSpan.addClassNames(FontWeight.MEDIUM);
-        priceSpan.setText(formats().currency(item.price(), getLocale()));
+        priceSpan.setText(format.currency(item.price()));
         add(priceSpan);
     }
 

@@ -4,7 +4,6 @@
  */
 package tschuba.ez.booth.ui.components.checkout;
 
-import static tschuba.ez.booth.i18n.Formats.formats;
 import static tschuba.ez.booth.i18n.TranslationKeys.Vendor.ID__FORMAT_SHORT;
 
 import com.vaadin.flow.component.ClickEvent;
@@ -20,6 +19,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import java.text.Format;
 import lombok.Getter;
 import org.vaadin.lineawesome.LineAwesomeIcon;
+import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
 
 @Getter
@@ -36,7 +36,8 @@ public class PurchaseItemBadge extends Button {
         setIconAfterText(true);
         addClickListener(this::onDeleteButtonClick);
 
-        Format decimalFormat = formats().currency(getLocale());
+        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        Format decimalFormat = format.currency();
         setText(decimalFormat.format(item.price()));
 
         Span vendorSpan = new Span();

@@ -5,7 +5,6 @@
 package tschuba.ez.booth.ui.components.checkout;
 
 import static java.util.Optional.ofNullable;
-import static tschuba.ez.booth.i18n.Formats.formats;
 import static tschuba.ez.booth.i18n.TranslationKeys.PurchaseSummary.ITEM_COUNT__TEXT;
 
 import com.vaadin.flow.component.ComponentEvent;
@@ -14,7 +13,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import java.math.BigDecimal;
-import java.text.Format;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,8 +20,9 @@ import java.util.List;
 import java.util.stream.Stream;
 import lombok.Getter;
 import tschuba.ez.booth.Ids;
-import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.i18n.TranslationKeys;
+import tschuba.ez.booth.model.DataModel;
 
 public class PurchaseVendorDetails extends Div {
     @Getter private final DataModel.Vendor.Key vendor;
@@ -115,14 +114,14 @@ public class PurchaseVendorDetails extends Div {
     }
 
     private void updateVendorDetails() {
-        Format format = formats().currency(getLocale());
+        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
         sumOfItems =
                 getItems()
                         .map(DataModel.PurchaseItem::price)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO)
                         .doubleValue();
-        vendorSumSpan.setText(format.format(sumOfItems));
+        vendorSumSpan.setText(format.currency().format(sumOfItems));
         long itemCount = getItems().count();
         vendorCountSpan.setText(getTranslation(ITEM_COUNT__TEXT, itemCount));
     }

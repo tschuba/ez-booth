@@ -23,9 +23,9 @@ import java.math.BigDecimal;
 import java.util.stream.Stream;
 import lombok.Getter;
 import org.vaadin.lineawesome.LineAwesomeIcon;
+import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.ui.Constraints;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
-import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.ui.util.UIUtil;
 import tschuba.ez.booth.ui.views.CheckoutView;
 
@@ -82,7 +82,7 @@ public class CheckoutItemForm extends Composite<HorizontalLayout> implements Has
 
         priceField.setLabel(getTranslation(PRICE_FIELD__LABEL));
         priceField.setPlaceholder(getTranslation(PRICE_FIELD__PLACEHOLDER));
-        priceField.setSuffixComponent(new Span(I18N.i18N().getCurrency(getLocale()).getSymbol()));
+        priceField.setSuffixComponent(new Span(I18N.i18N().currency(getLocale()).getSymbol()));
 
         Tooltip.forComponent(clearButton).setText(getTranslation(CLEAR_BUTTON__TOOLTIP));
         Tooltip.forComponent(historyToggle).setText(getTranslation(HISTORY_TOGGLE_BUTTON__TOOLTIP));

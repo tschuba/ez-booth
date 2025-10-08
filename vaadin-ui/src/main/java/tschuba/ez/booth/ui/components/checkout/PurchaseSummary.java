@@ -5,7 +5,6 @@
 package tschuba.ez.booth.ui.components.checkout;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.i18n.Formats.formats;
 import static tschuba.ez.booth.i18n.TranslationKeys.PurchaseSummary.*;
 
 import com.vaadin.flow.component.*;
@@ -28,6 +27,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.lineawesome.LineAwesomeIcon;
+import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.CheckoutConfig;
@@ -190,7 +190,8 @@ public class PurchaseSummary extends Div {
     private void updateSum() {
         double purchaseSum =
                 getVendorPanels().mapToDouble(PurchaseVendorDetails::getSumOfItems).sum();
-        String purchaseSumText = formats().currency(purchaseSum, getLocale());
+        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        String purchaseSumText = format.currency(purchaseSum);
         purchaseSumSpan.setText(purchaseSumText);
         String tooltipText;
         if (purchaseSum == 0d) {

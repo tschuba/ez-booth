@@ -5,7 +5,6 @@
 package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.i18n.Formats.formats;
 import static tschuba.ez.booth.i18n.TranslationKeys.PurchaseReceiptPrintView.*;
 
 import com.vaadin.flow.component.Component;
@@ -20,6 +19,7 @@ import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import tschuba.ez.booth.data.PurchaseRepository;
+import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
@@ -120,11 +120,13 @@ public class PurchaseReceiptPrintView extends OneColumnLayout implements BeforeE
             return;
         }
 
+        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+
         DataModel.Purchase purchase = purchaseByKey.map(EntitiesMapper::entityToObject).get();
         purchaseIdValue.setText(purchase.key().purchaseId());
-        dateTimeValue.setText(formats().dateTime(purchase.purchasedOn(), getLocale()));
+        dateTimeValue.setText(format.dateTime(purchase.purchasedOn()));
         itemCountValue.setText(Integer.toString(purchase.items().size()));
-        purchaseSumValue.setText(formats().currency(purchase.value()));
+        purchaseSumValue.setText(format.currency(purchase.value()));
 
         itemsContainer.removeAll();
         ItemComparator comparator =

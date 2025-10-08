@@ -13,7 +13,7 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.router.RouterLink;
 import lombok.Getter;
-import tschuba.ez.booth.i18n.I18NTextKey;
+import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.ui.util.Icons;
 
 public class MainMenuItem extends Tab {
@@ -21,7 +21,7 @@ public class MainMenuItem extends Tab {
     private final Span text;
     @Getter private final Class<? extends Component> view;
 
-    public MainMenuItem(I18NTextKey menuTitle, Component icon, Class<? extends Component> view) {
+    public MainMenuItem(I18N.TextKey menuTitle, Component icon, Class<? extends Component> view) {
         RouterLink routerLink = new RouterLink();
         routerLink.addClassNames(
                 Display.FLEX,
@@ -34,7 +34,7 @@ public class MainMenuItem extends Tab {
         this.view = view;
         routerLink.setRoute(this.view);
 
-        String title = getTranslation(menuTitle.getKey());
+        String title = getTranslation(menuTitle.key());
 
         text = new Span(title);
         text.setVisible(false);
@@ -51,7 +51,7 @@ public class MainMenuItem extends Tab {
     }
 
     public static MainMenuItem create(
-            I18NTextKey title, SvgIcon icon, Class<? extends Component> view) {
+            I18N.TextKey title, SvgIcon icon, Class<? extends Component> view) {
         return new MainMenuItem(title, Icons.large(icon), view);
     }
 }

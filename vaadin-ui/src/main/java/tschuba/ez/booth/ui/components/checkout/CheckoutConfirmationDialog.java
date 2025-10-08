@@ -5,7 +5,6 @@
 package tschuba.ez.booth.ui.components.checkout;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.i18n.Formats.formats;
 import static tschuba.ez.booth.i18n.TranslationKeys.CheckoutConfirmationDialog.*;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -20,6 +19,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import java.math.BigDecimal;
+import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.CheckoutConfig;
@@ -79,7 +79,8 @@ public class CheckoutConfirmationDialog extends Dialog {
                         .map(DataModel.PurchaseItem::price)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO);
-        valueSpan.setText(formats().currency(checkoutSum, getLocale()));
+        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        valueSpan.setText(format.currency(checkoutSum));
     }
 
     public void open(ServiceModel.Checkout checkout) {

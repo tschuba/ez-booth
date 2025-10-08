@@ -4,6 +4,8 @@
  */
 package tschuba.ez.booth.ui.views;
 
+import static tschuba.ez.booth.i18n.TranslationKeys.VendorReportPrintView.*;
+
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
@@ -16,8 +18,6 @@ import tschuba.ez.booth.reporting.ReportingException;
 import tschuba.ez.booth.services.ReportingService;
 import tschuba.ez.booth.ui.layouts.BaseLayout;
 import tschuba.ez.booth.ui.util.*;
-
-import static tschuba.ez.booth.i18n.TranslationKeys.VendorReportPrintView.*;
 
 @Route(value = "reports/vendor/print/:eventId/:vendorId")
 public class VendorReportPrintView extends BaseLayout implements BeforeEnterObserver {
