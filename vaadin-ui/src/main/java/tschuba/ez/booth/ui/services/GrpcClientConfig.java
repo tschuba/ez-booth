@@ -2,7 +2,7 @@
  * Copyright (c) 2025 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
-package tschuba.ez.booth.services;
+package tschuba.ez.booth.ui.services;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

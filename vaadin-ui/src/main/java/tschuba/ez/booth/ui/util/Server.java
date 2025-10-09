@@ -96,8 +96,8 @@ public class Server {
      * @param service the VaadinService to use
      * @return a Serving instance for the given VaadinService
      */
-    public Serving with(@NonNull VaadinService service) {
-        return new Serving(service);
+    public Service with(@NonNull VaadinService service) {
+        return new Service(service);
     }
 
     /**
@@ -106,7 +106,7 @@ public class Server {
      * @return a Serving instance for the current VaadinService
      * @throws IllegalStateException if no current VaadinService is available
      */
-    public Serving withCurrentService() {
+    public Service withCurrentService() {
         VaadinService service = VaadinService.getCurrent();
         if (service == null) {
             throw new IllegalStateException("No current VaadinService available!");
@@ -116,7 +116,7 @@ public class Server {
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter
-    public class Serving {
+    public class Service {
         private final VaadinService service;
 
         private VaadinServletContext servletContext() {

@@ -2,7 +2,7 @@
  * Copyright (c) 2025 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
-package tschuba.ez.booth.services;
+package tschuba.ez.booth.ui.services;
 
 import java.util.Optional;
 import java.util.Spliterator;

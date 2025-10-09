@@ -43,7 +43,7 @@ public class InitListener {
             final VaadinService service = event.getSource();
             if (config.launch()) {
                 Duration delay = Duration.ofSeconds(config.delayInSeconds());
-                Server.Serving launcher = Server.parse(environment).with(service);
+                Server.Service launcher = Server.parse(environment).with(service);
                 WithDelay.execute(delay, () -> launcher.launchView(EntryView.class));
             }
         }

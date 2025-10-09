@@ -7,7 +7,6 @@ package tschuba.ez.booth.reporting;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Optional;
-
 import lombok.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +71,8 @@ public class Reports {
         }
 
         public static Optional<Path> targetBasePath(@NonNull Environment environment) {
-            return Optional.ofNullable(environment.getProperty(REPORTING_OUTPUT_PATH)).map(Path::of);
+            return Optional.ofNullable(environment.getProperty(REPORTING_OUTPUT_PATH))
+                    .map(Path::of);
         }
     }
 }

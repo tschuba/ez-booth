@@ -19,7 +19,12 @@ import tschuba.ez.booth.services.ReportingService;
 import tschuba.ez.booth.ui.layouts.BaseLayout;
 import tschuba.ez.booth.ui.util.*;
 
-@Route(value = "reports/vendor/print/:" + Routing.Parameters.ROUTE_PARAM__BOOTH_ID + "/:" + Routing.Parameters.ROUTE_PARAM__VENDOR_ID)
+@Route(
+        value =
+                "reports/vendor/print/:"
+                        + Routing.Parameters.ROUTE_PARAM__BOOTH_ID
+                        + "/:"
+                        + Routing.Parameters.ROUTE_PARAM__VENDOR_ID)
 public class VendorReportPrintView extends BaseLayout implements BeforeEnterObserver {
     private final ReportingService reportingService;
 
