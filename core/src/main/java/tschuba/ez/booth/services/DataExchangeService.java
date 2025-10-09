@@ -5,30 +5,16 @@
 package tschuba.ez.booth.services;
 
 import lombok.NonNull;
-import tschuba.ez.booth.model.DataModel;
 
 /**
  * Service for data exchange operations.
  */
 public interface DataExchangeService {
     /**
-     * Export local data to the given data object and return it.
-     * @return the exported data object
+     * Receive data, process it and return an updated exchange dataset.
+     * @param dataReceived the received data
+     * @return the updated data
      */
     @NonNull
-    ServiceModel.ExchangeData exportLocalData(DataModel.Booth.Key boothId);
-
-    /**
-     * Import remote data from the given data object.
-     * @param data the data object to import from
-     */
-    void importRemoteData(@NonNull ServiceModel.ExchangeData data);
-
-    /**
-     * Subscribe for exchange data using the given receiver.
-     * @param receiver the receiver to use
-     * @return the subscription object
-     */
-    ServiceModel.ExchangeSubscription subscribeForExchange(
-            @NonNull ServiceModel.ExchangeReceiver receiver);
+    ServiceModel.ExchangeData exchangeData(ServiceModel.ExchangeData dataReceived);
 }

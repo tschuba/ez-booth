@@ -7,7 +7,6 @@ package tschuba.ez.booth.ui.services;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.DataExchangeServiceGrpc;
 import tschuba.ez.booth.proto.ProtoServices;
@@ -26,20 +25,8 @@ public class DataExchangeServiceClient implements DataExchangeService {
     }
 
     @Override
-    public @NonNull ServiceModel.ExchangeData exportLocalData(DataModel.Booth.Key boothId) {
-        ProtoServices.ExchangeData exchangeData =
-                client.exportLocalData(ProtoMapper.objectToMessage(boothId));
-        return ProtoMapper.messageToObject(exchangeData);
-    }
-
-    @Override
-    public void importRemoteData(ServiceModel.@NonNull ExchangeData data) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Override
-    public ServiceModel.ExchangeSubscription subscribeForExchange(
-            ServiceModel.@NonNull ExchangeReceiver receiver) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public @NonNull ServiceModel.ExchangeData exchangeData(ServiceModel.ExchangeData dataReceived) {
+        ProtoServices.ExchangeData exportData = client.syncData(ProtoMapper.objectToMessage(dataReceived));
+        return ProtoMapper.messageToObject(exportData);
     }
 }
