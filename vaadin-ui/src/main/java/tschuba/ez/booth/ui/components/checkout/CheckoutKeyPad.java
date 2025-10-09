@@ -15,7 +15,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.BigDecimalField;
-import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.TextField;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -25,7 +25,7 @@ import tschuba.ez.booth.i18n.TranslationKeys;
 
 public class CheckoutKeyPad extends Div implements HasEnabled {
     public static final char DECIMAL_SEPARATOR = '.';
-    private FieldAdapter<? extends Number> focusField;
+    private FieldAdapter<?> focusField;
 
     private boolean decimalSeparatorPending = false;
     private boolean decimalZeroPending = false;
@@ -124,8 +124,9 @@ public class CheckoutKeyPad extends Div implements HasEnabled {
         checkoutForm
                 .getPriceField()
                 .addFocusListener(event -> focusField = FieldAdapter.bigDecimal(event.getSource()));
-        // checkoutForm.getVendorField().addFocusListener(event -> focusField =
-        // FieldAdapter.integer(event.getSource()));
+        checkoutForm
+                .getVendorField()
+                .addFocusListener(event -> focusField = FieldAdapter.text(event.getSource()));
     }
 
     private Button createDigitButton(int value) {
@@ -203,21 +204,14 @@ public class CheckoutKeyPad extends Div implements HasEnabled {
         }
     }
 
-    private static class FieldAdapter<T extends Number> {
-        private final Converter<T> converter;
-        private final AbstractField<?, T> field;
-
-        private FieldAdapter(Converter<T> converter, AbstractField<?, T> field) {
-            this.converter = converter;
-            this.field = field;
-        }
-
-        private static FieldAdapter<Integer> integer(IntegerField field) {
-            return new FieldAdapter<>(new IntegerConverter(), field);
-        }
+    private record FieldAdapter<T>(Converter<T> converter, AbstractField<?, T> field) {
 
         private static FieldAdapter<BigDecimal> bigDecimal(BigDecimalField field) {
             return new FieldAdapter<>(new BigDecimalConverter(), field);
+        }
+
+        private static FieldAdapter<String> text(TextField field) {
+            return new FieldAdapter<>(new TextConverter(), field);
         }
 
         String getValueAsString() {
@@ -234,7 +228,7 @@ public class CheckoutKeyPad extends Div implements HasEnabled {
         }
     }
 
-    private interface Converter<T extends Number> {
+    private interface Converter<T> {
         String convert(T value);
 
         T parse(String value);
@@ -256,18 +250,15 @@ public class CheckoutKeyPad extends Div implements HasEnabled {
         }
     }
 
-    private static class IntegerConverter implements Converter<Integer> {
+    private static class TextConverter implements Converter<String> {
         @Override
-        public String convert(Integer value) {
-            if (value == null) {
-                return null;
-            }
-            return Integer.toString(value);
+        public String convert(String value) {
+            return value;
         }
 
         @Override
-        public Integer parse(String value) {
-            return Integer.parseInt(value);
+        public String parse(String value) {
+            return value;
         }
     }
 }
