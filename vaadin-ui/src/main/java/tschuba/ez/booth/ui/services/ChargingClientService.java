@@ -11,6 +11,8 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.ChargingServiceGrpc;
 import tschuba.ez.booth.proto.ProtoServices;
+import tschuba.ez.booth.services.ChargingService;
+import tschuba.ez.booth.services.ServiceModel;
 
 @Service
 public class ChargingClientService implements ChargingService {

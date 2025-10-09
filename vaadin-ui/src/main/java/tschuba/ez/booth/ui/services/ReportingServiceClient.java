@@ -15,6 +15,8 @@ import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.ProtoCore;
 import tschuba.ez.booth.proto.ProtoServices;
 import tschuba.ez.booth.proto.ReportingServiceGrpc;
+import tschuba.ez.booth.services.ReportingService;
+import tschuba.ez.booth.services.ServiceModel;
 
 @Service
 public class ReportingServiceClient implements ReportingService {

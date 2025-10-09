@@ -28,7 +28,12 @@ import tschuba.ez.booth.ui.util.Notifications;
 import tschuba.ez.booth.ui.util.Routing;
 import tschuba.ez.booth.ui.util.UIUtil;
 
-@Route(value = "reports/purchase/receipt/:eventId/:purchaseId")
+@Route(
+        value =
+                "reports/purchase/receipt/:"
+                        + Routing.Parameters.ROUTE_PARAM__BOOTH_ID
+                        + "/:"
+                        + Routing.Parameters.ROUTE_PARAM__PURCHASE_ID)
 public class PurchaseReceiptPrintView extends OneColumnLayout implements BeforeEnterObserver {
     private final Span purchaseIdValue;
     private final Div itemsContainer;
@@ -117,7 +122,7 @@ public class PurchaseReceiptPrintView extends OneColumnLayout implements BeforeE
             return;
         }
 
-        I18N.LocaleFormat format = I18N.current().format(getLocale());
+        I18N.LocaleFormat format = I18N.format(getLocale());
 
         DataModel.Purchase purchase = purchaseByKey.get();
         purchaseIdValue.setText(purchase.key().purchaseId());

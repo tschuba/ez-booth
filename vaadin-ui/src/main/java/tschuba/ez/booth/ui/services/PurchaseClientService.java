@@ -17,6 +17,8 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.ProtoModel;
 import tschuba.ez.booth.proto.PurchaseServiceGrpc;
+import tschuba.ez.booth.services.PurchaseService;
+import tschuba.ez.booth.services.ServiceModel;
 
 @Service
 public class PurchaseClientService implements PurchaseService {

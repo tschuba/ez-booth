@@ -18,6 +18,7 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.BoothServiceGrpc;
 import tschuba.ez.booth.proto.ProtoModel;
+import tschuba.ez.booth.services.BoothService;
 
 @Service
 public class BoothClientService implements BoothService {

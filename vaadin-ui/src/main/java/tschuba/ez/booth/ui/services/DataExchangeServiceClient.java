@@ -11,6 +11,8 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.DataExchangeServiceGrpc;
 import tschuba.ez.booth.proto.ProtoServices;
+import tschuba.ez.booth.services.DataExchangeService;
+import tschuba.ez.booth.services.ServiceModel;
 
 @Service
 public class DataExchangeServiceClient implements DataExchangeService {

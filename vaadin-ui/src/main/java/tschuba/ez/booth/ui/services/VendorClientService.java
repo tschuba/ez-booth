@@ -17,6 +17,7 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.ProtoModel;
 import tschuba.ez.booth.proto.VendorServiceGrpc;
+import tschuba.ez.booth.services.VendorService;
 
 @Service
 public class VendorClientService implements VendorService {
