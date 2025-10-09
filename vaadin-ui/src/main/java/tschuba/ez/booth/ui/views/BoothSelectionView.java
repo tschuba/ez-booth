@@ -34,7 +34,7 @@ import tschuba.ez.booth.ui.components.event.UpsertEventDialog;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.util.*;
 
-@Route(value = "event", layout = AppLayoutWithMenu.class)
+@Route(value = "booth", layout = AppLayoutWithMenu.class)
 public class BoothSelectionView extends Div
         implements BeforeEnterObserver, AfterNavigationObserver, HasDynamicTitle {
     private final BoothService boothService;

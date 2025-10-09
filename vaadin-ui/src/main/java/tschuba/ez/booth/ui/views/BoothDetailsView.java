@@ -41,7 +41,9 @@ import tschuba.ez.booth.ui.layouts.TwoColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.util.*;
 
-@Route(value = "event/:eventId", layout = AppLayoutWithMenu.class)
+@Route(
+        value = "booth/:" + Routing.Parameters.ROUTE_PARAM__BOOTH_ID,
+        layout = AppLayoutWithMenu.class)
 public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObserver {
     private final BoothService booths;
     private final VendorService vendors;
