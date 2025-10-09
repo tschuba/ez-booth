@@ -116,6 +116,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
         try {
             DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
             localService.delete(key);
+            responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (Exception ex) {
             responseObserver.onError(ex);
