@@ -1,15 +1,22 @@
 syntax = "proto3";
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 import "core.proto";
 import "model.proto";
 
 option java_package = "tschuba.ez.booth.proto";
 option java_outer_classname = "ProtoServices";
 
+message CheckoutItem {
+  VendorKey vendor = 1;
+  float price = 2;
+  google.protobuf.Timestamp purchased_on = 3;
+}
+
 message CheckoutInput {
   BoothKey booth = 1;
-  repeated PurchaseItem items = 2;
+  repeated CheckoutItem items = 2;
   bool print_receipt = 3;
 }
 
@@ -26,6 +33,13 @@ service PurchaseService {
   rpc Checkout(CheckoutInput) returns (Purchase);
   rpc GetPurchaseByKey(PurchaseKey) returns (Purchase);
   rpc GetPurchasesByBooth(BoothKey) returns (stream Purchase);
+}
+
+service VendorService {
+  rpc SaveVendor(Vendor) returns (google.protobuf.Empty);
+  rpc GetVendorsByBooth(BoothKey) returns (stream Vendor);
+  rpc GetVendorByKey(VendorKey) returns (Vendor);
+  rpc DeleteVendor(VendorKey) returns (google.protobuf.Empty);
 }
 
 message ChargedFees {

@@ -1,0 +1,37 @@
+server:
+  port: ${PORT:80}
+
+logging:
+  level:
+    org:
+      atmosphere: warn
+
+vaadin:
+  # Launch the default browser when starting the application in development mode
+  launch-browser: false
+  # To improve the performance during development.
+  # For more information https://vaadin.com/docs/latest/flow/integrations/spring/configuration#special-configuration-parameters
+  allowed-packages: com.vaadin,org.vaadin,com.flowingcode,tschuba.ez.booth
+
+tschuba:
+  ez:
+    booth:
+      ui:
+        browser:
+          launch: true
+          delay: PT2S
+      reporting:
+        outputPath: 'file:${user:home}/Documents/tschuba/ez-booth/static-content'
+grpc:
+  client:
+    booth:
+      address: localhost:9090
+      negotiation-type: plaintext
+
+spring:
+  mvc:
+    static-path-pattern: /resources/**
+  web:
+    resources:
+      static-locations:
+        - '${tschuba.ez.booth.reporting.outputPath}'

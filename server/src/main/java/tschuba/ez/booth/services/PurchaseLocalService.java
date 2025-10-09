@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import lombok.NonNull;
@@ -15,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import tschuba.ez.booth.Ids;
 import tschuba.ez.booth.data.*;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
@@ -53,18 +56,33 @@ public class PurchaseLocalService implements PurchaseService {
             throw new CheckoutException("Checkout failed! Booth not found: %s".formatted(booth));
         }
 
-        List<DataModel.PurchaseItem> items = checkout.items();
-        BigDecimal purchaseValue =
-                items.stream()
-                        .map(DataModel.PurchaseItem::price)
-                        .reduce(BigDecimal::add)
-                        .orElse(BigDecimal.ZERO);
         DataModel.Purchase.Key purchaseKey =
                 DataModel.Purchase.Key.builder().booth(booth).purchaseId(Ids.UUID()).build();
+        AtomicReference<BigDecimal> purchaseValue = new AtomicReference<>(BigDecimal.ZERO);
+        List<DataModel.PurchaseItem> items =
+                checkout.items().stream()
+                        .map(
+                                item -> {
+                                    purchaseValue.accumulateAndGet(item.price(), BigDecimal::add);
+
+                                    DataModel.PurchaseItem.Key itemKey =
+                                            DataModel.PurchaseItem.Key.builder()
+                                                    .purchase(purchaseKey)
+                                                    .itemId(Ids.UUID())
+                                                    .build();
+                                    return DataModel.PurchaseItem.builder()
+                                            .key(itemKey)
+                                            .vendor(item.vendor())
+                                            .price(item.price())
+                                            .purchasedOn(item.purchasedOn())
+                                            .build();
+                                })
+                        .toList();
+
         DataModel.Purchase purchaseData =
                 DataModel.Purchase.builder()
                         .key(purchaseKey)
-                        .value(purchaseValue)
+                        .value(purchaseValue.get())
                         .purchasedOn(LocalDateTime.now())
                         .items(items)
                         .build();
@@ -94,7 +112,8 @@ public class PurchaseLocalService implements PurchaseService {
     }
 
     @Override
-    public @NonNull Optional<DataModel.Purchase> getPurchaseByKey(
+    @Transactional
+    public @NonNull Optional<DataModel.Purchase> findById(
             @NonNull DataModel.Purchase.Key purchase) {
         return purchases
                 .findById(EntitiesMapper.objectToEntity(purchase))
@@ -102,8 +121,7 @@ public class PurchaseLocalService implements PurchaseService {
     }
 
     @Override
-    public @NonNull Stream<DataModel.Purchase> getPurchasesByBooth(
-            @NonNull DataModel.Booth.Key booth) {
+    public @NonNull Stream<DataModel.Purchase> findByBooth(@NonNull DataModel.Booth.Key booth) {
         return purchases.findPurchasesByBooth(booth.boothId()).stream()
                 .map(EntitiesMapper::entityToObject);
     }

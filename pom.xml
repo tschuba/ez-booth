@@ -12,6 +12,8 @@
     <modules>
         <module>core</module>
         <module>server</module>
+        <module>vaadin-ui</module>
+        <module>test</module>
     </modules>
 
     <properties>
@@ -35,6 +37,13 @@
                 <groupId>org.springframework.grpc</groupId>
                 <artifactId>spring-grpc-dependencies</artifactId>
                 <version>0.11.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.modulith</groupId>
+                <artifactId>spring-modulith-bom</artifactId>
+                <version>1.4.3</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

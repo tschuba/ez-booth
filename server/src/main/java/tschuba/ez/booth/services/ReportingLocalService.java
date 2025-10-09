@@ -8,15 +8,20 @@ import jakarta.transaction.Transactional;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.Inet4Address;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.data.PurchaseItemRepository;
 import tschuba.ez.booth.data.RecordNotFoundException;
@@ -24,8 +29,7 @@ import tschuba.ez.booth.data.VendorRepository;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
-import tschuba.ez.booth.reporting.ReportingConfig;
-import tschuba.ez.booth.reporting.ReportingException;
+import tschuba.ez.booth.reporting.Reports;
 import tschuba.ez.booth.reporting.VendorReportTemplate;
 
 /**
@@ -42,19 +46,22 @@ public class ReportingLocalService implements ReportingService {
     private final PurchaseItemRepository purchaseItems;
     private final ChargingService chargingService;
 
-    private final ReportingConfig config;
+    private final Reports.Config reportingConfig;
+    private final ServerProperties serverConfig;
 
     public ReportingLocalService(
             @NonNull BoothRepository booths,
             @NonNull VendorRepository vendors,
             @NonNull PurchaseItemRepository purchaseItems,
             @NonNull ChargingService chargingService,
-            @NonNull ReportingConfig config) {
+            @NonNull Reports.Config reportingConfig,
+            @NonNull ServerProperties serverConfig) {
         this.booths = booths;
         this.vendors = vendors;
         this.purchaseItems = purchaseItems;
         this.chargingService = chargingService;
-        this.config = config;
+        this.reportingConfig = reportingConfig;
+        this.serverConfig = serverConfig;
     }
 
     @Override
@@ -84,7 +91,8 @@ public class ReportingLocalService implements ReportingService {
                                 () ->
                                         new RecordNotFoundException(
                                                 "Booth not found: " + vendorKey.booth()));
-        ServiceModel.ChargingConfig chargingConfig = ServiceModel.ChargingConfig.of(booth);
+        ServiceModel.ChargingConfig chargingConfig =
+                ServiceModel.ChargingConfig.of(EntitiesMapper.entityToObject(booth));
 
         ServiceModel.Balance.Input balanceInput =
                 ServiceModel.Balance.Input.builder()
@@ -116,34 +124,22 @@ public class ReportingLocalService implements ReportingService {
     @Override
     @Transactional
     public @NonNull URI generateVendorReport(@NonNull DataModel.Vendor.Key... vendors) {
-        //        Optional<URI> result =
-        //                CompletableFuture.supplyAsync(() -> tryGenerateVendorReport(vendors))
-        //                        .orTimeout(config.timeout().toMillis(), TimeUnit.MILLISECONDS)
-        //                        .join();
-        //        return result.orElseThrow(() -> new ReportingException("Report generation
-        // failed!"));
-        //    }
-        //
-        //    /**
-        //     * Tries to generate a vendor report and returns the URI of the generated report file
-        // if successful.
-        //     *
-        //     * @param vendors the vendor keys for which to generate the report
-        //     * @return an Optional containing the URI of the generated report file, or empty if
-        // generation failed
-        //     */
-        //    Optional<URI> tryGenerateVendorReport(@NonNull DataModel.Vendor.Key... vendors) {
-        String reportFileName = VendorReportTemplate.reportFileName();
-        Path reportOutputPath = config.htmlOutputPath(reportFileName);
+        if (vendors.length < 1) {
+            throw new IllegalArgumentException("At least one vendor must be specified!");
+        }
+
+        DataModel.Vendor.Key firstVendor = vendors[0];
+        String reportFileName = (vendors.length == 1) ? VendorReportTemplate.reportFileName(firstVendor) : VendorReportTemplate.reportFileName(firstVendor.booth());
+        Reports.Target reportTarget = Reports.Target.of(reportFileName, reportingConfig);
+        Path reportFilePath = reportTarget.absolute();
+        Path reportOutputPath = reportFilePath.getParent();
 
         try {
-            Path outputDir = reportOutputPath.getParent();
-            if (!Files.exists(outputDir)) {
-                Files.createDirectories(outputDir);
-            }
-
             if (!Files.exists(reportOutputPath)) {
-                Files.createFile(reportOutputPath);
+                Files.createDirectories(reportOutputPath);
+            }
+            if (!Files.exists(reportFilePath)) {
+                Files.createFile(reportFilePath);
             }
         } catch (IOException ex) {
             LOGGER.error("Failed to create report output file: {}", reportOutputPath, ex);
@@ -151,23 +147,56 @@ public class ReportingLocalService implements ReportingService {
         }
 
         List<ServiceModel.VendorReportData> vendorReportData =
-                Arrays.stream(vendors).parallel().map(this::createVendorReportData).toList();
+                Arrays.stream(vendors).map(this::createVendorReportData).toList();
 
         VendorReportTemplate template = new VendorReportTemplate();
-        try (FileWriter fileWriter = new FileWriter(reportOutputPath.toFile())) {
-            LOGGER.debug("Rendering {} vendor report items", vendorReportData.size());
+        try (FileWriter fileWriter = new FileWriter(reportFilePath.toFile())) {
+            LOGGER.debug(
+                    "Rendering {} vendor report items to {}",
+                    vendorReportData.size(),
+                    reportFilePath);
             template.render(fileWriter, vendorReportData);
         } catch (IOException ex) {
             LOGGER.error("Failed to write report to file {}!", reportOutputPath, ex);
-            //            return Optional.empty();
             throw new ReportingException("Failed to write report to file", ex);
         } catch (ReportingException ex) {
             LOGGER.error("Failed to render report!", ex);
-            //            return Optional.empty();
             throw ex;
         }
+        return reportUrl(reportTarget);
+    }
 
-        //        return Optional.of(reportOutputPath.toUri());
-        return reportOutputPath.toUri();
+    URI reportUrl(@NonNull Reports.Target target) {
+        URI webPath = reportingConfig.getTargetWebPath();
+        if (webPath == null) {
+            throw new IllegalStateException("No reporting web path configured!");
+        }
+
+        String host =
+                Optional.ofNullable(serverConfig.getAddress())
+                        .orElseGet(
+                                () -> {
+                                    try {
+                                        return Inet4Address.getLocalHost();
+                                    } catch (UnknownHostException ex) {
+                                        LOGGER.error("Failed to determine local host address!", ex);
+                                        throw new RuntimeException(ex);
+                                    }
+                                })
+                        .getHostAddress();
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(webPath).host(host);
+        Optional.ofNullable(serverConfig.getPort()).ifPresent(uriBuilder::port);
+        Optional.ofNullable(serverConfig.getSsl())
+                .ifPresent(
+                        ssl -> {
+                            if (ssl.isEnabled()) {
+                                uriBuilder.scheme("https");
+                            } else {
+                                uriBuilder.scheme("http");
+                            }
+                        });
+
+        return uriBuilder.pathSegment(target.relativeFilePath()).build().toUri();
     }
 }

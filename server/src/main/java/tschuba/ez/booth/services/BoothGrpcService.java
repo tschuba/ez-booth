@@ -61,7 +61,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
         Consumer<DataModel.Booth> boothItemReceiver =
                 BOOTH_ITEM_RECEIVER_FACTORY.apply(responseObserver);
         try {
-            Stream<DataModel.Booth> allBooths = localService.getAllBooths();
+            Stream<DataModel.Booth> allBooths = localService.findAll();
             allBooths.forEach(boothItemReceiver);
             responseObserver.onCompleted();
         } catch (Exception ex) {
@@ -76,7 +76,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
                 BOOTH_ITEM_RECEIVER_FACTORY.apply(responseObserver);
         try {
             DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
-            localService.getBooth(key).ifPresent(boothItemReceiver);
+            localService.findById(key).ifPresent(boothItemReceiver);
             responseObserver.onCompleted();
         } catch (Exception ex) {
             responseObserver.onError(ex);
@@ -88,7 +88,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
             ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
             DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
-            DataModel.Booth booth = localService.closeBooth(key);
+            DataModel.Booth booth = localService.close(key);
             ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
             responseObserver.onNext(boothMsg);
             responseObserver.onCompleted();
@@ -102,7 +102,7 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
             ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
         try {
             DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
-            DataModel.Booth booth = localService.openBooth(key);
+            DataModel.Booth booth = localService.open(key);
             ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
             responseObserver.onNext(boothMsg);
             responseObserver.onCompleted();
@@ -115,7 +115,8 @@ public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
     public void deleteBooth(ProtoModel.BoothKey request, StreamObserver<Empty> responseObserver) {
         try {
             DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
-            localService.deleteBooth(key);
+            localService.delete(key);
+            responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (Exception ex) {
             responseObserver.onError(ex);

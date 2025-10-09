@@ -1,3 +1,6 @@
+server:
+  port: ${PORT:8080}
+
 spring:
   datasource:
     url: jdbc:sqlite:${user.home}/Documents/tschuba/ez-booth/booth.db
@@ -14,4 +17,13 @@ spring:
       mode: always
   web:
     resources:
-      static-locations: file:${user.home}/Documents/tschuba/ez-booth/static-content
+      static-locations:
+        - file:${tschuba.ez.booth.resourcePath}
+
+tschuba:
+  ez:
+    booth:
+      resourcePath: ${user.home}/Documents/tschuba/ez-booth/static-content
+      reporting:
+        outputPath: ${tschuba.ez.booth.resourcePath}/reports
+        webPath: http://localhost/resources/reports

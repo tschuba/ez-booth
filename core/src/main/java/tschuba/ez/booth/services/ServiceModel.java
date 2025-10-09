@@ -6,31 +6,39 @@ package tschuba.ez.booth.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Builder;
-import lombok.NonNull;
+import lombok.*;
 import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.model.EntityModel;
 
 /**
  * Service model classes for various service operations.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ServiceModel {
-    private ServiceModel() {}
+
+    /**
+     * Model for an item in the checkout operation.
+     */
+    @Builder(toBuilder = true)
+    public record CheckoutItem(
+            @EqualsAndHashCode.Include DataModel.Vendor.Key vendor,
+            BigDecimal price,
+            LocalDateTime purchasedOn) {}
 
     /**
      * Model for checkout operation.
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record Checkout(
             @NonNull DataModel.Booth.Key booth,
-            @NonNull List<DataModel.PurchaseItem> items,
+            @NonNull List<ServiceModel.CheckoutItem> items,
             boolean printReceipt) {}
 
     /**
      * Model for charged fees.
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record ChargedFees(@NonNull BigDecimal participationFee, @NonNull BigDecimal salesFee) {
 
         /**
@@ -46,7 +54,7 @@ public final class ServiceModel {
     /**
      * Configuration for charging fees.
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record ChargingConfig(
             @NonNull BigDecimal participationFee,
             @NonNull BigDecimal salesFee,
@@ -63,20 +71,6 @@ public final class ServiceModel {
                     .participationFee(booth.participationFee())
                     .salesFee(booth.salesFee())
                     .roundingStep(booth.feesRoundingStep())
-                    .build();
-        }
-
-        /**
-         * Create a {@link ChargingConfig} from the given booth entity.
-         *
-         * @param booth the booth entity to create the config from
-         * @return the created config
-         */
-        public static ChargingConfig of(@NonNull EntityModel.Booth booth) {
-            return ChargingConfig.builder()
-                    .participationFee(booth.getParticipationFee())
-                    .salesFee(booth.getSalesFee())
-                    .roundingStep(booth.getFeesRoundingStep())
                     .build();
         }
 
@@ -102,13 +96,12 @@ public final class ServiceModel {
     /**
      * Model for balance calculation.
      */
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class Balance {
-        private Balance() {}
-
         /**
          * Input for balance calculation.
          */
-        @Builder
+        @Builder(toBuilder = true)
         public record Input(
                 @NonNull BigDecimal totalSalesAmount,
                 @NonNull ServiceModel.ChargingConfig chargingConfig) {}
@@ -116,20 +109,20 @@ public final class ServiceModel {
         /**
          * Output for balance calculation.
          */
-        @Builder
+        @Builder(toBuilder = true)
         public record Output(@NonNull BigDecimal totalRevenue, @NonNull ChargedFees chargedFees) {}
     }
 
     /**
      * Input for vendor report generation.
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record VendorReportInput(@NonNull DataModel.Vendor.Key... vendors) {}
 
     /**
      * Data for vendor report generation.
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record VendorReportData(
             @NonNull DataModel.Vendor vendor,
             @NonNull DataModel.Booth booth,
@@ -145,7 +138,7 @@ public final class ServiceModel {
      * @param vendors the list of vendors
      * @param purchases the list of purchases
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record ExchangeData(
             @NonNull DataModel.Booth booth,
             @NonNull List<DataModel.Vendor> vendors,
@@ -156,7 +149,7 @@ public final class ServiceModel {
      * @param name the name of the receiver
      * @param endpoint the endpoint of the receiver
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record ExchangeReceiver(@NonNull String name, @NonNull String endpoint) {}
 
     /**
@@ -164,6 +157,6 @@ public final class ServiceModel {
      * @param id the subscription id
      * @param booth the booth key
      */
-    @Builder
+    @Builder(toBuilder = true)
     public record ExchangeSubscription(@NonNull String id, @NonNull DataModel.Booth.Key booth) {}
 }

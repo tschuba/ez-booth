@@ -6,6 +6,7 @@ package tschuba.ez.booth.reporting;
 
 import java.io.Writer;
 import lombok.NonNull;
+import tschuba.ez.booth.services.ReportingException;
 
 public interface ReportTemplate<T> {
     /**

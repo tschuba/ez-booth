@@ -56,7 +56,7 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
             ProtoModel.PurchaseKey request, StreamObserver<ProtoModel.Purchase> responseObserver) {
         try {
             DataModel.Purchase.Key key = ProtoMapper.messageToObject(request);
-            Optional<DataModel.Purchase> purchase = localService.getPurchaseByKey(key);
+            Optional<DataModel.Purchase> purchase = localService.findById(key);
             if (purchase.isPresent()) {
                 ProtoModel.Purchase purchaseMsg = ProtoMapper.objectToMessage(purchase.get());
                 responseObserver.onNext(purchaseMsg);
@@ -76,7 +76,7 @@ public class PurchaseGrpcService extends PurchaseServiceGrpc.PurchaseServiceImpl
             DataModel.Booth.Key booth = ProtoMapper.messageToObject(request);
             AtomicInteger count = new AtomicInteger(0);
             localService
-                    .getPurchasesByBooth(booth)
+                    .findByBooth(booth)
                     .forEach(
                             purchase -> {
                                 ProtoModel.Purchase purchaseMsg =

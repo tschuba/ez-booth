@@ -4,7 +4,10 @@
  */
 package tschuba.ez.booth.reporting;
 
+import java.time.LocalDate;
 import java.util.List;
+
+import lombok.NonNull;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
 
@@ -28,18 +31,12 @@ public class VendorReportTemplate
      *
      * @return the generated filename
      */
-    public static String reportFileName() {
-        return Reports.htmlFileName(TEMPLATE);
+    public static String reportFileName(@NonNull DataModel.Booth.Key booth) {
+        return "%s/%s-%s".formatted(booth.boothId(), TEMPLATE, LocalDate.now());
     }
 
-    /**
-     * Generates a filename for the vendor report for a specific vendor.
-     *
-     * @param vendor the vendor key
-     * @return the generated filename
-     */
-    public static String reportFileName(DataModel.Vendor.Key vendor) {
-        String prefix = TEMPLATE + "%s-%s".formatted(vendor.booth().boothId(), vendor.vendorId());
-        return Reports.htmlFileName(prefix);
+    public static String reportFileName(@NonNull DataModel.Vendor.Key vendor) {
+        DataModel.Booth.Key booth = vendor.booth();
+        return "%s/%s-%s.%s".formatted(booth.boothId(), TEMPLATE, LocalDate.now(), vendor.vendorId());
     }
 }
