@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tschuba.ez.booth.Ids;
 import tschuba.ez.booth.data.*;
 import tschuba.ez.booth.model.DataModel;
@@ -111,6 +112,7 @@ public class PurchaseLocalService implements PurchaseService {
     }
 
     @Override
+    @Transactional
     public @NonNull Optional<DataModel.Purchase> findById(
             @NonNull DataModel.Purchase.Key purchase) {
         return purchases
