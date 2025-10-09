@@ -124,8 +124,13 @@ public class ReportingLocalService implements ReportingService {
     @Override
     @Transactional
     public @NonNull URI generateVendorReport(@NonNull DataModel.Vendor.Key... vendors) {
-        Reports.Target reportTarget =
-                Reports.Target.of(VendorReportTemplate.reportFileName(), reportingConfig);
+        if (vendors.length < 1) {
+            throw new IllegalArgumentException("At least one vendor must be specified!");
+        }
+
+        DataModel.Vendor.Key firstVendor = vendors[0];
+        String reportFileName = (vendors.length == 1) ? VendorReportTemplate.reportFileName(firstVendor) : VendorReportTemplate.reportFileName(firstVendor.booth());
+        Reports.Target reportTarget = Reports.Target.of(reportFileName, reportingConfig);
         Path reportFilePath = reportTarget.absolute();
         Path reportOutputPath = reportFilePath.getParent();
 
