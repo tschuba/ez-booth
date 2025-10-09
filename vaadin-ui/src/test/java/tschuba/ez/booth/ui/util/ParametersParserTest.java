@@ -13,6 +13,7 @@ import com.vaadin.flow.router.RouteParameters;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tschuba.ez.booth.model.ModelTestValues;
 import tschuba.ez.booth.ui.views.CheckoutView;
 
 /**
@@ -20,43 +21,42 @@ import tschuba.ez.booth.ui.views.CheckoutView;
  */
 class ParametersParserTest {
 
-    private static final String EVENT_ID = "eventId";
-    private static final int VENDOR_ID = 4711;
-    private static final String PURCHASE_ID = "purchaseId";
     private static final Class<? extends Component> RETURN_TO_VIEW = CheckoutView.class;
 
-    private RouteParameters paramsMock;
     private Routing.Parameters.Parser parser;
     private Routing.Parameters.Parser parserSpy;
 
     @BeforeEach
     void setUp() {
-        paramsMock = mock(RouteParameters.class);
+        RouteParameters paramsMock = mock(RouteParameters.class);
         parser = Routing.Parameters.parser(paramsMock);
         parserSpy = spy(parser);
 
-        when(paramsMock.get(ROUTE_PARAM__BOOTH_ID)).thenReturn(Optional.of(EVENT_ID));
+        when(paramsMock.get(ROUTE_PARAM__BOOTH_ID))
+                .thenReturn(Optional.of(ModelTestValues.BOOTH_ID));
         when(paramsMock.get(ROUTE_PARAM__VENDOR_ID))
-                .thenReturn(Optional.of(String.valueOf(VENDOR_ID)));
-        when(paramsMock.get(ROUTE_PARAM__PURCHASE_ID)).thenReturn(Optional.of(PURCHASE_ID));
+                .thenReturn(Optional.of(String.valueOf(ModelTestValues.VENDOR_ID)));
+        when(paramsMock.get(ROUTE_PARAM__PURCHASE_ID))
+                .thenReturn(Optional.of(ModelTestValues.PURCHASE_ID));
         when(paramsMock.get(ROUTE_PARAM__RETURN_TO_VIEW))
                 .thenReturn(Optional.of(RETURN_TO_VIEW.getName()));
     }
 
     @Test
     void testBoothIdGetter() {
-        assertThat(parser.boothId()).hasValue(EVENT_ID);
+        assertThat(parser.boothId()).hasValue(ModelTestValues.BOOTH_ID);
     }
 
     @Test
     void testBoothKeyGetter() {
         assertThat(parser.boothKey())
-                .hasValueSatisfying(key -> assertThat(key.getId()).isEqualTo(EVENT_ID));
+                .hasValueSatisfying(
+                        key -> assertThat(key.boothId()).isEqualTo(ModelTestValues.BOOTH_ID));
     }
 
     @Test
     void testVendorIdGetter() {
-        assertThat(parser.vendorId()).hasValue(VENDOR_ID);
+        assertThat(parser.vendorId()).hasValue(ModelTestValues.VENDOR_ID);
     }
 
     @Test
@@ -64,14 +64,14 @@ class ParametersParserTest {
         assertThat(parser.vendorKey())
                 .hasValueSatisfying(
                         key -> {
-                            assertThat(key.getEvent().getId()).isEqualTo(EVENT_ID);
-                            assertThat(key.getId()).isEqualTo(VENDOR_ID);
+                            assertThat(key.booth().boothId()).isEqualTo(ModelTestValues.BOOTH_ID);
+                            assertThat(key.vendorId()).isEqualTo(ModelTestValues.VENDOR_ID);
                         });
     }
 
     @Test
     void testPurchaseIdGetter() {
-        assertThat(parser.purchaseId()).hasValue(PURCHASE_ID);
+        assertThat(parser.purchaseId()).hasValue(ModelTestValues.PURCHASE_ID);
     }
 
     @Test
@@ -79,8 +79,8 @@ class ParametersParserTest {
         assertThat(parser.purchaseKey())
                 .hasValueSatisfying(
                         key -> {
-                            assertThat(key.getEvent().getId()).isEqualTo(EVENT_ID);
-                            assertThat(key.getId()).isEqualTo(PURCHASE_ID);
+                            assertThat(key.booth().boothId()).isEqualTo(ModelTestValues.BOOTH_ID);
+                            assertThat(key.purchaseId()).isEqualTo(ModelTestValues.PURCHASE_ID);
                         });
     }
 

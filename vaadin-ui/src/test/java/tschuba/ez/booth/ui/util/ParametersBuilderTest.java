@@ -13,9 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import tschuba.basarix.data.model.EventKey;
-import tschuba.basarix.data.model.PurchaseKey;
-import tschuba.basarix.data.model.VendorKey;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.model.ModelTestValues;
 import tschuba.ez.booth.ui.views.BoothSelectionView;
 import tschuba.ez.booth.ui.views.CheckoutView;
 import tschuba.ez.booth.ui.views.VendorReportView;
@@ -25,64 +24,65 @@ import tschuba.ez.booth.ui.views.VendorReportView;
  */
 class ParametersBuilderTest {
 
-    private static final String EVENT_ID = "eventId";
-    private static final int VENDOR_ID = 4711;
-    private static final String PURCHASE_ID = "purchaseId";
-
-    private Routing.Parameters.Builder builder;
     private Routing.Parameters.Builder builderSpy;
 
     @BeforeEach
     void setUp() {
-        builder = Routing.Parameters.builder();
+        Routing.Parameters.Builder builder = Routing.Parameters.builder();
         builderSpy = spy(builder);
     }
 
     @Test
     void testBoothSetter() {
-        EventKey keyMock = mock(EventKey.class);
-        when(keyMock.getId()).thenReturn(EVENT_ID);
+        DataModel.Booth.Key keyMock = mock(DataModel.Booth.Key.class);
+        when(keyMock.boothId()).thenReturn(ModelTestValues.BOOTH_ID);
 
         assertThat(builderSpy.booth(keyMock)).isEqualTo(builderSpy);
-        verify(builderSpy).param(ROUTE_PARAM__BOOTH_ID, EVENT_ID);
+        verify(builderSpy).param(ROUTE_PARAM__BOOTH_ID, ModelTestValues.BOOTH_ID);
     }
 
     @Test
     void testBoothIdSetter() {
-        assertThat(builderSpy.boothId(EVENT_ID)).isEqualTo(builderSpy);
-        verify(builderSpy).param(ROUTE_PARAM__BOOTH_ID, EVENT_ID);
+        assertThat(builderSpy.boothId(ModelTestValues.BOOTH_ID)).isEqualTo(builderSpy);
+        verify(builderSpy).param(ROUTE_PARAM__BOOTH_ID, ModelTestValues.BOOTH_ID);
     }
 
     @Test
     void testVendorSetter() {
-        VendorKey keyMock = mock(VendorKey.class);
-        when(keyMock.getEvent()).thenReturn(EventKey.of(EVENT_ID));
-        when(keyMock.getId()).thenReturn(VENDOR_ID);
+        DataModel.Vendor.Key vendorKeyMock = mock(DataModel.Vendor.Key.class);
+        when(vendorKeyMock.booth())
+                .thenReturn(
+                        DataModel.Booth.Key.builder().boothId(ModelTestValues.BOOTH_ID).build());
+        when(vendorKeyMock.vendorId()).thenReturn(ModelTestValues.VENDOR_ID);
 
-        assertThat(builderSpy.vendor(keyMock)).isEqualTo(builderSpy);
-        verify(builderSpy).param(ROUTE_PARAM__VENDOR_ID, String.valueOf(VENDOR_ID));
+        assertThat(builderSpy.vendor(vendorKeyMock)).isEqualTo(builderSpy);
+        verify(builderSpy).param(ROUTE_PARAM__VENDOR_ID, ModelTestValues.VENDOR_ID);
     }
 
     @Test
     void testVendorIdSetter() {
-        assertThat(builderSpy.vendorId(VENDOR_ID)).isEqualTo(builderSpy);
-        verify(builderSpy).param(ROUTE_PARAM__VENDOR_ID, String.valueOf(VENDOR_ID));
+        assertThat(builderSpy.vendorId(ModelTestValues.VENDOR_ID)).isEqualTo(builderSpy);
+        verify(builderSpy).param(ROUTE_PARAM__VENDOR_ID, ModelTestValues.VENDOR_ID);
     }
 
     @Test
     void testPurchaseSetter() {
-        PurchaseKey keyMock = mock(PurchaseKey.class);
-        when(keyMock.getEvent()).thenReturn(EventKey.of(EVENT_ID));
-        when(keyMock.getId()).thenReturn(PURCHASE_ID);
+        DataModel.Booth.Key boothKey =
+                DataModel.Booth.Key.builder().boothId(ModelTestValues.BOOTH_ID).build();
+        DataModel.Purchase.Key purchaseKeyMock = mock(DataModel.Purchase.Key.class);
+        when(purchaseKeyMock.booth()).thenReturn(boothKey);
+        when(purchaseKeyMock.purchaseId()).thenReturn(ModelTestValues.PURCHASE_ID);
 
-        assertThat(builderSpy.purchase(keyMock)).isEqualTo(builderSpy);
-        verify(builderSpy).param(Routing.Parameters.ROUTE_PARAM__PURCHASE_ID, PURCHASE_ID);
+        assertThat(builderSpy.purchase(purchaseKeyMock)).isEqualTo(builderSpy);
+        verify(builderSpy)
+                .param(Routing.Parameters.ROUTE_PARAM__PURCHASE_ID, ModelTestValues.PURCHASE_ID);
     }
 
     @Test
     void testPurchaseIdSetter() {
-        assertThat(builderSpy.purchaseId(PURCHASE_ID)).isEqualTo(builderSpy);
-        verify(builderSpy).param(Routing.Parameters.ROUTE_PARAM__PURCHASE_ID, PURCHASE_ID);
+        assertThat(builderSpy.purchaseId(ModelTestValues.PURCHASE_ID)).isEqualTo(builderSpy);
+        verify(builderSpy)
+                .param(Routing.Parameters.ROUTE_PARAM__PURCHASE_ID, ModelTestValues.PURCHASE_ID);
     }
 
     @ParameterizedTest
@@ -95,17 +95,21 @@ class ParametersBuilderTest {
 
     @Test
     void testParamSetter() {
-        assertThat(builderSpy.param(ROUTE_PARAM__BOOTH_ID, EVENT_ID)).isEqualTo(builderSpy);
+        assertThat(builderSpy.param(ROUTE_PARAM__BOOTH_ID, ModelTestValues.BOOTH_ID))
+                .isEqualTo(builderSpy);
     }
 
     @Test
     void testBuildMethod() {
-        assertThat(builderSpy.param(ROUTE_PARAM__BOOTH_ID, EVENT_ID)).isEqualTo(builderSpy);
+        assertThat(builderSpy.param(ROUTE_PARAM__BOOTH_ID, ModelTestValues.BOOTH_ID))
+                .isEqualTo(builderSpy);
         assertThat(builderSpy.build())
                 .satisfies(
                         params -> {
-                            assertThat(params.getParameterNames()).containsOnly(EVENT_ID);
-                            assertThat(params.get(ROUTE_PARAM__BOOTH_ID)).hasValue(EVENT_ID);
+                            assertThat(params.getParameterNames())
+                                    .containsOnly(ROUTE_PARAM__BOOTH_ID);
+                            assertThat(params.get(ROUTE_PARAM__BOOTH_ID))
+                                    .hasValue(ModelTestValues.BOOTH_ID);
                         });
     }
 }

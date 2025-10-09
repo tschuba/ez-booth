@@ -30,7 +30,7 @@ public class Routing {
     }
 
     public static class Parameters {
-        public static final String ROUTE_PARAM__BOOTH_ID = "eventId";
+        public static final String ROUTE_PARAM__BOOTH_ID = "boothId";
         public static final String ROUTE_PARAM__VENDOR_ID = "vendorId";
         public static final String ROUTE_PARAM__PURCHASE_ID = "purchaseId";
         public static final String ROUTE_PARAM__RETURN_TO_VIEW = "returnToView";
