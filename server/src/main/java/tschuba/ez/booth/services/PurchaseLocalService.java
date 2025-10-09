@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import lombok.NonNull;
@@ -54,18 +55,33 @@ public class PurchaseLocalService implements PurchaseService {
             throw new CheckoutException("Checkout failed! Booth not found: %s".formatted(booth));
         }
 
-        List<DataModel.PurchaseItem> items = checkout.items();
-        BigDecimal purchaseValue =
-                items.stream()
-                        .map(DataModel.PurchaseItem::price)
-                        .reduce(BigDecimal::add)
-                        .orElse(BigDecimal.ZERO);
         DataModel.Purchase.Key purchaseKey =
                 DataModel.Purchase.Key.builder().booth(booth).purchaseId(Ids.UUID()).build();
+        AtomicReference<BigDecimal> purchaseValue = new AtomicReference<>(BigDecimal.ZERO);
+        List<DataModel.PurchaseItem> items =
+                checkout.items().stream()
+                        .map(
+                                item -> {
+                                    purchaseValue.accumulateAndGet(item.price(), BigDecimal::add);
+
+                                    DataModel.PurchaseItem.Key itemKey =
+                                            DataModel.PurchaseItem.Key.builder()
+                                                    .purchase(purchaseKey)
+                                                    .itemId(Ids.UUID())
+                                                    .build();
+                                    return DataModel.PurchaseItem.builder()
+                                            .key(itemKey)
+                                            .vendor(item.vendor())
+                                            .price(item.price())
+                                            .purchasedOn(item.purchasedOn())
+                                            .build();
+                                })
+                        .toList();
+
         DataModel.Purchase purchaseData =
                 DataModel.Purchase.builder()
                         .key(purchaseKey)
-                        .value(purchaseValue)
+                        .value(purchaseValue.get())
                         .purchasedOn(LocalDateTime.now())
                         .items(items)
                         .build();

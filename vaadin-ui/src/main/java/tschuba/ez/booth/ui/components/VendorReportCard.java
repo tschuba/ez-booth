@@ -38,7 +38,7 @@ public class VendorReportCard extends VendorCard {
         itemCount.setText(Integer.toString(vendorData.items().size()));
 
         revenue.addClassNames(FontSize.XSMALL);
-        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        I18N.LocaleFormat format = I18N.current().format(getLocale());
         revenue.setText(format.currency(vendorData.salesSum()));
 
         printButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);

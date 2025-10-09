@@ -82,7 +82,7 @@ public class CheckoutItemForm extends Composite<HorizontalLayout> implements Has
 
         priceField.setLabel(getTranslation(PRICE_FIELD__LABEL));
         priceField.setPlaceholder(getTranslation(PRICE_FIELD__PLACEHOLDER));
-        priceField.setSuffixComponent(new Span(I18N.i18N().currency(getLocale()).getSymbol()));
+        priceField.setSuffixComponent(new Span(I18N.current().currency(getLocale()).getSymbol()));
 
         Tooltip.forComponent(clearButton).setText(getTranslation(CLEAR_BUTTON__TOOLTIP));
         Tooltip.forComponent(historyToggle).setText(getTranslation(HISTORY_TOGGLE_BUTTON__TOOLTIP));

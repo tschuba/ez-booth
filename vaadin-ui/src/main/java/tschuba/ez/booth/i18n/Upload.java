@@ -4,7 +4,7 @@
  */
 package tschuba.ez.booth.i18n;
 
-import static tschuba.ez.booth.i18n.I18N.i18N;
+import static tschuba.ez.booth.i18n.I18N.current;
 
 import com.vaadin.flow.component.upload.UploadI18N;
 import java.util.Locale;
@@ -16,7 +16,7 @@ public class Upload {
 
     public static UploadI18N upload(String prefix, Locale locale) {
         UploadI18N.AddFiles addFiles = new UploadI18N.AddFiles();
-        I18N i18N = i18N();
+        I18N i18N = current();
         addFiles.setOne(i18N.getTranslation(prefix + UPLOAD_I18N_SUFFIX_ADD_FILE, locale));
 
         UploadI18N.Error error = new UploadI18N.Error();

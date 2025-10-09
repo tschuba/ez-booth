@@ -19,10 +19,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.Getter;
-import tschuba.ez.booth.Ids;
 import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.services.ServiceModel;
 
 public class PurchaseVendorDetails extends Div {
     @Getter private final DataModel.Vendor.Key vendor;
@@ -36,7 +36,7 @@ public class PurchaseVendorDetails extends Div {
     }
 
     public PurchaseVendorDetails(
-            DataModel.Vendor.Key vendor, List<DataModel.PurchaseItem> itemList) {
+            DataModel.Vendor.Key vendor, List<ServiceModel.CheckoutItem> itemList) {
         super();
         this.vendor = vendor;
 
@@ -73,7 +73,7 @@ public class PurchaseVendorDetails extends Div {
         updateVendorDetails();
     }
 
-    public Stream<DataModel.PurchaseItem> getItems() {
+    public Stream<ServiceModel.CheckoutItem> getItems() {
         return itemsContainer
                 .getChildren()
                 .map(component -> (PurchaseItemBadge) component)
@@ -81,18 +81,8 @@ public class PurchaseVendorDetails extends Div {
     }
 
     public void addItem(BigDecimal price) {
-
-        DataModel.Purchase.Key purchaseKey =
-                DataModel.Purchase.Key.builder().booth(vendor.booth()).build();
-        DataModel.PurchaseItem.Key itemKey =
-                DataModel.PurchaseItem.Key.builder()
-                        .purchase(purchaseKey)
-                        .itemId(Ids.UUID())
-                        .build();
-
-        DataModel.PurchaseItem item =
-                DataModel.PurchaseItem.builder()
-                        .key(itemKey)
+        ServiceModel.CheckoutItem item =
+                ServiceModel.CheckoutItem.builder()
                         .vendor(vendor)
                         .price(price)
                         .purchasedOn(LocalDateTime.now())
@@ -114,10 +104,10 @@ public class PurchaseVendorDetails extends Div {
     }
 
     private void updateVendorDetails() {
-        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        I18N.LocaleFormat format = I18N.format(getLocale());
         sumOfItems =
                 getItems()
-                        .map(DataModel.PurchaseItem::price)
+                        .map(ServiceModel.CheckoutItem::price)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO)
                         .doubleValue();
@@ -135,17 +125,17 @@ public class PurchaseVendorDetails extends Div {
         fireItemsChangedEvent(event.isFromClient(), event.getSource().getItem());
     }
 
-    private void fireItemsChangedEvent(boolean fromClient, DataModel.PurchaseItem item) {
+    private void fireItemsChangedEvent(boolean fromClient, ServiceModel.CheckoutItem item) {
         fireEvent(new ItemsChangedEvent(this, fromClient, item));
     }
 
     @Getter
     public static class ItemsChangedEvent extends ComponentEvent<PurchaseVendorDetails> {
 
-        private final DataModel.PurchaseItem item;
+        private final ServiceModel.CheckoutItem item;
 
         public ItemsChangedEvent(
-                PurchaseVendorDetails source, boolean fromClient, DataModel.PurchaseItem item) {
+                PurchaseVendorDetails source, boolean fromClient, ServiceModel.CheckoutItem item) {
             super(source, fromClient);
             this.item = item;
         }

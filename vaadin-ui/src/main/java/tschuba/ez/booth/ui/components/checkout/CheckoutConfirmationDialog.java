@@ -20,7 +20,6 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import java.math.BigDecimal;
 import tschuba.ez.booth.i18n.I18N;
-import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.CheckoutConfig;
 
@@ -76,10 +75,10 @@ public class CheckoutConfirmationDialog extends Dialog {
 
         BigDecimal checkoutSum =
                 checkout.items().stream()
-                        .map(DataModel.PurchaseItem::price)
+                        .map(ServiceModel.CheckoutItem::price)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO);
-        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        I18N.LocaleFormat format = I18N.format(getLocale());
         valueSpan.setText(format.currency(checkoutSum));
     }
 

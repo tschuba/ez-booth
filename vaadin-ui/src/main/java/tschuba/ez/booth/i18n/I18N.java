@@ -9,17 +9,18 @@ import static java.util.Objects.requireNonNull;
 import static java.util.function.Predicate.not;
 import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.internal.LocaleUtil;
 import com.vaadin.flow.server.VaadinSession;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -29,19 +30,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class I18N implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(I18N.class);
@@ -52,7 +52,7 @@ public class I18N implements Serializable {
         this.config = config;
     }
 
-    public static I18N i18N() {
+    public static I18N current() {
         return requireNonNull(
                 VaadinSession.getCurrent().getAttribute(I18N.class),
                 "No I18N instance assigned to current session!");
@@ -76,9 +76,9 @@ public class I18N implements Serializable {
         Set set = config.localeSet(locale);
         String text = set.texts().get(translationKey);
         if (text == null) {
-            return String.format("I18N[%s|%s]", locale, translationKey);
+            return "I18N[%s|%s]".formatted(locale, translationKey);
         }
-        return String.format(text, params);
+        return text.formatted(params);
     }
 
     private static Locale currentLocale() {
@@ -94,12 +94,12 @@ public class I18N implements Serializable {
     }
 
     public static String translate(Object key, Locale locale, Object... params) {
-        return i18N().getTranslation(key, locale, params);
+        return current().getTranslation(key, locale, params);
     }
 
     public static void translate(DatePicker datePicker) {
         Locale locale = datePicker.getLocale();
-        I18N.LocaleFormat format = I18N.i18N().format(locale);
+        I18N.LocaleFormat format = I18N.format(locale);
         Calendar calendar = Calendar.getInstance(locale);
         int firstDayOfWeek = calendar.getFirstDayOfWeek();
 
@@ -130,39 +130,28 @@ public class I18N implements Serializable {
         datePicker.setI18n(i18n);
     }
 
-    //    public LocaleFormat format() {
-    //        return format(currentLocale());
-    //    }
-
-    public LocaleFormat format(@NonNull Locale locale) {
-        Format format = config.localeSet(locale).format();
+    public static LocaleFormat format(@NonNull Locale locale) {
+        Format format = current().config.localeSet(locale).format();
         return new LocaleFormat(format, locale);
     }
 
-    public Currency currency() {
-        return currency(currentLocale());
-    }
-
-    public Currency currency(@NonNull Locale locale) {
-        Format format = config.localeSet(locale).format();
+    public static Currency currency(@NonNull Locale locale) {
+        Format format = current().config.localeSet(locale).format();
         return Currency.getInstance(format.currencyCode());
     }
 
     public static class Config {
 
         private static final ObjectMapper OBJECT_MAPPER =
-                new ObjectMapper().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                //                        .setVisibility(PropertyAccessor.FIELD,
-                // JsonAutoDetect.Visibility.ANY);
-                ;
+                new ObjectMapper().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         private final Map<Locale, Set> sets = new HashMap<>();
-        private final URL rootPath;
+        private final URI rootPath;
         @Getter private final Set defaultSet;
         @Getter private final Locale defaultLocale;
         @Getter private final Mapping mapping;
 
-        private Config(URL rootPath, Set defaultSet, Locale defaultLocale, Mapping mapping) {
+        private Config(URI rootPath, Set defaultSet, Locale defaultLocale, Mapping mapping) {
             this.rootPath = rootPath;
             this.defaultSet = defaultSet;
             this.defaultLocale = defaultLocale;
@@ -179,7 +168,7 @@ public class I18N implements Serializable {
 
         public static Config parse(@NonNull URL mappingFile) {
             try {
-                URL rootPath = parentPath(mappingFile);
+                URI rootPath = parentPath(mappingFile);
                 LOGGER.debug("Root path for i18n files: {}", rootPath);
                 Mapping mapping = OBJECT_MAPPER.readValue(mappingFile, Mapping.class);
                 Locale defaultLocale = parseLocaleString(mapping.defaultLocale());
@@ -197,10 +186,11 @@ public class I18N implements Serializable {
             }
         }
 
-        private static URL parentPath(URL file) throws MalformedURLException {
+        private static URI parentPath(URL file) {
             String filePath = file.getPath();
             String parentPath = filePath.substring(0, filePath.lastIndexOf('/'));
-            return new URL(file.getProtocol(), file.getHost(), file.getPort(), parentPath);
+            return URI.create(
+                    "%s://%s%s".formatted(file.getProtocol(), file.getHost(), parentPath));
         }
 
         private static Locale parseLocaleString(String localeString) {
@@ -218,7 +208,7 @@ public class I18N implements Serializable {
             return builder.build();
         }
 
-        private static Optional<URL> localeFilePath(Locale locale, Mapping mapping, URL rootPath) {
+        private static Optional<URI> localeFilePath(Locale locale, Mapping mapping, URI rootPath) {
             final String localeString = (locale != null) ? locale.toString() : "";
             LOGGER.debug("Searching mapping for locale '{}'", localeString);
             return mapping.supportedLocales().entrySet().stream()
@@ -228,29 +218,20 @@ public class I18N implements Serializable {
                             fileName -> {
                                 String urlPath =
                                         String.format("%s/%s", rootPath.getPath(), fileName);
-                                try {
-                                    return new URL(
-                                            rootPath.getProtocol(),
-                                            rootPath.getHost(),
-                                            rootPath.getPort(),
-                                            urlPath);
-                                } catch (MalformedURLException ex) {
-                                    LOGGER.error(
-                                            "Failed to create file path for locale '{}'!",
-                                            locale,
-                                            ex);
-                                    throw new RuntimeException(ex);
-                                }
+                                return UriComponentsBuilder.fromUri(rootPath)
+                                        .replacePath(urlPath)
+                                        .build()
+                                        .toUri();
                             })
                     .findFirst();
         }
 
-        private static Optional<Set> loadSet(Locale locale, Mapping mapping, URL rootPath)
+        private static Optional<Set> loadSet(Locale locale, Mapping mapping, URI rootPath)
                 throws IOException {
-            Optional<URL> resourcePath = localeFilePath(locale, mapping, rootPath);
+            Optional<URI> resourcePath = localeFilePath(locale, mapping, rootPath);
             LOGGER.debug("Loading mapping for locale '{}' from '{}'", locale, resourcePath);
             if (resourcePath.isPresent()) {
-                URL resource = resourcePath.get();
+                URL resource = resourcePath.get().toURL();
                 Set set = OBJECT_MAPPER.readValue(resource, Set.class);
                 return Optional.of(set);
             }
@@ -296,9 +277,9 @@ public class I18N implements Serializable {
         }
 
         private Optional<Set> loadSet(Locale locale) throws IOException {
-            Optional<URL> resourcePath = localeFilePath(locale);
+            Optional<URI> resourcePath = localeFilePath(locale);
             if (resourcePath.isPresent()) {
-                URL resource = resourcePath.get();
+                URL resource = resourcePath.get().toURL();
                 Set set = OBJECT_MAPPER.readValue(resource, Set.class);
                 return Optional.of(set);
             }
@@ -311,7 +292,7 @@ public class I18N implements Serializable {
                     .toList();
         }
 
-        private Optional<URL> localeFilePath(Locale locale) {
+        private Optional<URI> localeFilePath(Locale locale) {
             final String localeString = (locale != null) ? locale.toString() : "";
             return mapping.supportedLocales().entrySet().stream()
                     .filter(entry -> equalsIgnoreCase(entry.getKey(), localeString))
@@ -320,19 +301,10 @@ public class I18N implements Serializable {
                             fileName -> {
                                 String urlPath =
                                         String.format("%s/%s", rootPath.getPath(), fileName);
-                                try {
-                                    return new URL(
-                                            rootPath.getProtocol(),
-                                            rootPath.getHost(),
-                                            rootPath.getPort(),
-                                            urlPath);
-                                } catch (MalformedURLException ex) {
-                                    LOGGER.error(
-                                            "Failed to create file path for locale '{}'!",
-                                            locale,
-                                            ex);
-                                    throw new RuntimeException(ex);
-                                }
+                                return UriComponentsBuilder.fromUri(rootPath)
+                                        .replacePath(urlPath)
+                                        .build()
+                                        .toUri();
                             })
                     .findFirst();
         }
@@ -428,4 +400,26 @@ public class I18N implements Serializable {
 
     @Builder
     public record TextKey(@NonNull String key) {}
+
+    @Component
+    @RequiredArgsConstructor
+    public static class Provider implements I18NProvider {
+
+        private final I18N i18N;
+
+        @Override
+        public List<Locale> getProvidedLocales() {
+            return i18N.getConfig().providedLocales();
+        }
+
+        @Override
+        public String getTranslation(String key, Locale locale, Object... objects) {
+            return i18N.getTranslation(key, locale, objects);
+        }
+
+        @Override
+        public String getTranslation(Object key, Locale locale, Object... params) {
+            return i18N.getTranslation(key, locale, params);
+        }
+    }
 }

@@ -117,7 +117,7 @@ public class PurchaseReceiptPrintView extends OneColumnLayout implements BeforeE
             return;
         }
 
-        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        I18N.LocaleFormat format = I18N.current().format(getLocale());
 
         DataModel.Purchase purchase = purchaseByKey.get();
         purchaseIdValue.setText(purchase.key().purchaseId());

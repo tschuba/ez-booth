@@ -21,12 +21,13 @@ import lombok.Getter;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.services.ServiceModel;
 
 @Getter
 public class PurchaseItemBadge extends Button {
-    private final DataModel.PurchaseItem item;
+    private final ServiceModel.CheckoutItem item;
 
-    public PurchaseItemBadge(DataModel.PurchaseItem item) {
+    public PurchaseItemBadge(ServiceModel.CheckoutItem item) {
         this.item = item;
 
         DataModel.Vendor.Key vendor = item.vendor();
@@ -36,7 +37,7 @@ public class PurchaseItemBadge extends Button {
         setIconAfterText(true);
         addClickListener(this::onDeleteButtonClick);
 
-        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        I18N.LocaleFormat format = I18N.format(getLocale());
         Format decimalFormat = format.currency();
         setText(decimalFormat.format(item.price()));
 

@@ -17,7 +17,7 @@ public final class DataModel {
 
     private DataModel() {}
 
-    @Builder
+    @Builder(toBuilder = true)
     public record Booth(
             Key key,
             String description,
@@ -28,7 +28,7 @@ public final class DataModel {
             boolean closed,
             LocalDateTime closedOn) {
 
-        @Builder
+        @Builder(toBuilder = true)
         public record Key(String boothId) implements Comparable<Key> {
             @Override
             public int compareTo(@NonNull Key key) {
@@ -37,14 +37,14 @@ public final class DataModel {
         }
     }
 
-    @Builder
+    @Builder(toBuilder = true)
     public record Purchase(
             @EqualsAndHashCode.Include Key key,
             BigDecimal value,
             LocalDateTime purchasedOn,
             List<PurchaseItem> items) {
 
-        @Builder
+        @Builder(toBuilder = true)
         public record Key(Booth.Key booth, String purchaseId) implements Comparable<Key> {
             @Override
             public int compareTo(@NonNull Key key) {
@@ -55,14 +55,14 @@ public final class DataModel {
         }
     }
 
-    @Builder
+    @Builder(toBuilder = true)
     public record PurchaseItem(
             @EqualsAndHashCode.Include Key key,
             @EqualsAndHashCode.Include Vendor.Key vendor,
             BigDecimal price,
             LocalDateTime purchasedOn) {
 
-        @Builder
+        @Builder(toBuilder = true)
         public record Key(Purchase.Key purchase, String itemId) implements Comparable<Key> {
             @Override
             public int compareTo(@NonNull Key key) {
@@ -73,10 +73,10 @@ public final class DataModel {
         }
     }
 
-    @Builder
+    @Builder(toBuilder = true)
     public record Vendor(@EqualsAndHashCode.Include Key key) {
 
-        @Builder
+        @Builder(toBuilder = true)
         public record Key(Booth.Key booth, String vendorId) {}
     }
 }

@@ -6,17 +6,25 @@ package tschuba.ez.booth.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Builder;
-import lombok.NonNull;
+import lombok.*;
 import tschuba.ez.booth.model.DataModel;
 
 /**
  * Service model classes for various service operations.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ServiceModel {
-    private ServiceModel() {}
+
+    /**
+     * Model for an item in the checkout operation.
+     */
+    @Builder(toBuilder = true)
+    public record CheckoutItem(
+            @EqualsAndHashCode.Include DataModel.Vendor.Key vendor,
+            BigDecimal price,
+            LocalDateTime purchasedOn) {}
 
     /**
      * Model for checkout operation.
@@ -24,7 +32,7 @@ public final class ServiceModel {
     @Builder(toBuilder = true)
     public record Checkout(
             @NonNull DataModel.Booth.Key booth,
-            @NonNull List<DataModel.PurchaseItem> items,
+            @NonNull List<ServiceModel.CheckoutItem> items,
             boolean printReceipt) {}
 
     /**
@@ -88,9 +96,8 @@ public final class ServiceModel {
     /**
      * Model for balance calculation.
      */
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class Balance {
-        private Balance() {}
-
         /**
          * Input for balance calculation.
          */
@@ -124,14 +131,6 @@ public final class ServiceModel {
             @NonNull BigDecimal participationFee,
             @NonNull BigDecimal salesFee,
             @NonNull BigDecimal totalRevenue) {}
-
-    /**
-     * Report file information.
-     * @param localFile the local file path
-     * @param relativePath the relative path for download
-     */
-    @Builder
-    public record ReportFile(@NonNull Path localFile, @NonNull String relativePath) {}
 
     /**
      * Data for data exchange operations.

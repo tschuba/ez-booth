@@ -24,7 +24,7 @@ public class ItemListItem extends Div {
         addClassNames(Padding.Horizontal.SMALL);
 
         Span dateTimeSpan = new Span();
-        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        I18N.LocaleFormat format = I18N.current().format(getLocale());
         dateTimeSpan.setText(format.dateTime(item.purchasedOn()));
         dateTimeSpan.addClassNames(FontSize.XXSMALL);
         add(dateTimeSpan);

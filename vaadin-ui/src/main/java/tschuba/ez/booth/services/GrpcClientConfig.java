@@ -25,6 +25,11 @@ public class GrpcClientConfig {
     }
 
     @Bean
+    VendorServiceGrpc.VendorServiceBlockingStub vendorClient(GrpcChannelFactory channels) {
+        return VendorServiceGrpc.newBlockingStub(channels.createChannel(CHANNEL));
+    }
+
+    @Bean
     ChargingServiceGrpc.ChargingServiceBlockingStub chargingClient(GrpcChannelFactory channels) {
         return ChargingServiceGrpc.newBlockingStub(channels.createChannel(CHANNEL));
     }

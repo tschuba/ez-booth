@@ -239,7 +239,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                                     report.totalRevenue(), BigDecimal::add);
                         });
 
-        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        I18N.LocaleFormat format = I18N.current().format(getLocale());
 
         description.setContent(booth.description());
         date.setContent(format.date(booth.date()));

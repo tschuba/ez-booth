@@ -19,4 +19,13 @@ public interface VendorRepository
 
     @Query("SELECT v FROM Vendor v WHERE v.key.booth.boothId = :boothId")
     List<EntityModel.Vendor> findAllByBoothId(String boothId);
+
+    /**
+     * Find all vendors by booth.
+     * @param booth the booth
+     * @return the list of vendors
+     */
+    default List<EntityModel.Vendor> findAllByBooth(EntityModel.Booth.Key booth) {
+        return findAllByBoothId(booth.getBoothId());
+    }
 }

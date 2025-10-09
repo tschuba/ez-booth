@@ -411,7 +411,7 @@ public class ProtoMapper {
                         ProtoModel.BoothKey boothKey = BOOTH_KEY.objectToMessage(checkout.booth());
                         builder.setBooth(boothKey);
                         checkout.items().stream()
-                                .map(PURCHASE_ITEM::objectToMessage)
+                                .map(ProtoMapper::objectToMessage)
                                 .forEach(builder::addItems);
                         builder.setPrintReceipt(checkout.printReceipt());
                         return builder.build();
@@ -427,12 +427,12 @@ public class ProtoMapper {
                                 ServiceModel.Checkout.builder();
                         if (checkout.hasBooth()) {
                             DataModel.Booth.Key boothKey =
-                                    BOOTH_KEY.messageToObject(checkout.getBooth());
+                                    ProtoMapper.messageToObject(checkout.getBooth());
                             builder.booth(boothKey);
                         }
-                        List<DataModel.PurchaseItem> convertedItemsList =
+                        List<ServiceModel.CheckoutItem> convertedItemsList =
                                 checkout.getItemsList().stream()
-                                        .map(PURCHASE_ITEM::messageToObject)
+                                        .map(ProtoMapper::messageToObject)
                                         .toList();
                         builder.items(convertedItemsList);
                         builder.printReceipt(checkout.getPrintReceipt());
@@ -451,6 +451,48 @@ public class ProtoMapper {
     public static ServiceModel.Checkout messageToObject(
             @NonNull ProtoServices.CheckoutInput message) {
         return CHECKOUT.messageToObject(message);
+    }
+
+    public static final Mappable<ServiceModel.CheckoutItem, ProtoServices.CheckoutItem>
+            CHECKOUT_ITEM =
+                    new Mappable<>() {
+                        @Override
+                        public @NonNull Function<
+                                        ServiceModel.CheckoutItem, ProtoServices.CheckoutItem>
+                                objectToMessage() {
+                            return item ->
+                                    ProtoServices.CheckoutItem.newBuilder()
+                                            .setVendor(ProtoMapper.objectToMessage(item.vendor()))
+                                            .setPrice(item.price().floatValue())
+                                            .setPurchasedOn(
+                                                    DateAndTime.timestampOf(item.purchasedOn()))
+                                            .build();
+                        }
+
+                        @Override
+                        public @NonNull Function<
+                                        ProtoServices.CheckoutItem, ServiceModel.CheckoutItem>
+                                messageToObject() {
+                            return item ->
+                                    ServiceModel.CheckoutItem.builder()
+                                            .vendor(ProtoMapper.messageToObject(item.getVendor()))
+                                            .price(BigDecimal.valueOf(item.getPrice()))
+                                            .purchasedOn(
+                                                    DateAndTime.asDateTime(item.getPurchasedOn()))
+                                            .build();
+                        }
+                    };
+
+    @NonNull
+    public static ProtoServices.CheckoutItem objectToMessage(
+            @NonNull ServiceModel.CheckoutItem object) {
+        return CHECKOUT_ITEM.objectToMessage(object);
+    }
+
+    @NonNull
+    public static ServiceModel.CheckoutItem messageToObject(
+            @NonNull ProtoServices.CheckoutItem message) {
+        return CHECKOUT_ITEM.messageToObject(message);
     }
 
     /**

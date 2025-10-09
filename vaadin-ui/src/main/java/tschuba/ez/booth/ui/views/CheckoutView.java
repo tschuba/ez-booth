@@ -120,7 +120,7 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
 
     private PurchaseGrid<Void> createPurchaseGrid(PurchaseService purchaseService) {
 
-        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        I18N.LocaleFormat format = I18N.format(getLocale());
 
         PurchaseComparator dateTimeComparator =
                 PurchaseComparator.builder().ascending(PurchaseComparator.Field.DateTime).build();

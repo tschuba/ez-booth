@@ -31,6 +31,7 @@ import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.CheckoutConfig;
+import tschuba.ez.booth.ui.components.event.BoothSelection;
 
 @SpringComponent
 @UIScope
@@ -142,7 +143,7 @@ public class PurchaseSummary extends Div {
         addListener(SaveCheckoutEvent.class, listener);
     }
 
-    private Stream<DataModel.PurchaseItem> getAllItems() {
+    private Stream<ServiceModel.CheckoutItem> getAllItems() {
         return getVendorPanels().flatMap(PurchaseVendorDetails::getItems);
     }
 
@@ -190,7 +191,7 @@ public class PurchaseSummary extends Div {
     private void updateSum() {
         double purchaseSum =
                 getVendorPanels().mapToDouble(PurchaseVendorDetails::getSumOfItems).sum();
-        I18N.LocaleFormat format = I18N.i18N().format(getLocale());
+        I18N.LocaleFormat format = I18N.format(getLocale());
         String purchaseSumText = format.currency(purchaseSum);
         purchaseSumSpan.setText(purchaseSumText);
         String tooltipText;
@@ -214,14 +215,14 @@ public class PurchaseSummary extends Div {
     }
 
     private void onClickCheckout(ClickEvent<Button> event) {
-        List<DataModel.PurchaseItem> itemList = getAllItems().collect(Collectors.toList());
+        List<ServiceModel.CheckoutItem> itemList = getAllItems().collect(Collectors.toList());
         if (itemList.isEmpty()) {
             return;
         }
 
-        DataModel.Booth.Key purchaseBooth = itemList.getFirst().key().purchase().booth();
+        DataModel.Booth.Key booth = BoothSelection.get().orElseThrow();
         ServiceModel.Checkout checkout =
-                ServiceModel.Checkout.builder().booth(purchaseBooth).items(itemList).build();
+                ServiceModel.Checkout.builder().booth(booth).items(itemList).build();
         if (config.confirmationRequired()) {
             confirmationDialog.open(checkout);
         } else {
