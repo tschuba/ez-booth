@@ -15,12 +15,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.data.PurchaseItemRepository;
 import tschuba.ez.booth.data.RecordNotFoundException;
@@ -28,7 +29,7 @@ import tschuba.ez.booth.data.VendorRepository;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
-import tschuba.ez.booth.reporting.ReportingConfig;
+import tschuba.ez.booth.reporting.Reports;
 import tschuba.ez.booth.reporting.VendorReportTemplate;
 
 /**
@@ -45,22 +46,22 @@ public class ReportingLocalService implements ReportingService {
     private final PurchaseItemRepository purchaseItems;
     private final ChargingService chargingService;
 
-    private final ReportingConfig config;
-    private final Environment environment;
+    private final Reports.Config reportingConfig;
+    private final ServerProperties serverConfig;
 
     public ReportingLocalService(
             @NonNull BoothRepository booths,
             @NonNull VendorRepository vendors,
             @NonNull PurchaseItemRepository purchaseItems,
             @NonNull ChargingService chargingService,
-            @NonNull ReportingConfig config,
-            @NonNull Environment environment) {
+            @NonNull Reports.Config reportingConfig,
+            @NonNull ServerProperties serverConfig) {
         this.booths = booths;
         this.vendors = vendors;
         this.purchaseItems = purchaseItems;
         this.chargingService = chargingService;
-        this.config = config;
-        this.environment = environment;
+        this.reportingConfig = reportingConfig;
+        this.serverConfig = serverConfig;
     }
 
     @Override
@@ -123,26 +124,10 @@ public class ReportingLocalService implements ReportingService {
     @Override
     @Transactional
     public @NonNull URI generateVendorReport(@NonNull DataModel.Vendor.Key... vendors) {
-        //        Optional<URI> result =
-        //                CompletableFuture.supplyAsync(() -> tryGenerateVendorReport(vendors))
-        //                        .orTimeout(config.timeout().toMillis(), TimeUnit.MILLISECONDS)
-        //                        .join();
-        //        return result.orElseThrow(() -> new ReportingException("Report generation
-        // failed!"));
-        //    }
-        //
-        //    /**
-        //     * Tries to generate a vendor report and returns the URI of the generated report file
-        // if successful.
-        //     *
-        //     * @param vendors the vendor keys for which to generate the report
-        //     * @return an Optional containing the URI of the generated report file, or empty if
-        // generation failed
-        //     */
-        //    Optional<URI> tryGenerateVendorReport(@NonNull DataModel.Vendor.Key... vendors) {
-        String reportFileName = VendorReportTemplate.reportFileName();
-        Path reportOutputPath = config.htmlOutputPath();
-        Path reportFilePath = reportOutputPath.resolve(reportFileName);
+        Reports.Target reportTarget =
+                Reports.Target.of(VendorReportTemplate.reportFileName(), reportingConfig);
+        Path reportFilePath = reportTarget.absolute();
+        Path reportOutputPath = reportFilePath.getParent();
 
         try {
             if (!Files.exists(reportOutputPath)) {
@@ -157,50 +142,56 @@ public class ReportingLocalService implements ReportingService {
         }
 
         List<ServiceModel.VendorReportData> vendorReportData =
-                Arrays.stream(vendors).parallel().map(this::createVendorReportData).toList();
+                Arrays.stream(vendors).map(this::createVendorReportData).toList();
 
         VendorReportTemplate template = new VendorReportTemplate();
-        try (FileWriter fileWriter = new FileWriter(reportOutputPath.toFile())) {
-            LOGGER.debug("Rendering {} vendor report items", vendorReportData.size());
+        try (FileWriter fileWriter = new FileWriter(reportFilePath.toFile())) {
+            LOGGER.debug(
+                    "Rendering {} vendor report items to {}",
+                    vendorReportData.size(),
+                    reportFilePath);
             template.render(fileWriter, vendorReportData);
         } catch (IOException ex) {
             LOGGER.error("Failed to write report to file {}!", reportOutputPath, ex);
-            //            return Optional.empty();
             throw new ReportingException("Failed to write report to file", ex);
         } catch (ReportingException ex) {
             LOGGER.error("Failed to render report!", ex);
-            //            return Optional.empty();
             throw ex;
         }
-
-        //        return Optional.of(reportOutputPath.toUri());
-        return reportUrl(reportOutputPath);
+        return reportUrl(reportTarget);
     }
 
-    URI reportUrl(@NonNull Path reportFile) {
-        String staticPathPattern = environment.getProperty("spring.mvc.static-path-pattern");
-        if (staticPathPattern == null) {
-            throw new IllegalStateException("No static path pattern configured!");
+    URI reportUrl(@NonNull Reports.Target target) {
+        URI webPath = reportingConfig.getTargetWebPath();
+        if (webPath == null) {
+            throw new IllegalStateException("No reporting web path configured!");
         }
 
-        String staticPath = staticPathPattern;
-        if (staticPathPattern.indexOf('*') >= 0) {
-            staticPath = staticPathPattern.substring(0, staticPathPattern.indexOf('*'));
-        }
+        String host =
+                Optional.ofNullable(serverConfig.getAddress())
+                        .orElseGet(
+                                () -> {
+                                    try {
+                                        return Inet4Address.getLocalHost();
+                                    } catch (UnknownHostException ex) {
+                                        LOGGER.error("Failed to determine local host address!", ex);
+                                        throw new RuntimeException(ex);
+                                    }
+                                })
+                        .getHostAddress();
 
-        String relativePath =
-                config.targetBasePath().relativize(reportFile).toString().replace("\\", "/");
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(webPath).host(host);
+        Optional.ofNullable(serverConfig.getPort()).ifPresent(uriBuilder::port);
+        Optional.ofNullable(serverConfig.getSsl())
+                .ifPresent(
+                        ssl -> {
+                            if (ssl.isEnabled()) {
+                                uriBuilder.scheme("https");
+                            } else {
+                                uriBuilder.scheme("http");
+                            }
+                        });
 
-        try {
-            String hostAddress = Inet4Address.getLocalHost().getHostAddress();
-            return ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .host(hostAddress)
-                    .pathSegment(staticPath, relativePath)
-                    .build()
-                    .toUri();
-        } catch (UnknownHostException ex) {
-            LOGGER.error("Failed to determine local host address!", ex);
-            throw new RuntimeException(ex);
-        }
+        return uriBuilder.pathSegment(target.relativeFilePath()).build().toUri();
     }
 }
