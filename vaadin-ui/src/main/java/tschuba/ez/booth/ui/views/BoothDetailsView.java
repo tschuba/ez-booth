@@ -232,7 +232,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                         })
                 .forEach(
                         report -> {
-                            itemCount.incrementAndGet();
+                            itemCount.addAndGet(report.items().size());
                             aggregatedItemSum.accumulateAndGet(report.salesSum(), BigDecimal::add);
                             aggregatedParticipationFee.accumulateAndGet(
                                     report.participationFee(), BigDecimal::add);
@@ -241,7 +241,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                                     report.totalRevenue(), BigDecimal::add);
                         });
 
-        I18N.LocaleFormat format = I18N.current().format(getLocale());
+        I18N.LocaleFormat format = I18N.format(getLocale());
 
         description.setContent(booth.description());
         date.setContent(format.date(booth.date()));
