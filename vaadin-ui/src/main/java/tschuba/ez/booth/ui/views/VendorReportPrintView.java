@@ -14,19 +14,16 @@ import java.net.URI;
 import java.util.Optional;
 import lombok.NonNull;
 import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.reporting.ReportingException;
+import tschuba.ez.booth.services.ReportingException;
 import tschuba.ez.booth.services.ReportingService;
 import tschuba.ez.booth.ui.layouts.BaseLayout;
 import tschuba.ez.booth.ui.util.*;
 
 @Route(value = "reports/vendor/print/:eventId/:vendorId")
 public class VendorReportPrintView extends BaseLayout implements BeforeEnterObserver {
-    @NonNull private final ReportViewHelper helper;
     private final ReportingService reportingService;
 
-    public VendorReportPrintView(
-            @NonNull ReportViewHelper helper, @NonNull ReportingService reportingService) {
-        this.helper = helper;
+    public VendorReportPrintView(@NonNull ReportingService reportingService) {
         this.reportingService = reportingService;
 
         setTitle(getTranslation(TITLE));
@@ -43,16 +40,15 @@ public class VendorReportPrintView extends BaseLayout implements BeforeEnterObse
         }
 
         DataModel.Vendor.Key vendor = parameter.get();
-        URI reportFile;
+        URI reportUrl;
         try {
-            reportFile = reportingService.generateVendorReport(vendor);
+            reportUrl = reportingService.generateVendorReport(vendor);
         } catch (ReportingException ex) {
             String message = getTranslation(NOTIFICATION__REPORT_GENERATION_FAILED);
             Notifications.error(message, ex);
             return;
         }
 
-        URI reportUrl = helper.reportUrl(reportFile);
         NavigateTo.uri(reportUrl).currentWindow();
     }
 

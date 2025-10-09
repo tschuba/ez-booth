@@ -39,18 +39,18 @@ public class BoothLocalService implements BoothService {
     }
 
     @Override
-    public @NonNull Stream<DataModel.Booth> getAllBooths() {
+    public @NonNull Stream<DataModel.Booth> findAll() {
         return booths.findAll().stream().map(EntitiesMapper::entityToObject);
     }
 
     @Override
-    public @NonNull Optional<DataModel.Booth> getBooth(@NonNull DataModel.Booth.Key booth) {
+    public @NonNull Optional<DataModel.Booth> findById(@NonNull DataModel.Booth.Key booth) {
         return booths.findById(EntitiesMapper.objectToEntity(booth))
                 .map(EntitiesMapper::entityToObject);
     }
 
     @Override
-    public @NonNull DataModel.Booth closeBooth(@NonNull DataModel.Booth.Key key) {
+    public @NonNull DataModel.Booth close(@NonNull DataModel.Booth.Key key) {
         EntityModel.Booth boothToClose =
                 booths.findById(EntitiesMapper.objectToEntity(key))
                         .orElseThrow(() -> new RecordNotFoundException("Booth not found: " + key));
@@ -69,7 +69,7 @@ public class BoothLocalService implements BoothService {
     }
 
     @Override
-    public @NonNull DataModel.Booth openBooth(@NonNull DataModel.Booth.Key booth) {
+    public @NonNull DataModel.Booth open(@NonNull DataModel.Booth.Key booth) {
         EntityModel.Booth boothToOpen =
                 booths.findById(EntitiesMapper.objectToEntity(booth))
                         .orElseThrow(
@@ -88,7 +88,7 @@ public class BoothLocalService implements BoothService {
     }
 
     @Override
-    public void deleteBooth(@NonNull DataModel.Booth.Key booth) {
+    public void delete(@NonNull DataModel.Booth.Key booth) {
         LOGGER.debug("Deleting booth: {}", booth);
         booths.deleteById(EntitiesMapper.objectToEntity(booth));
         LOGGER.debug("Booth deleted: {}", booth);

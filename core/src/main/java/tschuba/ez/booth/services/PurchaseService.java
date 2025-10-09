@@ -26,12 +26,12 @@ public interface PurchaseService {
      * @return the purchase if found, otherwise an empty optional
      */
     @NonNull
-    Optional<DataModel.Purchase> getPurchaseByKey(@NonNull DataModel.Purchase.Key purchase);
+    Optional<DataModel.Purchase> findById(@NonNull DataModel.Purchase.Key purchase);
 
     /**
      * @param booth the booth key
      * @return a stream of all purchases for the given booth
      */
     @NonNull
-    Stream<DataModel.Purchase> getPurchasesByBooth(@NonNull DataModel.Booth.Key booth);
+    Stream<DataModel.Purchase> findByBooth(@NonNull DataModel.Booth.Key booth);
 }

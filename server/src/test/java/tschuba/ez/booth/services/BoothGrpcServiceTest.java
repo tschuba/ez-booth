@@ -72,13 +72,13 @@ class BoothGrpcServiceTest {
     @Test
     void testGetAllShouldDelegateToLocalServiceAndComplete() {
         Stream<DataModel.Booth> allBoothsStream = Stream.of(modelMocks.objects.booth);
-        when(localServiceMock.getAllBooths()).thenReturn(allBoothsStream);
+        when(localServiceMock.findAll()).thenReturn(allBoothsStream);
 
         try (MockedStatic<ProtoMapper> _ = modelMocks.mapper()) {
             StreamObserver<ProtoModel.Booth> observerMock = mock(StreamObserver.class);
             grpcService.getAllBooths(Empty.getDefaultInstance(), observerMock);
 
-            verify(localServiceMock).getAllBooths();
+            verify(localServiceMock).findAll();
             verify(observerMock).onNext(modelMocks.messages.booth);
             assertCompletion(observerMock);
         }
@@ -86,7 +86,7 @@ class BoothGrpcServiceTest {
 
     @Test
     void testGetAllShouldNotifyOnError() {
-        when(localServiceMock.getAllBooths()).thenThrow(TEST_EXCEPTION);
+        when(localServiceMock.findAll()).thenThrow(TEST_EXCEPTION);
 
         StreamObserver<ProtoModel.Booth> observerMock = mock(StreamObserver.class);
         grpcService.getAllBooths(Empty.getDefaultInstance(), observerMock);
@@ -98,14 +98,14 @@ class BoothGrpcServiceTest {
     void testGetShouldDelegateToLocalServiceAndComplete() {
         StreamObserver<ProtoModel.Booth> observerMock = mock(StreamObserver.class);
 
-        when(localServiceMock.getBooth(modelMocks.objects.boothKey))
+        when(localServiceMock.findById(modelMocks.objects.boothKey))
                 .thenReturn(Optional.of(modelMocks.objects.booth));
 
         try (MockedStatic<ProtoMapper> _ = modelMocks.mapper()) {
             grpcService.getBooth(modelMocks.messages.boothKey, observerMock);
         }
 
-        verify(localServiceMock).getBooth(modelMocks.objects.boothKey);
+        verify(localServiceMock).findById(modelMocks.objects.boothKey);
         verify(observerMock).onNext(modelMocks.messages.booth);
         assertCompletion(observerMock);
     }
@@ -116,7 +116,7 @@ class BoothGrpcServiceTest {
         StreamObserver<ProtoModel.Booth> observerMock = mock(StreamObserver.class);
         DataModel.Booth.Key boothKeyMock = mock(DataModel.Booth.Key.class);
 
-        when(localServiceMock.getBooth(boothKeyMock)).thenThrow(TEST_EXCEPTION);
+        when(localServiceMock.findById(boothKeyMock)).thenThrow(TEST_EXCEPTION);
 
         try (MockedStatic<ProtoMapper> protoMapperMockedStatic = mockStatic(ProtoMapper.class)) {
             protoMapperMockedStatic
@@ -133,14 +133,14 @@ class BoothGrpcServiceTest {
     void testCloseShouldDelegateToLocalServiceAndComplete() {
         StreamObserver<ProtoModel.Booth> observerMock = mock(StreamObserver.class);
 
-        when(localServiceMock.closeBooth(modelMocks.objects.boothKey))
+        when(localServiceMock.close(modelMocks.objects.boothKey))
                 .thenReturn(modelMocks.objects.booth);
 
         try (MockedStatic<ProtoMapper> _ = modelMocks.mapper()) {
             grpcService.closeBooth(modelMocks.messages.boothKey, observerMock);
         }
 
-        verify(localServiceMock).closeBooth(modelMocks.objects.boothKey);
+        verify(localServiceMock).close(modelMocks.objects.boothKey);
         verify(observerMock).onNext(modelMocks.messages.booth);
         assertCompletion(observerMock);
     }
@@ -149,7 +149,7 @@ class BoothGrpcServiceTest {
     void testCloseShouldNotifyOnError() {
         StreamObserver<ProtoModel.Booth> observerMock = mock(StreamObserver.class);
 
-        when(localServiceMock.closeBooth(modelMocks.objects.boothKey)).thenThrow(TEST_EXCEPTION);
+        when(localServiceMock.close(modelMocks.objects.boothKey)).thenThrow(TEST_EXCEPTION);
 
         try (MockedStatic<ProtoMapper> _ = modelMocks.mapper()) {
             grpcService.closeBooth(modelMocks.messages.boothKey, observerMock);
@@ -162,14 +162,14 @@ class BoothGrpcServiceTest {
     void testOpenShouldDelegateToLocalServiceAndComplete() {
         StreamObserver<ProtoModel.Booth> observerMock = mock(StreamObserver.class);
 
-        when(localServiceMock.openBooth(modelMocks.objects.boothKey))
+        when(localServiceMock.open(modelMocks.objects.boothKey))
                 .thenReturn(modelMocks.objects.booth);
 
         try (MockedStatic<ProtoMapper> _ = modelMocks.mapper()) {
             grpcService.openBooth(modelMocks.messages.boothKey, observerMock);
         }
 
-        verify(localServiceMock).openBooth(modelMocks.objects.boothKey);
+        verify(localServiceMock).open(modelMocks.objects.boothKey);
         verify(observerMock).onNext(modelMocks.messages.booth);
         assertCompletion(observerMock);
     }
@@ -178,7 +178,7 @@ class BoothGrpcServiceTest {
     void testOpenShouldNotifyOnError() {
         StreamObserver<ProtoModel.Booth> observerMock = mock(StreamObserver.class);
 
-        when(localServiceMock.openBooth(modelMocks.objects.boothKey)).thenThrow(TEST_EXCEPTION);
+        when(localServiceMock.open(modelMocks.objects.boothKey)).thenThrow(TEST_EXCEPTION);
 
         try (MockedStatic<ProtoMapper> _ = modelMocks.mapper()) {
             grpcService.openBooth(modelMocks.messages.boothKey, observerMock);

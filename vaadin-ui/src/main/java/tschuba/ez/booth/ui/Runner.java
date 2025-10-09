@@ -13,8 +13,8 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"tschuba.commons", "tschuba.basarix"})
-@ConfigurationPropertiesScan(basePackages = {"tschuba.commons", "tschuba.basarix"})
+@ComponentScan(basePackages = "tschuba.ez.booth")
+@ConfigurationPropertiesScan(basePackages = "tschuba.ez.booth")
 @NoArgsConstructor(access = PRIVATE)
 public class Runner {
     public static void main(String[] args) {

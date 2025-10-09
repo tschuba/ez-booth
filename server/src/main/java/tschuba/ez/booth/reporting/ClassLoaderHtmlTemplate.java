@@ -24,6 +24,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import tschuba.ez.booth.services.ReportingException;
 
 /**
  * HTML report template implementation that loads templates from the classpath.

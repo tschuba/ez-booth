@@ -25,16 +25,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.NonNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.ez.booth.data.BoothRepository;
-import tschuba.ez.booth.data.VendorRepository;
 import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.model.EntitiesMapper;
-import tschuba.ez.booth.model.EntityModel;
-import tschuba.ez.booth.reporting.ReportingException;
 import tschuba.ez.booth.services.BoothService;
+import tschuba.ez.booth.services.ReportingException;
 import tschuba.ez.booth.services.ReportingService;
+import tschuba.ez.booth.services.VendorService;
 import tschuba.ez.booth.ui.components.Block;
 import tschuba.ez.booth.ui.components.ConfirmativeButton;
 import tschuba.ez.booth.ui.components.event.BoothSavedEvent;
@@ -46,8 +43,8 @@ import tschuba.ez.booth.ui.util.*;
 
 @Route(value = "event/:eventId", layout = AppLayoutWithMenu.class)
 public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObserver {
-    private final BoothRepository booths;
-    private final VendorRepository vendors;
+    private final BoothService booths;
+    private final VendorService vendors;
     private final ReportingService reportingService;
 
     private final AtomicReference<Optional<DataModel.Booth>> boothRef =
@@ -73,9 +70,9 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
     private final ConfirmativeButton deleteButton;
 
     public BoothDetailsView(
-            @NonNull final BoothRepository booths,
+            @NonNull final BoothService booths,
             @NonNull final BoothService boothService,
-            @NonNull final VendorRepository vendors,
+            @NonNull final VendorService vendors,
             @NonNull final ReportingService reportingService) {
         this.booths = booths;
         this.vendors = vendors;
@@ -101,7 +98,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                             try {
                                 DataModel.Booth.Key boothToClose =
                                         boothRef.get().map(DataModel.Booth::key).orElseThrow();
-                                DataModel.Booth closedBooth = boothService.closeBooth(boothToClose);
+                                DataModel.Booth closedBooth = boothService.close(boothToClose);
                                 updateView(closedBooth);
                             } catch (Exception ex) {
                                 Notifications.error(CLOSE_EVENT_FAILED__MESSAGE, ex);
@@ -118,7 +115,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                             try {
                                 DataModel.Booth.Key boothToOpen =
                                         boothRef.get().map(DataModel.Booth::key).orElseThrow();
-                                DataModel.Booth openedBooth = boothService.openBooth(boothToOpen);
+                                DataModel.Booth openedBooth = boothService.open(boothToOpen);
                                 updateView(openedBooth);
                             } catch (Exception ex) {
                                 Notifications.error(OPEN_EVENT_FAILED__MESSAGE, ex);
@@ -134,7 +131,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                     try {
                         DataModel.Booth.Key boothToDelete =
                                 boothRef.get().map(DataModel.Booth::key).orElseThrow();
-                        boothService.deleteBooth(boothToDelete);
+                        boothService.delete(boothToDelete);
                         BoothSelection.deleted(boothToDelete);
                         NavigateTo.view(BoothSelectionView.class).currentWindow();
                     } catch (Exception ex) {
@@ -191,9 +188,9 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
             return;
         }
 
-        Optional<EntityModel.Booth> boothData =
-                booths.findById(EntityModel.Booth.Key.builder().boothId(eventId.get()).build());
-        updateView(EntitiesMapper.entityToObject(boothData.orElseThrow()));
+        Optional<DataModel.Booth> boothData =
+                booths.findById(DataModel.Booth.Key.builder().boothId(eventId.get()).build());
+        updateView(boothData.orElseThrow());
     }
 
     private void onEventSaved(BoothSavedEvent boothSavedEvent) {
@@ -208,10 +205,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
     private void updateView() {
         final DataModel.Booth booth = boothRef.get().orElseThrow();
         List<DataModel.Vendor.Key> allVendors =
-                vendors.findAllByBoothId(booth.key().boothId()).stream()
-                        .map(EntityModel.Vendor::getKey)
-                        .map(EntitiesMapper::entityToObject)
-                        .toList();
+                vendors.findByBooth(booth.key()).map(DataModel.Vendor::key).toList();
 
         final AtomicInteger itemCount = new AtomicInteger(0);
         final AtomicReference<BigDecimal> aggregatedItemSum =

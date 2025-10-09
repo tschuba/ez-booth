@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.BoothService;
 import tschuba.ez.booth.ui.components.PageTitle;
@@ -43,9 +42,7 @@ public class BoothSelectionView extends Div
     private final UpsertEventDialog editDialog;
     private Class<? extends Component> returnToView;
 
-    public BoothSelectionView(
-            @NonNull @Autowired BoothService boothService,
-            @NonNull @Autowired BoothRepository booths) {
+    public BoothSelectionView(@NonNull @Autowired BoothService boothService) {
         this.boothService = boothService;
 
         addClassNames(Display.FLEX, FlexDirection.COLUMN, Flex.GROW_NONE, Height.FULL);
@@ -61,7 +58,7 @@ public class BoothSelectionView extends Div
                 Padding.Horizontal.LARGE);
         add(container);
 
-        editDialog = new UpsertEventDialog(booths);
+        editDialog = new UpsertEventDialog(boothService);
         editDialog.addEventSavedListener(this::onEventCreated);
         add(editDialog);
 
@@ -129,7 +126,7 @@ public class BoothSelectionView extends Div
 
     private void onCloseBooth(DataModel.Booth booth) {
         try {
-            boothService.closeBooth(booth.key());
+            boothService.close(booth.key());
         } catch (Exception ex) {
             Notifications.error(getTranslation(CLOSE_EVENT_FAILED__MESSAGE), ex);
         } finally {
@@ -139,7 +136,7 @@ public class BoothSelectionView extends Div
 
     private void onReopenBooth(DataModel.Booth booth) {
         try {
-            boothService.openBooth(booth.key());
+            boothService.open(booth.key());
         } catch (Exception ex) {
             Notifications.error(getTranslation(OPEN_EVENT_FAILED__MESSAGE), ex);
         } finally {
@@ -150,7 +147,7 @@ public class BoothSelectionView extends Div
     private void onDeleteBooth(DataModel.Booth booth) {
         try {
             DataModel.Booth.Key boothToDelete = booth.key();
-            boothService.deleteBooth(boothToDelete);
+            boothService.delete(boothToDelete);
             BoothSelection.deleted(boothToDelete);
         } catch (Exception ex) {
             Notifications.error(DELETE_EVENT_FAILED__MESSAGE, ex);
@@ -162,7 +159,7 @@ public class BoothSelectionView extends Div
     private void updateBoothListItems() {
         Stream<DataModel.Booth> allBooths =
                 boothService
-                        .getAllBooths()
+                        .findAll()
                         .sorted(
                                 Comparator.comparing(DataModel.Booth::closed)
                                         .reversed()

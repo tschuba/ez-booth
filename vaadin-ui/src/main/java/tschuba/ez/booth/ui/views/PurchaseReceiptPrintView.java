@@ -18,11 +18,9 @@ import com.vaadin.flow.router.Route;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import tschuba.ez.booth.data.PurchaseRepository;
 import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.model.EntitiesMapper;
-import tschuba.ez.booth.model.EntityModel;
+import tschuba.ez.booth.services.PurchaseService;
 import tschuba.ez.booth.ui.components.checkout.ReportPrintViewItemCard;
 import tschuba.ez.booth.ui.components.model.ItemComparator;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
@@ -34,12 +32,12 @@ import tschuba.ez.booth.ui.util.UIUtil;
 public class PurchaseReceiptPrintView extends OneColumnLayout implements BeforeEnterObserver {
     private final Span purchaseIdValue;
     private final Div itemsContainer;
-    private final PurchaseRepository purchases;
+    private final PurchaseService purchases;
     private final Span itemCountValue;
     private final Span dateTimeValue;
     private final Span purchaseSumValue;
 
-    public PurchaseReceiptPrintView(@Autowired @NonNull PurchaseRepository purchases) {
+    public PurchaseReceiptPrintView(@Autowired @NonNull PurchaseService purchases) {
         this.purchases = purchases;
 
         setTitle(getTranslation(TITLE));
@@ -112,8 +110,7 @@ public class PurchaseReceiptPrintView extends OneColumnLayout implements BeforeE
             return;
         }
 
-        Optional<EntityModel.Purchase> purchaseByKey =
-                purchases.findById(EntitiesMapper.objectToEntity(purchaseKey.get()));
+        Optional<DataModel.Purchase> purchaseByKey = purchases.findById(purchaseKey.get());
         if (purchaseByKey.isEmpty()) {
             Notifications.warning(
                     getTranslation(NOTIFICATION__PURCHASE_NOT_FOUND, purchaseKey.get()));
@@ -122,7 +119,7 @@ public class PurchaseReceiptPrintView extends OneColumnLayout implements BeforeE
 
         I18N.LocaleFormat format = I18N.i18N().format(getLocale());
 
-        DataModel.Purchase purchase = purchaseByKey.map(EntitiesMapper::entityToObject).get();
+        DataModel.Purchase purchase = purchaseByKey.get();
         purchaseIdValue.setText(purchase.key().purchaseId());
         dateTimeValue.setText(format.dateTime(purchase.purchasedOn()));
         itemCountValue.setText(Integer.toString(purchase.items().size()));

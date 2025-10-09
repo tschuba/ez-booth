@@ -25,10 +25,9 @@ import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.model.EntitiesMapper;
+import tschuba.ez.booth.services.BoothService;
 import tschuba.ez.booth.services.PurchaseService;
 import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.components.checkout.CheckoutItemForm;
@@ -48,7 +47,7 @@ import tschuba.ez.booth.ui.util.*;
 @EventRequired
 public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver {
     private final PurchaseService purchaseService;
-    private final BoothRepository booths;
+    private final BoothService booths;
 
     private final PurchaseSummary purchaseSummary;
     private final CheckoutItemForm checkoutForm;
@@ -56,7 +55,7 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
     private final CheckoutKeyPad numPad;
 
     public CheckoutView(
-            @NonNull final BoothRepository booths,
+            @NonNull final BoothService booths,
             @NonNull final PurchaseService purchaseService,
             @NonNull final PurchaseSummary purchaseSummary) {
         this.booths = booths;
@@ -98,12 +97,12 @@ public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver
         super.beforeEnter(enterEvent);
 
         BoothSelection.get()
-                .map(EntitiesMapper::objectToEntity)
                 .flatMap(booths::findById)
                 .ifPresent(
                         booth -> {
-                            checkoutForm.setEnabled(!booth.isClosed());
-                            numPad.setEnabled(!booth.isClosed());
+                            boolean inputEnabled = !booth.closed();
+                            checkoutForm.setEnabled(inputEnabled);
+                            numPad.setEnabled(inputEnabled);
                         });
     }
 

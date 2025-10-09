@@ -8,7 +8,9 @@ import jakarta.transaction.Transactional;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.Inet4Address;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -16,7 +18,9 @@ import java.util.List;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.data.PurchaseItemRepository;
 import tschuba.ez.booth.data.RecordNotFoundException;
@@ -25,7 +29,6 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
 import tschuba.ez.booth.reporting.ReportingConfig;
-import tschuba.ez.booth.reporting.ReportingException;
 import tschuba.ez.booth.reporting.VendorReportTemplate;
 
 /**
@@ -43,18 +46,21 @@ public class ReportingLocalService implements ReportingService {
     private final ChargingService chargingService;
 
     private final ReportingConfig config;
+    private final Environment environment;
 
     public ReportingLocalService(
             @NonNull BoothRepository booths,
             @NonNull VendorRepository vendors,
             @NonNull PurchaseItemRepository purchaseItems,
             @NonNull ChargingService chargingService,
-            @NonNull ReportingConfig config) {
+            @NonNull ReportingConfig config,
+            @NonNull Environment environment) {
         this.booths = booths;
         this.vendors = vendors;
         this.purchaseItems = purchaseItems;
         this.chargingService = chargingService;
         this.config = config;
+        this.environment = environment;
     }
 
     @Override
@@ -168,6 +174,33 @@ public class ReportingLocalService implements ReportingService {
         }
 
         //        return Optional.of(reportOutputPath.toUri());
-        return reportOutputPath.toUri();
+        return reportUrl(reportOutputPath);
+    }
+
+    URI reportUrl(@NonNull Path reportFile) {
+        String staticPathPattern = environment.getProperty("spring.mvc.static-path-pattern");
+        if (staticPathPattern == null) {
+            throw new IllegalStateException("No static path pattern configured!");
+        }
+
+        String staticPath = staticPathPattern;
+        if (staticPathPattern.indexOf('*') >= 0) {
+            staticPath = staticPathPattern.substring(0, staticPathPattern.indexOf('*'));
+        }
+
+        String relativePath =
+                config.targetBasePath().relativize(reportFile).toString().replace("\\", "/");
+
+        try {
+            String hostAddress = Inet4Address.getLocalHost().getHostAddress();
+            return ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .host(hostAddress)
+                    .pathSegment(staticPath, relativePath)
+                    .build()
+                    .toUri();
+        } catch (UnknownHostException ex) {
+            LOGGER.error("Failed to determine local host address!", ex);
+            throw new RuntimeException(ex);
+        }
     }
 }

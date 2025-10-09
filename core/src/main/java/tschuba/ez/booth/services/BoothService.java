@@ -19,31 +19,31 @@ public interface BoothService {
      * @return a stream of all booths
      */
     @NonNull
-    Stream<DataModel.Booth> getAllBooths();
+    Stream<DataModel.Booth> findAll();
 
     /**
      * @param booth the booth key
      * @return the booth if found, otherwise an empty optional
      */
     @NonNull
-    Optional<DataModel.Booth> getBooth(@NonNull DataModel.Booth.Key booth);
+    Optional<DataModel.Booth> findById(@NonNull DataModel.Booth.Key booth);
 
     /**
      * @param booth the booth key
      * @return the updated booth with closed status
      */
     @NonNull
-    DataModel.Booth closeBooth(@NonNull DataModel.Booth.Key booth);
+    DataModel.Booth close(@NonNull DataModel.Booth.Key booth);
 
     /**
      * @param booth the booth key
      * @return the updated booth with opened status
      */
     @NonNull
-    DataModel.Booth openBooth(@NonNull DataModel.Booth.Key booth);
+    DataModel.Booth open(@NonNull DataModel.Booth.Key booth);
 
     /**
      * @param booth the booth key to delete
      */
-    void deleteBooth(@NonNull DataModel.Booth.Key booth);
+    void delete(@NonNull DataModel.Booth.Key booth);
 }

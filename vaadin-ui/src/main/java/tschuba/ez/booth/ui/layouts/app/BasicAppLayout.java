@@ -6,10 +6,10 @@ package tschuba.ez.booth.ui.layouts.app;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import tschuba.ez.booth.data.BoothRepository;
+import tschuba.ez.booth.services.BoothService;
 
 public class BasicAppLayout extends CustomAppLayout {
-    public BasicAppLayout(@Autowired BoothRepository booths) {
+    public BasicAppLayout(@Autowired BoothService booths) {
         super(booths, List.of());
     }
 }

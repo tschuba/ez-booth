@@ -28,6 +28,13 @@ service PurchaseService {
   rpc GetPurchasesByBooth(BoothKey) returns (stream Purchase);
 }
 
+service VendorService {
+  rpc SaveVendor(Vendor) returns (google.protobuf.Empty);
+  rpc GetVendorsByBooth(BoothKey) returns (stream Vendor);
+  rpc GetVendorByKey(VendorKey) returns (Vendor);
+  rpc DeleteVendor(VendorKey) returns (google.protobuf.Empty);
+}
+
 message ChargedFees {
   double participation_fee = 1;
   double sales_fee = 2;

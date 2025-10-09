@@ -27,9 +27,8 @@ import com.vaadin.flow.theme.lumo.Lumo;
 import java.util.List;
 import java.util.Objects;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.i18n.TranslationKeys;
-import tschuba.ez.booth.model.EntitiesMapper;
+import tschuba.ez.booth.services.BoothService;
 import tschuba.ez.booth.ui.components.ToggleButton;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.util.Icons;
@@ -44,7 +43,7 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
     private final Tabs tabs;
     private Component content;
 
-    protected CustomAppLayout(final BoothRepository booths, final List<MainMenuItem> menuItems) {
+    protected CustomAppLayout(final BoothService booths, final List<MainMenuItem> menuItems) {
         Div rootLayout = new Div();
         rootLayout.addClassNames(Display.FLEX, FlexDirection.ROW, Flex.AUTO);
         rootLayout.setHeightFull();
@@ -101,15 +100,14 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
         topBar.add(appName);
 
         BoothSelection.get()
-                .map(EntitiesMapper::objectToEntity)
                 .flatMap(booths::findById)
                 .ifPresent(
-                        event -> {
+                        booth -> {
                             RouterLink eventLink = new RouterLink();
                             eventLink.setRoute(BoothSelectionView.class);
                             eventLink.addClassNames(Margin.Right.MEDIUM);
 
-                            Span descriptionText = new Span(event.getDescription());
+                            Span descriptionText = new Span(booth.description());
                             descriptionText.addClassNames(FontWeight.MEDIUM);
                             eventLink.add(descriptionText);
 
@@ -121,9 +119,7 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
                                     _ -> {
                                         RouteParameters routeParams =
                                                 Routing.Parameters.builder()
-                                                        .booth(
-                                                                EntitiesMapper.entityToObject(
-                                                                        event.getKey()))
+                                                        .booth(booth.key())
                                                         .build();
                                         NavigateTo.view(BoothDetailsView.class, routeParams)
                                                 .currentWindow();

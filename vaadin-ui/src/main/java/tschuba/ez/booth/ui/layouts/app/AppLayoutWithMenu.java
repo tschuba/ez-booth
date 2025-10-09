@@ -8,13 +8,16 @@ import static org.vaadin.lineawesome.LineAwesomeIcon.*;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.i18n.TranslationKeys;
-import tschuba.ez.booth.ui.views.*;
+import tschuba.ez.booth.services.BoothService;
+import tschuba.ez.booth.ui.views.BoothSelectionView;
+import tschuba.ez.booth.ui.views.CheckoutView;
+import tschuba.ez.booth.ui.views.InfoView;
+import tschuba.ez.booth.ui.views.VendorReportView;
 
 public class AppLayoutWithMenu extends CustomAppLayout {
-    public AppLayoutWithMenu(@Autowired BoothRepository booths) {
+    public AppLayoutWithMenu(@Autowired BoothService booths) {
         super(
                 booths,
                 List.of(

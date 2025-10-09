@@ -11,12 +11,9 @@ import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
 import static org.apache.commons.lang3.StringUtils.*;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.internal.LocaleUtil;
 import com.vaadin.flow.server.VaadinSession;
@@ -41,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public class I18N implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(I18N.class);
 
-    private final Config config;
+    @Getter private final Config config;
 
     public I18N(@NonNull Config config) {
         this.config = config;
@@ -153,9 +151,10 @@ public class I18N implements Serializable {
     public static class Config {
 
         private static final ObjectMapper OBJECT_MAPPER =
-                new ObjectMapper()
-                        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                        .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+                new ObjectMapper().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                //                        .setVisibility(PropertyAccessor.FIELD,
+                // JsonAutoDetect.Visibility.ANY);
+                ;
 
         private final Map<Locale, Set> sets = new HashMap<>();
         private final URL rootPath;
@@ -181,6 +180,7 @@ public class I18N implements Serializable {
         public static Config parse(@NonNull URL mappingFile) {
             try {
                 URL rootPath = parentPath(mappingFile);
+                LOGGER.debug("Root path for i18n files: {}", rootPath);
                 Mapping mapping = OBJECT_MAPPER.readValue(mappingFile, Mapping.class);
                 Locale defaultLocale = parseLocaleString(mapping.defaultLocale());
                 Set defaultSet =
@@ -193,7 +193,7 @@ public class I18N implements Serializable {
                 return new Config(rootPath, defaultSet, defaultLocale, mapping);
             } catch (IOException ex) {
                 throw new RuntimeException(
-                        String.format("Initialization of %s failed!", I18N.class), ex);
+                        "Initialization of %s failed!".formatted(I18N.class), ex);
             }
         }
 
@@ -220,6 +220,7 @@ public class I18N implements Serializable {
 
         private static Optional<URL> localeFilePath(Locale locale, Mapping mapping, URL rootPath) {
             final String localeString = (locale != null) ? locale.toString() : "";
+            LOGGER.debug("Searching mapping for locale '{}'", localeString);
             return mapping.supportedLocales().entrySet().stream()
                     .filter(entry -> equalsIgnoreCase(entry.getKey(), localeString))
                     .map(Map.Entry::getValue)
@@ -247,6 +248,7 @@ public class I18N implements Serializable {
         private static Optional<Set> loadSet(Locale locale, Mapping mapping, URL rootPath)
                 throws IOException {
             Optional<URL> resourcePath = localeFilePath(locale, mapping, rootPath);
+            LOGGER.debug("Loading mapping for locale '{}' from '{}'", locale, resourcePath);
             if (resourcePath.isPresent()) {
                 URL resource = resourcePath.get();
                 Set set = OBJECT_MAPPER.readValue(resource, Set.class);
@@ -269,7 +271,7 @@ public class I18N implements Serializable {
                 Locale lookup =
                         Locale.lookup(
                                 Locale.LanguageRange.parse(locale.toLanguageTag()),
-                                getProvidedLocales());
+                                providedLocales());
                 if (lookup == null) {
                     return getDefaultSet();
                 }
@@ -303,7 +305,7 @@ public class I18N implements Serializable {
             return Optional.empty();
         }
 
-        private List<Locale> getProvidedLocales() {
+        public List<Locale> providedLocales() {
             return mapping.supportedLocales().keySet().stream()
                     .map(Locale::forLanguageTag)
                     .toList();
@@ -336,22 +338,18 @@ public class I18N implements Serializable {
         }
     }
 
-    @Builder(builderClassName = "Builder", toBuilder = true)
-    @JsonDeserialize(builder = Mapping.Builder.class)
+    @Jacksonized
+    @Builder
     private record Mapping(
-            @NonNull String defaultLocale, @NonNull Map<String, String> supportedLocales) {
+            @NonNull String defaultLocale, @NonNull Map<String, String> supportedLocales) {}
 
-        @JsonPOJOBuilder(withPrefix = "")
-        public static class Builder {}
-    }
-
-    @Builder(builderClassName = "Builder", toBuilder = true)
-    @JsonDeserialize(builder = Format.Builder.class)
+    @Jacksonized
+    @Builder
     public record Format(
             @NonNull String currencyCode,
-            @NonNull String dateTimeFormat,
-            @NonNull String dateFormat,
-            @NonNull String decimalFormat) {
+            @NonNull @JsonProperty("dateTime") String dateTimeFormat,
+            @NonNull @JsonProperty("date") String dateFormat,
+            @NonNull @JsonProperty("decimal") String decimalFormat) {
 
         public java.text.Format currency(Locale locale) {
             NumberFormat format = NumberFormat.getCurrencyInstance(locale);
@@ -387,9 +385,6 @@ public class I18N implements Serializable {
         public String decimalNumber(Number value, Locale locale) {
             return decimalNumber(locale).format(value);
         }
-
-        @JsonPOJOBuilder(withPrefix = "")
-        public static class Builder {}
     }
 
     public record LocaleFormat(@NonNull Format format, @NonNull Locale locale) {
@@ -427,13 +422,9 @@ public class I18N implements Serializable {
         }
     }
 
-    @Builder(builderClassName = "Builder", toBuilder = true)
-    @JsonDeserialize(builder = Set.Builder.class)
-    private record Set(@NonNull I18N.Format format, @NonNull Map<String, String> texts) {
-
-        @JsonPOJOBuilder(withPrefix = "")
-        public static class Builder {}
-    }
+    @Jacksonized
+    @Builder
+    private record Set(@NonNull I18N.Format format, @NonNull Map<String, String> texts) {}
 
     @Builder
     public record TextKey(@NonNull String key) {}

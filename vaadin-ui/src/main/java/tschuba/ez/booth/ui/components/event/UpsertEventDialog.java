@@ -16,19 +16,17 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import java.util.Optional;
-import tschuba.ez.booth.data.BoothRepository;
 import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.model.EntitiesMapper;
-import tschuba.ez.booth.model.EntityModel;
+import tschuba.ez.booth.services.BoothService;
 
 public class UpsertEventDialog extends Dialog {
     private final UpsertEventForm upsertEventForm;
-    private final BoothRepository booths;
+    private final BoothService boothService;
     private final Button saveButton;
 
-    public UpsertEventDialog(BoothRepository booths) {
+    public UpsertEventDialog(BoothService boothService) {
         super();
-        this.booths = booths;
+        this.boothService = boothService;
 
         setHeaderTitle(getTranslation(TITLE));
         setCloseOnEsc(true);
@@ -80,8 +78,7 @@ public class UpsertEventDialog extends Dialog {
         Optional<DataModel.Booth> formData = upsertEventForm.validate(true);
         if (formData.isPresent()) {
             DataModel.Booth boothData = formData.get();
-            EntityModel.Booth entity = EntitiesMapper.objectToEntity(boothData);
-            booths.save(entity);
+            boothService.saveBooth(boothData);
             close();
             fireEvent(new BoothSavedEvent(this, event.isFromClient(), boothData));
         }
