@@ -161,7 +161,6 @@ public class CheckoutKeyPad extends Div implements HasEnabled {
         Optional.ofNullable(focusField)
                 .ifPresent(
                         field -> {
-                            field.getValueAsString();
                             String fieldValue = field.getValueAsString();
                             if (decimalSeparatorPending) {
                                 fieldValue =
