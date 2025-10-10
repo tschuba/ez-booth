@@ -67,7 +67,7 @@ public class AddressCodec {
          */
         public static String decode(@NonNull String input) {
             boolean hasPort = input.charAt(0) != PREFIX_NO_PORT;
-            String base64Authority = input.substring((hasPort) ? 1 : 2);
+            String base64Authority = input.substring((hasPort) ? 0 : 1);
             ByteBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(base64Authority));
 
             byte[] encodedAddressBytes = new byte[buffer.capacity() - ((hasPort) ? 2 : 0)];
@@ -86,9 +86,10 @@ public class AddressCodec {
          */
         public static Try<String> tryDecode(@NonNull String input) {
             try {
+                LOGGER.debug("Trying to decode input: {}", input);
                 return Try.success(decode(input));
             } catch (Exception ex) {
-                LOGGER.debug("Failed to decode sync URL: {}", input, ex);
+                LOGGER.debug("Failed to decode input: {}", input, ex);
                 return Try.fail(ex);
             }
         }
@@ -96,7 +97,7 @@ public class AddressCodec {
         /**
          * Encodes a port number to a byte. The port number must be in the range of 0 to 65535.
          */
-        static class PortCodec {
+        public static class PortCodec {
             private final ByteBuffer buffer;
 
             /**
@@ -112,16 +113,16 @@ public class AddressCodec {
                 this.buffer = buffer;
             }
 
-            static PortCodec of(@NonNull ByteBuffer buffer) {
+            public static PortCodec of(@NonNull ByteBuffer buffer) {
                 return new PortCodec(buffer);
             }
 
-            void encode(int port) {
+            public void encode(int port) {
                 short portAsShort = (short) (port + Short.MIN_VALUE);
                 buffer.putShort(portAsShort);
             }
 
-            int decode() {
+            public int decode() {
                 short port = buffer.getShort(buffer.capacity() - 2);
                 return ((int) port) - Short.MIN_VALUE;
             }

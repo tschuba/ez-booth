@@ -116,15 +116,19 @@
     "PurchaseReceiptPrintView.notification.purchaseNotFound": "Die Quittung kann nicht erstellt werden weil der Verkauf nicht gefunden wurde! (ID %s)",
     "DataExchangeView.title": "Daten exportieren / importieren",
     "DataExchangeView.menuItem.text": "Export/Import",
-    "DataExchangeView.copiedToClipboard.notification": "Wert wurde in die Zwischenablage kopiert",
     "DataExchangeView.SelfInfoCard.title": "Selbstauskunft",
     "DataExchangeView.SelfInfoCard.addressLabel.text": "Adresse",
     "DataExchangeView.SelfInfoCard.shortAddressLabel.text": "Kurzadresse",
     "DataExchangeView.TransferCard.title": "Übertragung",
     "DataExchangeView.TransferCard.addressFieldLabel.text": "Zieladresse",
     "DataExchangeView.TransferCard.transferButton.text": "Datenübertragung starten",
+    "DataExchangeView.TransferCard.description.text": "Sendet fehlende Einträge zum aktuellen Ereignis '%s'%nan die Zieladresse und kopiert fehlende Einträge%naus dem Zielsystem auf dieses System.",
     "DataExchangeView.TransferCard.transferInProgress.text": "Daten werden übertragen...",
+    "DataExchangeView.TransferCard.notification.invalidValue": "Zieladresse '%s' ist ungültig!",
+    "DataExchangeView.TransferCard.notification.transferFailed": "Datenübertragung fehlgeschlagen!",
+    "DataExchangeView.TransferCard.notification.transferCompleted": "Datenübertragung erfolgreich abgeschlossen",
     "Notifications.genericError.text": "Es ist ein Fehler aufgetreten!",
+    "Notifications.copiedToClipboard.message": "Wert wurde in die Zwischenablage kopiert",
     "EntryView.title": "Legen wir los!"
   }
 }

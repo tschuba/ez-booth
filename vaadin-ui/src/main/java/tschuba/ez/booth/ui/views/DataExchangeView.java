@@ -6,7 +6,6 @@ package tschuba.ez.booth.ui.views;
 
 import static org.vaadin.lineawesome.LineAwesomeIcon.COPY_SOLID;
 import static org.vaadin.lineawesome.LineAwesomeIcon.PLAY_SOLID;
-import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.COPIED_TO_CLIPBOARD__NOTIFICATION;
 import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.ADDRESS_LABEL__TEXT;
 import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.SHORT_ADDRESS_LABEL__TEXT;
 
@@ -33,23 +32,27 @@ import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Width;
+import java.util.Optional;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import tschuba.ez.booth.Try;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.Transfer;
+import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.services.BoothService;
 import tschuba.ez.booth.ui.Constraints;
+import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.components.event.EventRequired;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
+import tschuba.ez.booth.ui.services.DataExchangeClient;
 import tschuba.ez.booth.ui.util.*;
 
 @Route(value = "data-exchange", layout = AppLayoutWithMenu.class)
 @EventRequired
 public class DataExchangeView extends OneColumnLayout {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeView.class);
 
     public DataExchangeView(@NonNull SelfInfoCard selfInfo, @NonNull TransferCard transferCard) {
         Main content = new Main();
@@ -73,19 +76,17 @@ public class DataExchangeView extends OneColumnLayout {
 
             Badges addressBadge = Badges.primary().contrast();
 
-            addressBadge.applyTo(this.address);
-            this.address.addClassNames(FontWeight.BLACK);
-            Button addressButton = createCopyButton(this.address);
+            addressBadge.applyTo(address);
+            address.addClassNames(FontWeight.BLACK);
 
-            addressBadge.applyTo(this.shortAddress);
-            this.shortAddress.addClassNames(FontWeight.BLACK);
-            Button shortAddressButton = createCopyButton(this.shortAddress);
+            addressBadge.applyTo(shortAddress);
+            shortAddress.addClassNames(FontWeight.BLACK);
 
             getContent()
                     .add(
-                            new HorizontalLayout(Alignment.CENTER, addressLabel, addressButton),
+                            new HorizontalLayout(Alignment.CENTER, addressLabel, address),
                             new HorizontalLayout(
-                                    Alignment.CENTER, shortAddressLabel, shortAddressButton));
+                                    Alignment.CENTER, shortAddressLabel, shortAddress));
         }
 
         @Override
@@ -114,32 +115,7 @@ public class DataExchangeView extends OneColumnLayout {
             button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
             button.addClassNames(Margin.NONE);
 
-            button.addClickListener(
-                    event ->
-                            event.getSource()
-                                    .getUI()
-                                    .ifPresent(
-                                            ui -> {
-                                                ui.getPage()
-                                                        .executeJs(
-                                                                """
-                                                                window.copyToClipboard = (str) => {
-                                                                  const textarea = document.createElement("textarea");
-                                                                  textarea.value = str;
-                                                                  textarea.style.position = "absolute";
-                                                                  textarea.style.opacity = "0";
-                                                                  document.body.appendChild(textarea);
-                                                                  textarea.select();
-                                                                  document.execCommand("copy");
-                                                                  document.body.removeChild(textarea);
-                                                                };
-                                                                window.copyToClipboard($0)\
-                                                                """,
-                                                                urlContainer.getText());
-                                                Notifications.message(
-                                                        getTranslation(
-                                                                COPIED_TO_CLIPBOARD__NOTIFICATION));
-                                            }));
+            button.addClickListener(Buttons.copyToClipboard(urlContainer::getText));
 
             return button;
         }
@@ -149,12 +125,22 @@ public class DataExchangeView extends OneColumnLayout {
     @UIScope
     public static class TransferCard extends Composite<Card> {
 
+        private static final Logger LOGGER = LoggerFactory.getLogger(TransferCard.class);
+
+        private final BoothService booths;
+        private final DataExchangeClient dataExchangeClient;
+
         private final TextField addressField = new TextField();
         private final Button transferButton = new Button(PLAY_SOLID.create());
+        private final Span descriptionText = new Span();
         private final Popover busyIndicator = new Popover();
         private final Span busyIndicatorText = new Span();
 
-        public TransferCard() {
+        public TransferCard(
+                @NonNull BoothService booths, @NonNull DataExchangeClient dataExchangeClient) {
+            this.booths = booths;
+            this.dataExchangeClient = dataExchangeClient;
+
             addressField.addClassNames(Width.FULL);
             addressField.setRequired(true);
             addressField.setRequiredIndicatorVisible(true);
@@ -179,14 +165,24 @@ public class DataExchangeView extends OneColumnLayout {
             busyIndicator.setPosition(PopoverPosition.TOP);
             busyIndicator.add(new VerticalLayout(busyIndicatorText, progressBar));
 
+            getContent().setSubtitle(descriptionText);
             getContent().add(addressField, transferButton, busyIndicator);
         }
 
         @Override
         protected void onAttach(AttachEvent attachEvent) {
+            Optional<DataModel.Booth> currentBooth = BoothSelection.get().flatMap(booths::findById);
             getContent().setTitle(getTranslation(Transfer.TITLE));
             addressField.setLabel(getTranslation(Transfer.ADDRESS_FIELD__LABEL));
             transferButton.setText(getTranslation(Transfer.TRANSFER_BUTTON__LABEL));
+            descriptionText.setText(
+                    currentBooth
+                            .map(
+                                    booth ->
+                                            getTranslation(
+                                                    Transfer.TRANSFER_DESCRIPTION__TEXT,
+                                                    booth.description()))
+                            .orElse(""));
             busyIndicatorText.setText(getTranslation(Transfer.TRANSFER_IN_PROGRESS__TEXT));
         }
 
@@ -195,12 +191,31 @@ public class DataExchangeView extends OneColumnLayout {
         }
 
         private void onClickTransferButton(ClickEvent<Button> event) {
-            LOGGER.info("Starting data transfer to {}", addressField.getValue());
+            String input = addressField.getValue();
+            Try<String> decodedValue = AddressCodec.Exchange.tryDecode(input);
+            if (decodedValue.failed()) {
+                LOGGER.debug("Invalid target address entered: {}", input);
+                addressField.focus();
+                Notifications.error(getTranslation(Transfer.NOTIFICATION__INVALID_ADDRESS, input));
+                return;
+            }
+            String targetAddress = decodedValue.get();
+
+            DataModel.Booth.Key booth = BoothSelection.get().orElseThrow();
+            LOGGER.debug("Starting data transfer to {} for {}", targetAddress, booth.boothId());
             try {
                 addressField.setVisible(false);
                 busyIndicator.open();
-                Notifications.message(
-                        "Starting data transfer to %s".formatted(addressField.getValue()));
+
+                dataExchangeClient.exchangeDataWith(targetAddress, booth);
+                LOGGER.debug(
+                        "Data transfer to {} for {} completed successfully.",
+                        targetAddress,
+                        booth.boothId());
+                Notifications.success(getTranslation(Transfer.NOTIFICATION__TRANSFER_COMPLETED));
+            } catch (Exception ex) {
+                LOGGER.error("Data transfer to {} for {} failed!", targetAddress, booth, ex);
+                Notifications.error(getTranslation(Transfer.NOTIFICATION__TRANSFER_FAILED), ex);
             } finally {
                 busyIndicator.close();
                 addressField.setVisible(true);

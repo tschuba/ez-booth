@@ -109,6 +109,7 @@ public interface TranslationKeys {
 
     interface Notifications {
         String GENERIC_ERROR_MESSAGE = "Notifications.genericError.text";
+        String COPIED_TO_CLIPBOARD__MESSAGE = "Notifications.copiedToClipboard.message";
     }
 
     interface PurchaseSummary {
@@ -178,8 +179,6 @@ public interface TranslationKeys {
     interface DataExchangeView {
         String TITLE = "DataExchangeView.title";
         String MENU_ITEM__TEXT = "DataExchangeView.menuItem.text";
-        String COPIED_TO_CLIPBOARD__NOTIFICATION =
-                "DataExchangeView.copiedToClipboard.notification";
 
         interface SelfInfo {
             String TITLE = "DataExchangeView.SelfInfoCard.title";
@@ -192,8 +191,15 @@ public interface TranslationKeys {
             String TITLE = "DataExchangeView.TransferCard.title";
             String ADDRESS_FIELD__LABEL = "DataExchangeView.TransferCard.addressFieldLabel.text";
             String TRANSFER_BUTTON__LABEL = "DataExchangeView.TransferCard.transferButton.text";
+            String TRANSFER_DESCRIPTION__TEXT = "DataExchangeView.TransferCard.description.text";
             String TRANSFER_IN_PROGRESS__TEXT =
                     "DataExchangeView.TransferCard.transferInProgress.text";
+            String NOTIFICATION__INVALID_ADDRESS =
+                    "DataExchangeView.TransferCard.notification.invalidValue";
+            String NOTIFICATION__TRANSFER_FAILED =
+                    "DataExchangeView.TransferCard.notification.transferFailed";
+            String NOTIFICATION__TRANSFER_COMPLETED =
+                    "DataExchangeView.TransferCard.notification.transferCompleted";
         }
     }
 }
