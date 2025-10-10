@@ -62,7 +62,7 @@ public class Patterns {
         private static final DataExchange INSTANCE = new DataExchange();
 
         public Support address() {
-            return () -> "^[^\\s:]+(:\\d+)?$";
+            return () -> "^[^\\s:\\/]+(:\\d+)?$";
         }
 
         public Support encodedAddress() {
