@@ -122,7 +122,7 @@ public class PurchaseLocalService implements PurchaseService {
 
     @Override
     public @NonNull Stream<DataModel.Purchase> findByBooth(@NonNull DataModel.Booth.Key booth) {
-        return purchases.findPurchasesByBooth(booth.boothId()).stream()
+        return purchases.findAllByBooth(booth.boothId()).stream()
                 .map(EntitiesMapper::entityToObject);
     }
 }

@@ -54,7 +54,7 @@ public class ChargingLocalService implements ChargingService {
 
         BigDecimal vendorItemsSum =
                 purchaseItems
-                        .findPurchaseItemsByVendor(EntitiesMapper.objectToEntity(vendor))
+                        .findAllByVendor(EntitiesMapper.objectToEntity(vendor))
                         .map(EntityModel.PurchaseItem::getPrice)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO);

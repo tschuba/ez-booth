@@ -5,14 +5,15 @@
 package tschuba.ez.booth.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tschuba.ez.booth.data.BoothRepository;
-import tschuba.ez.booth.data.RecordNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+import tschuba.ez.booth.data.*;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.model.EntitiesMapper;
 import tschuba.ez.booth.model.EntityModel;
@@ -27,10 +28,20 @@ public class BoothLocalService implements BoothService {
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(BoothLocalService.class);
 
     private final BoothRepository booths;
+    private final PurchaseRepository purchases;
+    private final PurchaseItemRepository purchaseItems;
+    private final VendorRepository vendors;
 
     @Autowired
-    public BoothLocalService(@NonNull BoothRepository booths) {
+    public BoothLocalService(
+            @NonNull BoothRepository booths,
+            @NonNull PurchaseRepository purchases,
+            @NonNull PurchaseItemRepository purchaseItems,
+            @NonNull VendorRepository vendors) {
         this.booths = booths;
+        this.purchases = purchases;
+        this.purchaseItems = purchaseItems;
+        this.vendors = vendors;
     }
 
     @Override
@@ -88,9 +99,30 @@ public class BoothLocalService implements BoothService {
     }
 
     @Override
+    @Transactional
     public void delete(@NonNull DataModel.Booth.Key booth) {
+        EntityModel.Booth.Key boothKey = EntitiesMapper.objectToEntity(booth);
         LOGGER.debug("Deleting booth: {}", booth);
-        booths.deleteById(EntitiesMapper.objectToEntity(booth));
+
+        List<EntityModel.PurchaseItem.Key> purchaseItemKeys =
+                purchaseItems
+                        .findAllByBooth(boothKey)
+                        .map(EntityModel.PurchaseItem::getKey)
+                        .toList();
+        LOGGER.debug("Deleting {} PurchaseItem(s) of booth: {}", purchaseItemKeys.size(), boothKey);
+        purchaseItems.deleteAllByIdInBatch(purchaseItemKeys);
+
+        List<EntityModel.Purchase.Key> purchaseKeys =
+                purchases.findAllByBooth(boothKey).map(EntityModel.Purchase::getKey).toList();
+        LOGGER.debug("Deleting {} Purchase(s) of booth: {}", purchaseKeys.size(), boothKey);
+        purchases.deleteAllByIdInBatch(purchaseKeys);
+
+        List<EntityModel.Vendor.Key> vendorKeys =
+                vendors.findAllByBooth(boothKey).stream().map(EntityModel.Vendor::getKey).toList();
+        LOGGER.debug("Deleting {} Vendor(s) of booth: {}", vendorKeys.size(), boothKey);
+        vendors.deleteAllByIdInBatch(vendorKeys);
+
+        booths.deleteById(boothKey);
         LOGGER.debug("Booth deleted: {}", booth);
     }
 }

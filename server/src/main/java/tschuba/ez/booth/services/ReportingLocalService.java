@@ -76,9 +76,7 @@ public class ReportingLocalService implements ReportingService {
                                                 "Vendor not found: " + vendorKey)));
 
         List<EntityModel.PurchaseItem> vendorItems =
-                purchaseItems
-                        .findPurchaseItemsByVendor(EntitiesMapper.objectToEntity(vendorKey))
-                        .toList();
+                purchaseItems.findAllByVendor(EntitiesMapper.objectToEntity(vendorKey)).toList();
         BigDecimal vendorItemsSum =
                 vendorItems.stream()
                         .map(EntityModel.PurchaseItem::getPrice)
@@ -129,7 +127,10 @@ public class ReportingLocalService implements ReportingService {
         }
 
         DataModel.Vendor.Key firstVendor = vendors[0];
-        String reportFileName = (vendors.length == 1) ? VendorReportTemplate.reportFileName(firstVendor) : VendorReportTemplate.reportFileName(firstVendor.booth());
+        String reportFileName =
+                (vendors.length == 1)
+                        ? VendorReportTemplate.reportFileName(firstVendor)
+                        : VendorReportTemplate.reportFileName(firstVendor.booth());
         Reports.Target reportTarget = Reports.Target.of(reportFileName, reportingConfig);
         Path reportFilePath = reportTarget.absolute();
         Path reportOutputPath = reportFilePath.getParent();

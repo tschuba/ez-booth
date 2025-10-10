@@ -205,7 +205,7 @@ public class DataLocalService implements DataService {
         LOGGER.debug("Found vendors: {}", vendorList);
 
         List<DataModel.Purchase> purchaseList =
-                purchases.findPurchasesByBooth(boothKey.boothId()).stream()
+                purchases.findAllByBooth(boothKey.boothId()).stream()
                         .map(EntitiesMapper::entityToObject)
                         .toList();
         LOGGER.debug("Found purchases: {}", purchaseList);
