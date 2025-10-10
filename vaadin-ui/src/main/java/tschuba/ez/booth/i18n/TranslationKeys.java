@@ -130,7 +130,7 @@ public interface TranslationKeys {
         String MENU_ITEM__TEXT = "CheckoutView.menuItem.title";
         String TITLE = "CheckoutView.title";
         String PURCHASE_GRID__HEADER__DATE_TIME = "CheckoutView.purchaseGrid.header.dateTime";
-        String PURCHASE_GRID__HEADER__VALUE = "CheckoutView.purchaseGrid.header.byteValue";
+        String PURCHASE_GRID__HEADER__VALUE = "CheckoutView.purchaseGrid.header.value";
         String PURCHASE_GRID__HEADER__ID = "CheckoutView.purchaseGrid.header.id";
         String BUTTON_PRINT_RECEIPT__TOOLTIP = "CheckoutView.buttonPrintReceipt.tooltip";
         String NOTIFICATION__PURCHASE_SUBMITTED = "CheckoutView.notification.purchaseSubmitted";
