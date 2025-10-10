@@ -9,6 +9,7 @@
     "app.title": "Basar",
     "AppLayout.eventLink.tooltip": "Zeigt das aktuell ausgewählte Ereignis. Klicken öffnet die Ansicht zum Erstellen eines neuen Ereignisses oder Wechsel zu einem anderen bestehenden Ereignis.",
     "AppLayout.toggleThemeButton.tooltip": "Umschalten zwischen hellem und dunklem Modus",
+    "EntryView.title": "Legen wir los!",
     "CheckoutItemForm.vendorField.label": "Verkäufernummer",
     "CheckoutItemForm.vendorField.placeholder": "Verkäufernummer...",
     "CheckoutItemForm.vendorField.tooltip": "Nummer des Verkäufers",
@@ -129,6 +130,6 @@
     "DataExchangeView.TransferCard.notification.transferCompleted": "Datenübertragung erfolgreich abgeschlossen",
     "Notifications.genericError.text": "Es ist ein Fehler aufgetreten!",
     "Notifications.copiedToClipboard.message": "Wert wurde in die Zwischenablage kopiert",
-    "EntryView.title": "Legen wir los!"
+    "Common.or": "oder"
   }
 }

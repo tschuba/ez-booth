@@ -6,7 +6,6 @@ package tschuba.ez.booth.ui.views;
 
 import static org.vaadin.lineawesome.LineAwesomeIcon.PLAY_SOLID;
 import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.ADDRESS_LABEL__TEXT;
-import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.SHORT_ADDRESS_LABEL__TEXT;
 
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.AttachEvent;
@@ -26,6 +25,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.popover.Popover;
 import com.vaadin.flow.component.popover.PopoverPosition;
 import com.vaadin.flow.component.progressbar.ProgressBar;
+import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import tschuba.ez.booth.Try;
+import tschuba.ez.booth.i18n.TranslationKeys.Common;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.Transfer;
 import tschuba.ez.booth.model.DataModel;
@@ -87,9 +88,13 @@ public class DataExchangeView extends OneColumnLayout {
             HorizontalLayout addressLayout =
                     new HorizontalLayout(Alignment.CENTER, addressLabel, address);
             addressLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+            addressLayout.addClassNames(Width.FULL);
+
             HorizontalLayout shortAddressLayout =
                     new HorizontalLayout(Alignment.CENTER, shortAddressLabel, shortAddress);
             shortAddressLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+            shortAddressLayout.addClassNames(Width.FULL);
+
             VerticalLayout contentLayout = new VerticalLayout(addressLayout, shortAddressLayout);
             Spacing.spacing(contentLayout).small();
             getContent().add(contentLayout);
@@ -110,7 +115,7 @@ public class DataExchangeView extends OneColumnLayout {
             address.setText(externalGrpcAddress);
             addressLabel.setText(getTranslation(ADDRESS_LABEL__TEXT));
             shortAddress.setText(shortExternalGrpcAddress);
-            shortAddressLabel.setText(getTranslation(SHORT_ADDRESS_LABEL__TEXT));
+            shortAddressLabel.setText(getTranslation(Common.OR));
         }
     }
 
@@ -134,11 +139,13 @@ public class DataExchangeView extends OneColumnLayout {
             this.booths = booths;
             this.dataExchangeClient = dataExchangeClient;
 
+            addressField.setId("data-exchange-target");
             addressField.addClassNames(Width.FULL);
             addressField.setRequired(true);
             addressField.setRequiredIndicatorVisible(true);
             addressField.setMinLength(2);
             addressField.setAutoselect(true);
+            addressField.setAutocomplete(Autocomplete.OFF);
             addressField.setPattern(Constraints.DataExchange.Transfer.ADDRESS_PATTERN);
             addressField.addValueChangeListener(this::onAddressChange);
 

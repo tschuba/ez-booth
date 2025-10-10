@@ -5,6 +5,11 @@
 package tschuba.ez.booth.i18n;
 
 public interface TranslationKeys {
+
+    interface Common {
+        String OR = "Common.or";
+    }
+
     interface App {
         String TITLE = "app.title";
     }
