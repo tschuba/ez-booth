@@ -4,7 +4,6 @@
  */
 package tschuba.ez.booth.ui.views;
 
-import static org.vaadin.lineawesome.LineAwesomeIcon.COPY_SOLID;
 import static org.vaadin.lineawesome.LineAwesomeIcon.PLAY_SOLID;
 import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.ADDRESS_LABEL__TEXT;
 import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.SHORT_ADDRESS_LABEL__TEXT;
@@ -13,13 +12,15 @@ import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.card.Card;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.NativeLabel;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.popover.Popover;
@@ -30,7 +31,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
-import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Width;
 import java.util.Optional;
 import lombok.NonNull;
@@ -64,6 +64,8 @@ public class DataExchangeView extends OneColumnLayout {
     @UIScope
     public static class SelfInfoCard extends Composite<Card> {
 
+        private static final String GRPC_CLIENT_ADDRESS = "grpc.client.booth.address";
+
         private final String grpcAddress;
 
         private final Span address = new Span();
@@ -72,7 +74,7 @@ public class DataExchangeView extends OneColumnLayout {
         private final NativeLabel shortAddressLabel = new NativeLabel();
 
         public SelfInfoCard(@NonNull Environment environment) {
-            this.grpcAddress = environment.getProperty("grpc.client.booth.address");
+            this.grpcAddress = environment.getProperty(GRPC_CLIENT_ADDRESS);
 
             Badges addressBadge = Badges.primary().contrast();
 
@@ -82,11 +84,15 @@ public class DataExchangeView extends OneColumnLayout {
             addressBadge.applyTo(shortAddress);
             shortAddress.addClassNames(FontWeight.BLACK);
 
-            getContent()
-                    .add(
-                            new HorizontalLayout(Alignment.CENTER, addressLabel, address),
-                            new HorizontalLayout(
-                                    Alignment.CENTER, shortAddressLabel, shortAddress));
+            HorizontalLayout addressLayout =
+                    new HorizontalLayout(Alignment.CENTER, addressLabel, address);
+            addressLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+            HorizontalLayout shortAddressLayout =
+                    new HorizontalLayout(Alignment.CENTER, shortAddressLabel, shortAddress);
+            shortAddressLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+            VerticalLayout contentLayout = new VerticalLayout(addressLayout, shortAddressLayout);
+            Spacing.spacing(contentLayout).small();
+            getContent().add(contentLayout);
         }
 
         @Override
@@ -106,19 +112,6 @@ public class DataExchangeView extends OneColumnLayout {
             shortAddress.setText(shortExternalGrpcAddress);
             shortAddressLabel.setText(getTranslation(SHORT_ADDRESS_LABEL__TEXT));
         }
-
-        private Button createCopyButton(final Span urlContainer) {
-            HorizontalLayout syncUrlShortButtonContent =
-                    new HorizontalLayout(urlContainer, COPY_SOLID.create());
-            Spacing.spacing(syncUrlShortButtonContent).xsmall();
-            Button button = new Button(syncUrlShortButtonContent);
-            button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-            button.addClassNames(Margin.NONE);
-
-            button.addClickListener(Buttons.copyToClipboard(urlContainer::getText));
-
-            return button;
-        }
     }
 
     @SpringComponent
@@ -132,7 +125,7 @@ public class DataExchangeView extends OneColumnLayout {
 
         private final TextField addressField = new TextField();
         private final Button transferButton = new Button(PLAY_SOLID.create());
-        private final Span descriptionText = new Span();
+        private final Paragraph description = new Paragraph();
         private final Popover busyIndicator = new Popover();
         private final Span busyIndicatorText = new Span();
 
@@ -165,8 +158,10 @@ public class DataExchangeView extends OneColumnLayout {
             busyIndicator.setPosition(PopoverPosition.TOP);
             busyIndicator.add(new VerticalLayout(busyIndicatorText, progressBar));
 
-            getContent().setSubtitle(descriptionText);
-            getContent().add(addressField, transferButton, busyIndicator);
+            description.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
+
+            getContent().setSubtitle(description);
+            getContent().add(new VerticalLayout(addressField, transferButton), busyIndicator);
         }
 
         @Override
@@ -175,7 +170,7 @@ public class DataExchangeView extends OneColumnLayout {
             getContent().setTitle(getTranslation(Transfer.TITLE));
             addressField.setLabel(getTranslation(Transfer.ADDRESS_FIELD__LABEL));
             transferButton.setText(getTranslation(Transfer.TRANSFER_BUTTON__LABEL));
-            descriptionText.setText(
+            description.setText(
                     currentBooth
                             .map(
                                     booth ->
