@@ -7,8 +7,8 @@ package tschuba.ez.booth.services;
 /**
  * Exception thrown for errors during data exchange operations.
  */
-public class DataExchangeExcpetion extends RuntimeException {
-    public DataExchangeExcpetion(String message) {
+public class DataExchangeException extends RuntimeException {
+    public DataExchangeException(String message) {
         super(message);
     }
 }
