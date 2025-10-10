@@ -140,12 +140,12 @@ public class AddressCodec {
         /**
          * @param ip IPv4 address in dot-decimal notation, e.g. 127.0.0.1,
          * @return the encoded IPv4 address
-         * @throws IllegalArgumentException if given byteValue is no valid IPv4 address
+         * @throws IllegalArgumentException if given ip is not a valid IPv4 address
          */
         public static byte[] encode(String ip) {
             if (!Patterns.ipAddress().v4().wholeInput().matcher(ip).find()) {
                 throw new IllegalArgumentException(
-                        "Given byteValue is no valid IPv4 address: %s".formatted(ip));
+                        "Given ip is not a valid IPv4 address: %s".formatted(ip));
             }
 
             ByteBuffer buffer = ByteBuffer.allocate(4);
