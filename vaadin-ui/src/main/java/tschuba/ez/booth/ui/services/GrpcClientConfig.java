@@ -38,10 +38,4 @@ public class GrpcClientConfig {
     ReportingServiceGrpc.ReportingServiceBlockingStub reportingClient(GrpcChannelFactory channels) {
         return ReportingServiceGrpc.newBlockingStub(channels.createChannel(CHANNEL));
     }
-
-    @Bean
-    DataExchangeServiceGrpc.DataExchangeServiceBlockingStub dataExchangeClient(
-            GrpcChannelFactory channels) {
-        return DataExchangeServiceGrpc.newBlockingStub(channels.createChannel(CHANNEL));
-    }
 }
