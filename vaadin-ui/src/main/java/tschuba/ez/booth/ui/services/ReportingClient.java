@@ -19,12 +19,11 @@ import tschuba.ez.booth.services.ReportingService;
 import tschuba.ez.booth.services.ServiceModel;
 
 @Service
-public class ReportingServiceClient implements ReportingService {
+public class ReportingClient implements ReportingService {
     private final ReportingServiceGrpc.ReportingServiceBlockingStub client;
 
     @Autowired
-    public ReportingServiceClient(
-            @NonNull ReportingServiceGrpc.ReportingServiceBlockingStub client) {
+    public ReportingClient(@NonNull ReportingServiceGrpc.ReportingServiceBlockingStub client) {
         this.client = client;
     }
 

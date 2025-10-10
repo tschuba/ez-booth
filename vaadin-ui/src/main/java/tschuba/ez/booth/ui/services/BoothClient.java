@@ -21,12 +21,12 @@ import tschuba.ez.booth.proto.ProtoModel;
 import tschuba.ez.booth.services.BoothService;
 
 @Service
-public class BoothClientService implements BoothService {
+public class BoothClient implements BoothService {
 
     private final BoothServiceGrpc.BoothServiceBlockingStub client;
 
     @Autowired
-    public BoothClientService(@NonNull BoothServiceGrpc.BoothServiceBlockingStub client) {
+    public BoothClient(@NonNull BoothServiceGrpc.BoothServiceBlockingStub client) {
         this.client = client;
     }
 

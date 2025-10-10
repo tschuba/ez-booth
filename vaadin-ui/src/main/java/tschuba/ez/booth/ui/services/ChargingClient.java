@@ -15,11 +15,11 @@ import tschuba.ez.booth.services.ChargingService;
 import tschuba.ez.booth.services.ServiceModel;
 
 @Service
-public class ChargingClientService implements ChargingService {
+public class ChargingClient implements ChargingService {
     private final ChargingServiceGrpc.ChargingServiceBlockingStub client;
 
     @Autowired
-    public ChargingClientService(@NonNull ChargingServiceGrpc.ChargingServiceBlockingStub client) {
+    public ChargingClient(@NonNull ChargingServiceGrpc.ChargingServiceBlockingStub client) {
         this.client = client;
     }
 
