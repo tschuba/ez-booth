@@ -25,7 +25,7 @@ public class AppLayoutWithMenu extends CustomAppLayout {
                 booths,
                 List.of(
                         MainMenuItem.create(
-                                I18N.textKey(TranslationKeys.EventSelectionView.MENU_ITEM__TEXT),
+                                I18N.textKey(TranslationKeys.BoothSelectionView.MENU_ITEM__TEXT),
                                 STORE_SOLID.create(),
                                 BoothSelectionView.class),
                         MainMenuItem.create(

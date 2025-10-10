@@ -6,7 +6,7 @@ package tschuba.ez.booth.ui.layouts.app;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 import static tschuba.ez.booth.i18n.TranslationKeys.App.TITLE;
-import static tschuba.ez.booth.i18n.TranslationKeys.AppLayout.EVENT_LINK__TOOLTIP_TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.AppLayout.BOOTH_LINK__TOOLTIP_TEXT;
 import static tschuba.ez.booth.i18n.TranslationKeys.AppLayout.TOGGLE_THEME_BUTTON__TOOLTIP_TEXT;
 
 import com.vaadin.flow.component.*;
@@ -131,10 +131,10 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
                     Tooltip.forComponent(boothDetailsButton)
                             .setText(
                                     getTranslation(
-                                            TranslationKeys.EventSelectionView.INFO_BUTTON__TEXT));
+                                            TranslationKeys.BoothSelectionView.INFO_BUTTON__TEXT));
 
                     Tooltip.forComponent(eventLink)
-                            .withText(getTranslation(EVENT_LINK__TOOLTIP_TEXT))
+                            .withText(getTranslation(BOOTH_LINK__TOOLTIP_TEXT))
                             .withPosition(Tooltip.TooltipPosition.END_BOTTOM);
 
                     topBar.add(eventLink, boothDetailsButton);

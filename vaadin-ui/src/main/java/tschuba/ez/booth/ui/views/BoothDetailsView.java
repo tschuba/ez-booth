@@ -6,7 +6,7 @@ package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.component.button.ButtonVariant.*;
 import static java.util.Optional.empty;
-import static tschuba.ez.booth.i18n.TranslationKeys.EventDetailsView.*;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.*;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
@@ -107,7 +107,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                                 DataModel.Booth closedBooth = boothService.close(boothToClose);
                                 updateView(closedBooth);
                             } catch (Exception ex) {
-                                Notifications.error(CLOSE_EVENT_FAILED__MESSAGE, ex);
+                                Notifications.error(CLOSE_BOOTH_FAILED__MESSAGE, ex);
                             }
                         }));
         Tooltip.forComponent(closeButton).setText(getTranslation(CLOSE_BUTTON__TEXT));
@@ -124,7 +124,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                                 DataModel.Booth openedBooth = boothService.open(boothToOpen);
                                 updateView(openedBooth);
                             } catch (Exception ex) {
-                                Notifications.error(OPEN_EVENT_FAILED__MESSAGE, ex);
+                                Notifications.error(OPEN_BOOTH_FAILED__MESSAGE, ex);
                             }
                         }));
         Tooltip.forComponent(openButton).setText(getTranslation(OPEN_BUTTON__TEXT));
@@ -141,7 +141,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                         BoothSelection.deleted(boothToDelete);
                         NavigateTo.view(BoothSelectionView.class).currentWindow();
                     } catch (Exception ex) {
-                        Notifications.error(DELETE_EVENT_FAILED__MESSAGE, ex);
+                        Notifications.error(DELETE_BOOTH_FAILED__MESSAGE, ex);
                     }
                 });
 
@@ -189,7 +189,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
         if (eventId.isEmpty()) {
             String message =
                     getTranslation(
-                            TranslationKeys.EventDetailsView.NOTIFICATION__ILLEGAL_ARGUMENTS);
+                            TranslationKeys.BoothDetailsView.NOTIFICATION__ILLEGAL_ARGUMENTS);
             Notifications.error(message);
             return;
         }

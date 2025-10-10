@@ -4,7 +4,7 @@
  */
 package tschuba.ez.booth.ui.components.event;
 
-import static tschuba.ez.booth.i18n.TranslationKeys.UpsertEventDialog.*;
+import static tschuba.ez.booth.i18n.TranslationKeys.UpsertBoothDialog.*;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;

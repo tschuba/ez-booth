@@ -15,7 +15,7 @@ public interface TranslationKeys {
     }
 
     interface AppLayout {
-        String EVENT_LINK__TOOLTIP_TEXT = "AppLayout.eventLink.tooltip";
+        String BOOTH_LINK__TOOLTIP_TEXT = "AppLayout.boothLink.tooltip";
         String TOGGLE_THEME_BUTTON__TOOLTIP_TEXT = "AppLayout.toggleThemeButton.tooltip";
     }
 
@@ -33,73 +33,73 @@ public interface TranslationKeys {
         String FINISH_BUTTON__TEXT = "CheckoutKeyPad.finishButton.text";
     }
 
-    interface UpsertEventDialog {
-        String TITLE = "UpsertEventDialog.title";
-        String SAVE_BUTTON__TEXT = "UpsertEventDialog.saveButton.text";
-        String CANCEL_BUTTON__TEXT = "UpsertEventDialog.cancelButton.text";
-        String NOTIFICATION__SAVE_EVENT_FAILED = "UpsertEventDialog.notification.saveEventFailed";
+    interface UpsertBoothDialog {
+        String TITLE = "UpsertBoothDialog.title";
+        String SAVE_BUTTON__TEXT = "UpsertBoothDialog.saveButton.text";
+        String CANCEL_BUTTON__TEXT = "UpsertBoothDialog.cancelButton.text";
+        String NOTIFICATION__SAVE_BOOTH_FAILED = "UpsertBoothDialog.notification.saveBoothFailed";
     }
 
-    interface UpsertEventForm {
-        String DESCRIPTION_FIELD__LABEL = "UpsertEventForm.descriptionField.label";
-        String DATE_FIELD__LABEL = "UpsertEventForm.dateField.label";
-        String PARTICIPATION_FEE_FIELD__LABEL = "UpsertEventForm.participationFeeField.label";
-        String SALES_FEE_FIELD__LABEL = "UpsertEventForm.salesFeeField.label";
-        String FEES_ROUNDING_STEP_FIELD__LABEL = "UpsertEventForm.feesRoundingStepField.label";
+    interface UpsertBoothForm {
+        String DESCRIPTION_FIELD__LABEL = "UpsertBoothForm.descriptionField.label";
+        String DATE_FIELD__LABEL = "UpsertBoothForm.dateField.label";
+        String PARTICIPATION_FEE_FIELD__LABEL = "UpsertBoothForm.participationFeeField.label";
+        String SALES_FEE_FIELD__LABEL = "UpsertBoothForm.salesFeeField.label";
+        String FEES_ROUNDING_STEP_FIELD__LABEL = "UpsertBoothForm.feesRoundingStepField.label";
         String NOTIFICATION__INVALID_DESCRIPTION =
-                "UpsertEventForm.notification.invalidDescription";
-        String NOTIFICATION__INVALID_DATE = "UpsertEventForm.notification.invalidDate";
+                "UpsertBoothForm.notification.invalidDescription";
+        String NOTIFICATION__INVALID_DATE = "UpsertBoothForm.notification.invalidDate";
         String NOTIFICATION__INVALID_PARTICIPATION_FEE =
-                "UpsertEventForm.notification.invalidParticipationFee";
-        String NOTIFICATION__INVALID_SALES_FEE = "UpsertEventForm.notification.invalidSalesFee";
+                "UpsertBoothForm.notification.invalidParticipationFee";
+        String NOTIFICATION__INVALID_SALES_FEE = "UpsertBoothForm.notification.invalidSalesFee";
         String NOTIFICATION__INVALID_FEES_ROUNDING_STEP =
-                "UpsertEventForm.notification.invalidFeesRoundingStep";
+                "UpsertBoothForm.notification.invalidFeesRoundingStep";
     }
 
-    interface EventSelection {
-        String NOTIFICATION__NO_EVENT_SELECTED = "EventSelection.notification.noEventSelected";
+    interface BoothSelection {
+        String NOTIFICATION__NO_BOOTH_SELECTED = "BoothSelection.notification.noBoothSelected";
     }
 
-    interface EventSelectionView {
-        String MENU_ITEM__TEXT = "EventSelectionView.menuItem.text";
-        String TITLE = "EventSelectionView.title";
-        String CREATE_BUTTON__TEXT = "EventSelectionView.createButton.text";
-        String EDIT_BUTTON__TEXT = "EventSelectionView.editButton.text";
-        String SELECT_BUTTON__TEXT = "EventSelectionView.selectButton.text";
-        String INFO_BUTTON__TEXT = "EventSelectionView.infoButton.text";
-        String CLOSE_BUTTON__TEXT = "EventSelectionView.closeButton.text";
-        String OPEN_BUTTON__TEXT = "EventSelectionView.openButton.text";
-        String DELETE_BUTTON__TEXT = "EventSelectionView.deleteButton.text";
-        String DELETE_BUTTON_DISABLED__TEXT = "EventSelectionView.deleteButton.disabled.text";
-        String CLOSE_EVENT_FAILED__MESSAGE = "EventSelectionView.closeEventFailed.message";
-        String OPEN_EVENT_FAILED__MESSAGE = "EventSelectionView.openEventFailed.message";
-        String DELETE_EVENT_FAILED__MESSAGE = "EventSelectionView.deleteEventFailed.message";
+    interface BoothSelectionView {
+        String MENU_ITEM__TEXT = "BoothSelectionView.menuItem.text";
+        String TITLE = "BoothSelectionView.title";
+        String CREATE_BUTTON__TEXT = "BoothSelectionView.createButton.text";
+        String EDIT_BUTTON__TEXT = "BoothSelectionView.editButton.text";
+        String SELECT_BUTTON__TEXT = "BoothSelectionView.selectButton.text";
+        String INFO_BUTTON__TEXT = "BoothSelectionView.infoButton.text";
+        String CLOSE_BUTTON__TEXT = "BoothSelectionView.closeButton.text";
+        String OPEN_BUTTON__TEXT = "BoothSelectionView.openButton.text";
+        String DELETE_BUTTON__TEXT = "BoothSelectionView.deleteButton.text";
+        String DELETE_BUTTON_DISABLED__TEXT = "BoothSelectionView.deleteButton.disabled.text";
+        String CLOSE_BOOTH_FAILED__MESSAGE = "BoothSelectionView.closeBoothFailed.message";
+        String OPEN_BOOTH_FAILED__MESSAGE = "BoothSelectionView.openBoothFailed.message";
+        String DELETE_BOOTH_FAILED__MESSAGE = "BoothSelectionView.deleteBoothFailed.message";
     }
 
-    interface EventDetailsView {
-        String TITLE = "EventDetailsView.title";
-        String DESCRIPTION__LABEL = "EventDetailsView.description.label";
-        String DATE__LABEL = "EventDetailsView.date.label";
-        String PARTICIPATION_FEE__LABEL = "EventDetailsView.participationFee.label";
-        String SALES_FEE__LABEL = "EventDetailsView.salesFee.label";
-        String FEES_ROUNDING_STEP__LABEL = "EventDetailsView.feesRoundingStep.label";
-        String TOTAL_VENDOR_COUNT__LABEL = "EventDetailsView.totalVendorCount.label";
-        String TOTAL_PURCHASE_COUNT__LABEL = "EventDetailsView.totalPurchaseCount.label";
-        String TOTAL_ITEM_COUNT__LABEL = "EventDetailsView.totalItemCount.label";
-        String TOTAL_ITEM_SUM__LABEL = "EventDetailsView.totalItemSum.label";
-        String TOTAL_PARTICIPATION_FEE__LABEL = "EventDetailsView.totalParticipationFee.label";
-        String TOTAL_SALES_FEE__LABEL = "EventDetailsView.totalSalesFee.label";
-        String TOTAL_REVENUE__LABEL = "EventDetailsView.totalRevenue.label";
-        String NOTIFICATION__ILLEGAL_ARGUMENTS = "EventDetailsView.notification.illegalArguments";
-        String EDIT_BUTTON__TEXT = "EventDetailsView.editButton.text";
-        String EDIT_BUTTON_DISABLED__TEXT = "EventDetailsView.editButton.disabled.text";
-        String OPEN_BUTTON__TEXT = "EventDetailsView.openButton.text";
-        String CLOSE_BUTTON__TEXT = "EventDetailsView.closeButton.text";
-        String DELETE_BUTTON__TEXT = "EventDetailsView.deleteButton.text";
-        String DELETE_BUTTON_DISABLED__TEXT = "EventDetailsView.deleteButton.disabled.text";
-        String CLOSE_EVENT_FAILED__MESSAGE = "EventDetailsView.closeEventFailed.message";
-        String OPEN_EVENT_FAILED__MESSAGE = "EventDetailsView.openEventFailed.message";
-        String DELETE_EVENT_FAILED__MESSAGE = "EventDetailsView.deleteEventFailed.message";
+    interface BoothDetailsView {
+        String TITLE = "BoothDetailsView.title";
+        String DESCRIPTION__LABEL = "BoothDetailsView.description.label";
+        String DATE__LABEL = "BoothDetailsView.date.label";
+        String PARTICIPATION_FEE__LABEL = "BoothDetailsView.participationFee.label";
+        String SALES_FEE__LABEL = "BoothDetailsView.salesFee.label";
+        String FEES_ROUNDING_STEP__LABEL = "BoothDetailsView.feesRoundingStep.label";
+        String TOTAL_VENDOR_COUNT__LABEL = "BoothDetailsView.totalVendorCount.label";
+        String TOTAL_PURCHASE_COUNT__LABEL = "BoothDetailsView.totalPurchaseCount.label";
+        String TOTAL_ITEM_COUNT__LABEL = "BoothDetailsView.totalItemCount.label";
+        String TOTAL_ITEM_SUM__LABEL = "BoothDetailsView.totalItemSum.label";
+        String TOTAL_PARTICIPATION_FEE__LABEL = "BoothDetailsView.totalParticipationFee.label";
+        String TOTAL_SALES_FEE__LABEL = "BoothDetailsView.totalSalesFee.label";
+        String TOTAL_REVENUE__LABEL = "BoothDetailsView.totalRevenue.label";
+        String NOTIFICATION__ILLEGAL_ARGUMENTS = "BoothDetailsView.notification.illegalArguments";
+        String EDIT_BUTTON__TEXT = "BoothDetailsView.editButton.text";
+        String EDIT_BUTTON_DISABLED__TEXT = "BoothDetailsView.editButton.disabled.text";
+        String OPEN_BUTTON__TEXT = "BoothDetailsView.openButton.text";
+        String CLOSE_BUTTON__TEXT = "BoothDetailsView.closeButton.text";
+        String DELETE_BUTTON__TEXT = "BoothDetailsView.deleteButton.text";
+        String DELETE_BUTTON_DISABLED__TEXT = "BoothDetailsView.deleteButton.disabled.text";
+        String CLOSE_BOOTH_FAILED__MESSAGE = "BoothDetailsView.closeBoothFailed.message";
+        String OPEN_BOOTH_FAILED__MESSAGE = "BoothDetailsView.openBoothFailed.message";
+        String DELETE_BOOTH_FAILED__MESSAGE = "BoothDetailsView.deleteBoothFailed.message";
     }
 
     interface Vendor {

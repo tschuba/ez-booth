@@ -5,7 +5,7 @@
 package tschuba.ez.booth.ui.components.event;
 
 import static java.math.BigDecimal.ZERO;
-import static tschuba.ez.booth.i18n.TranslationKeys.UpsertEventForm.*;
+import static tschuba.ez.booth.i18n.TranslationKeys.UpsertBoothForm.*;
 
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.datepicker.DatePicker;
