@@ -105,4 +105,6 @@ message ExchangeSubscription {
 
 service DataExchangeService {
   rpc SyncData(ExchangeData) returns (ExchangeData);
+  rpc ExportData(BoothKey) returns (ExchangeData);
+  rpc MergeData(ExchangeData) returns (google.protobuf.Empty);
 }

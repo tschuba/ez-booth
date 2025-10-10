@@ -34,4 +34,14 @@ public class DataExchangeLocalService implements DataExchangeService {
         LOGGER.debug("Export data: {}", exportData);
         return exportData;
     }
+
+    @Override
+    public @NonNull ServiceModel.ExchangeData export(DataModel.Booth.@NonNull Key booth) {
+        return dataService.export(booth);
+    }
+
+    @Override
+    public void merge(ServiceModel.@NonNull ExchangeData data) {
+        dataService.merge(data);
+    }
 }
