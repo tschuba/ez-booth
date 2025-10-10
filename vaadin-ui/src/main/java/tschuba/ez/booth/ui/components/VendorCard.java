@@ -18,56 +18,56 @@ import tschuba.ez.booth.ui.renderer.VendorRenderer.Format;
 
 @Getter
 public class VendorCard extends Div implements Selectable {
-    private final DataModel.Vendor vendor;
-    private final Span nameSpan;
-    private final Avatar avatar;
-    private boolean selected;
+  private final DataModel.Vendor vendor;
+  private final Span nameSpan;
+  private final Avatar avatar;
+  private boolean selected;
 
-    public VendorCard(DataModel.Vendor vendor) {
-        this.vendor = vendor;
-        addClassNames(
-                Display.FLEX,
-                AlignItems.CENTER,
-                JustifyContent.BETWEEN,
-                Padding.SMALL,
-                BorderRadius.MEDIUM);
+  public VendorCard(DataModel.Vendor vendor) {
+    this.vendor = vendor;
+    addClassNames(
+        Display.FLEX,
+        AlignItems.CENTER,
+        JustifyContent.BETWEEN,
+        Padding.SMALL,
+        BorderRadius.MEDIUM);
 
-        avatar = new Avatar();
-        avatar.addThemeVariants(AvatarVariant.LUMO_LARGE);
-        avatar.addClassNames(Margin.Right.MEDIUM);
-        String vendorId = vendor.key().vendorId();
-        // avatar.setColorIndex(Integer.remainderUnsigned(vendorId, 7));
+    avatar = new Avatar();
+    avatar.addThemeVariants(AvatarVariant.LUMO_LARGE);
+    avatar.addClassNames(Margin.Right.MEDIUM);
+    String vendorId = vendor.key().vendorId();
+    // avatar.setColorIndex(Integer.remainderUnsigned(vendorId, 7));
 
-        nameSpan = new Span();
+    nameSpan = new Span();
 
-        Div contentContainer = new Div(avatar, nameSpan);
-        contentContainer.addClassNames(
-                Display.FLEX, AlignItems.CENTER, JustifyContent.START, BorderRadius.MEDIUM);
+    Div contentContainer = new Div(avatar, nameSpan);
+    contentContainer.addClassNames(
+        Display.FLEX, AlignItems.CENTER, JustifyContent.START, BorderRadius.MEDIUM);
 
-        add(contentContainer);
-    }
+    add(contentContainer);
+  }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        super.onAttach(attachEvent);
+  @Override
+  protected void onAttach(AttachEvent attachEvent) {
+    super.onAttach(attachEvent);
 
-        VendorRenderer vendorRenderer = VendorRenderer.of(attachEvent.getUI());
-        DataModel.Vendor.Key key = vendor.key();
+    VendorRenderer vendorRenderer = VendorRenderer.of(attachEvent.getUI());
+    DataModel.Vendor.Key key = vendor.key();
 
-        nameSpan.setText(vendorRenderer.keyToString(Format.Long, key));
+    nameSpan.setText(vendorRenderer.keyToString(Format.Long, key));
 
-        String abbreviation = vendorRenderer.keyToString(Format.Short, key);
-        avatar.setAbbreviation(abbreviation);
-    }
+    String abbreviation = vendorRenderer.keyToString(Format.Short, key);
+    avatar.setAbbreviation(abbreviation);
+  }
 
-    public void select() {
-        selected = true;
-        Selectable.super.select();
-    }
+  public void select() {
+    selected = true;
+    Selectable.super.select();
+  }
 
-    @Override
-    public void unselect() {
-        selected = false;
-        Selectable.super.unselect();
-    }
+  @Override
+  public void unselect() {
+    selected = false;
+    Selectable.super.unselect();
+  }
 }

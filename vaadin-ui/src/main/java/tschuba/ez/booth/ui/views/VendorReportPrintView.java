@@ -22,47 +22,47 @@ import tschuba.ez.booth.ui.layouts.BaseLayout;
 import tschuba.ez.booth.ui.util.*;
 
 @Route(
-        value =
-                "reports/vendor/print/:"
-                        + Routing.Parameters.ROUTE_PARAM__BOOTH_ID
-                        + "/:"
-                        + Routing.Parameters.ROUTE_PARAM__VENDOR_ID)
+    value =
+        "reports/vendor/print/:"
+            + Routing.Parameters.ROUTE_PARAM__BOOTH_ID
+            + "/:"
+            + Routing.Parameters.ROUTE_PARAM__VENDOR_ID)
 @SpringComponent
 @UIScope
 public class VendorReportPrintView extends BaseLayout implements BeforeEnterObserver {
-    private final ReportingService reportingService;
+  private final ReportingService reportingService;
 
-    public VendorReportPrintView(@NonNull ReportingService reportingService) {
-        this.reportingService = reportingService;
+  public VendorReportPrintView(@NonNull ReportingService reportingService) {
+    this.reportingService = reportingService;
 
-        setTitle(getTranslation(TITLE));
+    setTitle(getTranslation(TITLE));
+  }
+
+  @Override
+  public void beforeEnter(BeforeEnterEvent viewEvent) {
+    Optional<DataModel.Vendor.Key> parameter =
+        Routing.Parameters.parser(viewEvent.getRouteParameters()).vendorKey();
+    if (parameter.isEmpty()) {
+      String message = getTranslation(NOTIFICATION__ILLEGAL_ARGUMENTS);
+      Notifications.error(message);
+      return;
     }
 
-    @Override
-    public void beforeEnter(BeforeEnterEvent viewEvent) {
-        Optional<DataModel.Vendor.Key> parameter =
-                Routing.Parameters.parser(viewEvent.getRouteParameters()).vendorKey();
-        if (parameter.isEmpty()) {
-            String message = getTranslation(NOTIFICATION__ILLEGAL_ARGUMENTS);
-            Notifications.error(message);
-            return;
-        }
-
-        DataModel.Vendor.Key vendor = parameter.get();
-        URI reportUrl;
-        try {
-            reportUrl = reportingService.generateVendorReport(vendor);
-        } catch (ReportingException ex) {
-            String message = getTranslation(NOTIFICATION__REPORT_GENERATION_FAILED);
-            Notifications.error(message, ex);
-            return;
-        }
-
-        NavigateTo.uri(reportUrl).currentWindow();
+    DataModel.Vendor.Key vendor = parameter.get();
+    URI reportUrl;
+    try {
+      reportUrl = reportingService.generateVendorReport(vendor);
+    } catch (ReportingException ex) {
+      String message = getTranslation(NOTIFICATION__REPORT_GENERATION_FAILED);
+      Notifications.error(message, ex);
+      return;
     }
 
-    public static void newWindowFor(DataModel.Vendor.Key vendorKey) {
-        RouteParameters routeParameters = Routing.Parameters.builder().vendor(vendorKey).build();
-        NavigateTo.view(VendorReportPrintView.class, routeParameters).newWindow();
-    }
+    NavigateTo.uri(reportUrl).currentWindow();
+  }
+
+  public static void newWindowFor(DataModel.Vendor.Key vendorKey) {
+    RouteParameters routeParameters = Routing.Parameters.builder().vendor(vendorKey).build();
+    NavigateTo.view(VendorReportPrintView.class, routeParameters).newWindow();
+  }
 }

@@ -13,33 +13,33 @@ import java.util.Optional;
 import tschuba.ez.booth.model.DataModel;
 
 public class VendorRenderer extends HasUI {
-    public enum Format {
-        Short,
-        Long
-    }
+  public enum Format {
+    Short,
+    Long
+  }
 
-    public VendorRenderer(UI ui) {
-        super(ui);
-    }
+  public VendorRenderer(UI ui) {
+    super(ui);
+  }
 
-    /**
-     * @deprecated use {@link #of(UI)} instead
-     */
-    @Deprecated
-    public static VendorRenderer of(Optional<UI> ui) {
-        return of(ui, VendorRenderer::new);
-    }
+  /**
+   * @deprecated use {@link #of(UI)} instead
+   */
+  @Deprecated
+  public static VendorRenderer of(Optional<UI> ui) {
+    return of(ui, VendorRenderer::new);
+  }
 
-    public static VendorRenderer of(UI ui) {
-        return of(Optional.ofNullable(ui), VendorRenderer::new);
-    }
+  public static VendorRenderer of(UI ui) {
+    return of(Optional.ofNullable(ui), VendorRenderer::new);
+  }
 
-    public ValueProvider<DataModel.Vendor.Key, String> keyToString(Format format) {
-        String translationKey = (format == Format.Short) ? ID__FORMAT_SHORT : ID__FORMAT_LONG;
-        return vendorKey -> getUi().getTranslation(translationKey, vendorKey.vendorId());
-    }
+  public ValueProvider<DataModel.Vendor.Key, String> keyToString(Format format) {
+    String translationKey = (format == Format.Short) ? ID__FORMAT_SHORT : ID__FORMAT_LONG;
+    return vendorKey -> getUi().getTranslation(translationKey, vendorKey.vendorId());
+  }
 
-    public String keyToString(Format format, DataModel.Vendor.Key vendor) {
-        return keyToString(format).apply(vendor);
-    }
+  public String keyToString(Format format, DataModel.Vendor.Key vendor) {
+    return keyToString(format).apply(vendor);
+  }
 }

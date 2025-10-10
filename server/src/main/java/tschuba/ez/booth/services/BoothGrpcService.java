@@ -26,100 +26,100 @@ import tschuba.ez.booth.proto.ProtoModel;
 @GrpcService
 public class BoothGrpcService extends BoothServiceGrpc.BoothServiceImplBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BoothGrpcService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BoothGrpcService.class);
 
-    private static final Function<StreamObserver<ProtoModel.Booth>, Consumer<DataModel.Booth>>
-            BOOTH_ITEM_RECEIVER_FACTORY =
-                    responseObserver ->
-                            booth -> {
-                                ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
-                                LOGGER.debug("Returning booth: {}", boothMsg);
-                                responseObserver.onNext(boothMsg);
-                            };
+  private static final Function<StreamObserver<ProtoModel.Booth>, Consumer<DataModel.Booth>>
+      BOOTH_ITEM_RECEIVER_FACTORY =
+          responseObserver ->
+              booth -> {
+                ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
+                LOGGER.debug("Returning booth: {}", boothMsg);
+                responseObserver.onNext(boothMsg);
+              };
 
-    private final BoothLocalService localService;
+  private final BoothLocalService localService;
 
-    @Autowired
-    BoothGrpcService(@NonNull BoothLocalService localService) {
-        this.localService = localService;
+  @Autowired
+  BoothGrpcService(@NonNull BoothLocalService localService) {
+    this.localService = localService;
+  }
+
+  @Override
+  public void saveBooth(ProtoModel.Booth request, StreamObserver<Empty> responseObserver) {
+    try {
+      DataModel.Booth booth = ProtoMapper.messageToObject(request);
+      localService.saveBooth(booth);
+      responseObserver.onNext(Empty.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (Exception ex) {
+      responseObserver.onError(ex);
     }
+  }
 
-    @Override
-    public void saveBooth(ProtoModel.Booth request, StreamObserver<Empty> responseObserver) {
-        try {
-            DataModel.Booth booth = ProtoMapper.messageToObject(request);
-            localService.saveBooth(booth);
-            responseObserver.onNext(Empty.getDefaultInstance());
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            responseObserver.onError(ex);
-        }
+  @Override
+  public void getAllBooths(Empty request, StreamObserver<ProtoModel.Booth> responseObserver) {
+    Consumer<DataModel.Booth> boothItemReceiver =
+        BOOTH_ITEM_RECEIVER_FACTORY.apply(responseObserver);
+    try {
+      Stream<DataModel.Booth> allBooths = localService.findAll();
+      allBooths.forEach(boothItemReceiver);
+      responseObserver.onCompleted();
+    } catch (Exception ex) {
+      responseObserver.onError(ex);
     }
+  }
 
-    @Override
-    public void getAllBooths(Empty request, StreamObserver<ProtoModel.Booth> responseObserver) {
-        Consumer<DataModel.Booth> boothItemReceiver =
-                BOOTH_ITEM_RECEIVER_FACTORY.apply(responseObserver);
-        try {
-            Stream<DataModel.Booth> allBooths = localService.findAll();
-            allBooths.forEach(boothItemReceiver);
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            responseObserver.onError(ex);
-        }
+  @Override
+  public void getBooth(
+      ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
+    Consumer<DataModel.Booth> boothItemReceiver =
+        BOOTH_ITEM_RECEIVER_FACTORY.apply(responseObserver);
+    try {
+      DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
+      localService.findById(key).ifPresent(boothItemReceiver);
+      responseObserver.onCompleted();
+    } catch (Exception ex) {
+      responseObserver.onError(ex);
     }
+  }
 
-    @Override
-    public void getBooth(
-            ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
-        Consumer<DataModel.Booth> boothItemReceiver =
-                BOOTH_ITEM_RECEIVER_FACTORY.apply(responseObserver);
-        try {
-            DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
-            localService.findById(key).ifPresent(boothItemReceiver);
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            responseObserver.onError(ex);
-        }
+  @Override
+  public void closeBooth(
+      ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
+    try {
+      DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
+      DataModel.Booth booth = localService.close(key);
+      ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
+      responseObserver.onNext(boothMsg);
+      responseObserver.onCompleted();
+    } catch (Exception ex) {
+      responseObserver.onError(ex);
     }
+  }
 
-    @Override
-    public void closeBooth(
-            ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
-        try {
-            DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
-            DataModel.Booth booth = localService.close(key);
-            ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
-            responseObserver.onNext(boothMsg);
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            responseObserver.onError(ex);
-        }
+  @Override
+  public void openBooth(
+      ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
+    try {
+      DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
+      DataModel.Booth booth = localService.open(key);
+      ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
+      responseObserver.onNext(boothMsg);
+      responseObserver.onCompleted();
+    } catch (Exception ex) {
+      responseObserver.onError(ex);
     }
+  }
 
-    @Override
-    public void openBooth(
-            ProtoModel.BoothKey request, StreamObserver<ProtoModel.Booth> responseObserver) {
-        try {
-            DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
-            DataModel.Booth booth = localService.open(key);
-            ProtoModel.Booth boothMsg = ProtoMapper.objectToMessage(booth);
-            responseObserver.onNext(boothMsg);
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            responseObserver.onError(ex);
-        }
+  @Override
+  public void deleteBooth(ProtoModel.BoothKey request, StreamObserver<Empty> responseObserver) {
+    try {
+      DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
+      localService.delete(key);
+      responseObserver.onNext(Empty.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (Exception ex) {
+      responseObserver.onError(ex);
     }
-
-    @Override
-    public void deleteBooth(ProtoModel.BoothKey request, StreamObserver<Empty> responseObserver) {
-        try {
-            DataModel.Booth.Key key = ProtoMapper.messageToObject(request);
-            localService.delete(key);
-            responseObserver.onNext(Empty.getDefaultInstance());
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            responseObserver.onError(ex);
-        }
-    }
+  }
 }

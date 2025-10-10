@@ -18,40 +18,40 @@ import tschuba.ez.booth.ui.util.Icons;
 
 public class MainMenuItem extends Tab {
 
-    private final Span text;
-    @Getter private final Class<? extends Component> view;
+  private final Span text;
+  @Getter private final Class<? extends Component> view;
 
-    public MainMenuItem(I18N.TextKey menuTitle, Component icon, Class<? extends Component> view) {
-        RouterLink routerLink = new RouterLink();
-        routerLink.addClassNames(
-                Display.FLEX,
-                Gap.XSMALL,
-                Height.MEDIUM,
-                AlignItems.CENTER,
-                Padding.Horizontal.SMALL,
-                Padding.Vertical.MEDIUM,
-                TextColor.BODY);
-        this.view = view;
-        routerLink.setRoute(this.view);
+  public MainMenuItem(I18N.TextKey menuTitle, Component icon, Class<? extends Component> view) {
+    RouterLink routerLink = new RouterLink();
+    routerLink.addClassNames(
+        Display.FLEX,
+        Gap.XSMALL,
+        Height.MEDIUM,
+        AlignItems.CENTER,
+        Padding.Horizontal.SMALL,
+        Padding.Vertical.MEDIUM,
+        TextColor.BODY);
+    this.view = view;
+    routerLink.setRoute(this.view);
 
-        String title = getTranslation(menuTitle.key());
+    String title = getTranslation(menuTitle.key());
 
-        text = new Span(title);
-        text.setVisible(false);
-        text.addClassNames(FontWeight.MEDIUM, FontSize.MEDIUM, Whitespace.NOWRAP);
-        Tooltip.forComponent(icon).withText(title);
+    text = new Span(title);
+    text.setVisible(false);
+    text.addClassNames(FontWeight.MEDIUM, FontSize.MEDIUM, Whitespace.NOWRAP);
+    Tooltip.forComponent(icon).withText(title);
 
-        routerLink.add(icon, text);
-        add(routerLink);
-    }
+    routerLink.add(icon, text);
+    add(routerLink);
+  }
 
-    public void toggleText() {
-        boolean visible = text.isVisible();
-        text.setVisible(!visible);
-    }
+  public void toggleText() {
+    boolean visible = text.isVisible();
+    text.setVisible(!visible);
+  }
 
-    public static MainMenuItem create(
-            I18N.TextKey title, SvgIcon icon, Class<? extends Component> view) {
-        return new MainMenuItem(title, Icons.large(icon), view);
-    }
+  public static MainMenuItem create(
+      I18N.TextKey title, SvgIcon icon, Class<? extends Component> view) {
+    return new MainMenuItem(title, Icons.large(icon), view);
+  }
 }

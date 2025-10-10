@@ -15,18 +15,15 @@ import org.junit.jupiter.api.Test;
  * Test class for {@link Routing.Parameters}.
  */
 class ParametersTest {
-    @Test
-    void testParserFactoryMethod() {
-        assertThatNoException()
-                .isThrownBy(
-                        () ->
-                                assertThat(Routing.Parameters.parser(mock(RouteParameters.class)))
-                                        .isNotNull());
-    }
+  @Test
+  void testParserFactoryMethod() {
+    assertThatNoException()
+        .isThrownBy(
+            () -> assertThat(Routing.Parameters.parser(mock(RouteParameters.class))).isNotNull());
+  }
 
-    @Test
-    void testBuilderFactoryMethod() {
-        assertThatNoException()
-                .isThrownBy(() -> assertThat(Routing.Parameters.builder()).isNotNull());
-    }
+  @Test
+  void testBuilderFactoryMethod() {
+    assertThatNoException().isThrownBy(() -> assertThat(Routing.Parameters.builder()).isNotNull());
+  }
 }

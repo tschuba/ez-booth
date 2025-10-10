@@ -15,19 +15,19 @@ import org.junit.jupiter.api.Test;
  * Test class for {@link Icons}.
  */
 class IconsTest {
-    @Test
-    void testLargeShouldThrowIfIconIsNull() {
-        assertThatNullPointerException()
-                .isThrownBy(() -> Icons.large(null))
-                .withMessage("icon is marked non-null but is null");
-    }
+  @Test
+  void testLargeShouldThrowIfIconIsNull() {
+    assertThatNullPointerException()
+        .isThrownBy(() -> Icons.large(null))
+        .withMessage("icon is marked non-null but is null");
+  }
 
-    @Test
-    void testLargeShouldReturnIconWithSizeSet() {
-        SvgIcon iconMock = mock(SvgIcon.class);
-        SvgIcon actualIcon = Icons.large(iconMock);
+  @Test
+  void testLargeShouldReturnIconWithSizeSet() {
+    SvgIcon iconMock = mock(SvgIcon.class);
+    SvgIcon actualIcon = Icons.large(iconMock);
 
-        assertThat(actualIcon).isEqualTo(iconMock);
-        verify(iconMock).setSize(Icons.LUMO_ICON_SIZE_L);
-    }
+    assertThat(actualIcon).isEqualTo(iconMock);
+    verify(iconMock).setSize(Icons.LUMO_ICON_SIZE_L);
+  }
 }

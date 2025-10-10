@@ -62,176 +62,171 @@ import tschuba.ez.booth.ui.util.Notifications;
 @SpringComponent
 @UIScope
 public class VendorReportView extends OneColumnLayout {
-    private static final Logger LOGGER = LoggerFactory.getLogger(VendorReportView.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(VendorReportView.class);
 
-    private static final Unit CSS_UNIT = Unit.EM;
-    private static final CssUnit MIN_HEIGHT = CssUnit.cssUnit(40, CSS_UNIT);
+  private static final Unit CSS_UNIT = Unit.EM;
+  private static final CssUnit MIN_HEIGHT = CssUnit.cssUnit(40, CSS_UNIT);
 
-    private final VendorService vendors;
-    private final ReportingService reportingService;
+  private final VendorService vendors;
+  private final ReportingService reportingService;
 
-    private final VirtualList<ServiceModel.VendorReportData> vendorList;
-    private final VirtualList<DataModel.PurchaseItem> itemList;
-    private final Button printAllButton;
-    private final TextField filterField;
-    private VendorCard selectedItem;
-    private String filterText;
+  private final VirtualList<ServiceModel.VendorReportData> vendorList;
+  private final VirtualList<DataModel.PurchaseItem> itemList;
+  private final Button printAllButton;
+  private final TextField filterField;
+  private VendorCard selectedItem;
+  private String filterText;
 
-    public VendorReportView(
-            @NonNull VendorService vendors, @NonNull ReportingService reportingService) {
-        this.vendors = vendors;
-        this.reportingService = reportingService;
+  public VendorReportView(
+      @NonNull VendorService vendors, @NonNull ReportingService reportingService) {
+    this.vendors = vendors;
+    this.reportingService = reportingService;
 
-        filterField = new TextField();
-        filterField.setClearButtonVisible(true);
-        filterField.setSuffixComponent(SEARCH_SOLID.create());
-        filterField.setValueChangeMode(TIMEOUT);
-        filterField.addValueChangeListener(this::onSearchFieldValueChange);
-        filterField.setWidth(20, CSS_UNIT);
+    filterField = new TextField();
+    filterField.setClearButtonVisible(true);
+    filterField.setSuffixComponent(SEARCH_SOLID.create());
+    filterField.setValueChangeMode(TIMEOUT);
+    filterField.addValueChangeListener(this::onSearchFieldValueChange);
+    filterField.setWidth(20, CSS_UNIT);
 
-        printAllButton = new Button(LineAwesomeIcon.STACK_OVERFLOW.create());
-        printAllButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_PRIMARY);
-        printAllButton.addClassNames(Margin.Left.LARGE);
-        printAllButton.addClickListener(this::onClickPrintAll);
+    printAllButton = new Button(LineAwesomeIcon.STACK_OVERFLOW.create());
+    printAllButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_PRIMARY);
+    printAllButton.addClassNames(Margin.Left.LARGE);
+    printAllButton.addClickListener(this::onClickPrintAll);
 
-        HorizontalLayout topBar = new HorizontalLayout();
-        topBar.addClassNames(Padding.Left.SMALL, Padding.Bottom.MEDIUM);
-        topBar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        topBar.setDefaultVerticalComponentAlignment(Alignment.CENTER);
-        topBar.add(filterField, printAllButton);
+    HorizontalLayout topBar = new HorizontalLayout();
+    topBar.addClassNames(Padding.Left.SMALL, Padding.Bottom.MEDIUM);
+    topBar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+    topBar.setDefaultVerticalComponentAlignment(Alignment.CENTER);
+    topBar.add(filterField, printAllButton);
 
-        vendorList = new VirtualList<>();
-        vendorList.setMinWidth(27, CSS_UNIT);
-        vendorList.setMinHeight(MIN_HEIGHT.getValue(), MIN_HEIGHT.getUnit());
+    vendorList = new VirtualList<>();
+    vendorList.setMinWidth(27, CSS_UNIT);
+    vendorList.setMinHeight(MIN_HEIGHT.getValue(), MIN_HEIGHT.getUnit());
 
-        itemList = new VirtualList<>();
-        itemList.setMinWidth(18, CSS_UNIT);
-        itemList.setMinHeight(MIN_HEIGHT.getValue(), MIN_HEIGHT.getUnit());
+    itemList = new VirtualList<>();
+    itemList.setMinWidth(18, CSS_UNIT);
+    itemList.setMinHeight(MIN_HEIGHT.getValue(), MIN_HEIGHT.getUnit());
 
-        HorizontalLayout listsContainer = new HorizontalLayout(vendorList, itemList);
-        VerticalLayout content = new VerticalLayout(topBar, listsContainer);
-        setContent(content);
-    }
+    HorizontalLayout listsContainer = new HorizontalLayout(vendorList, itemList);
+    VerticalLayout content = new VerticalLayout(topBar, listsContainer);
+    setContent(content);
+  }
 
-    @Override
-    protected void onAttach(AttachEvent event) {
-        super.onAttach(event);
+  @Override
+  protected void onAttach(AttachEvent event) {
+    super.onAttach(event);
 
-        setTitle(getTranslation(TITLE));
+    setTitle(getTranslation(TITLE));
 
-        filterField.setPlaceholder(
-                getTranslation(TranslationKeys.VendorReportView.FILTER_FIELD__PLACEHOLDER));
+    filterField.setPlaceholder(
+        getTranslation(TranslationKeys.VendorReportView.FILTER_FIELD__PLACEHOLDER));
 
-        Tooltip.forComponent(printAllButton)
-                .withText(getTranslation(BUTTON_PRINT_ALL_RECEIPTS__TOOLTIP));
+    Tooltip.forComponent(printAllButton)
+        .withText(getTranslation(BUTTON_PRINT_ALL_RECEIPTS__TOOLTIP));
 
-        vendorList.setRenderer(
-                new ComponentRenderer<>(
-                        vendorData -> {
-                            VendorReportCard vendorReportCard = new VendorReportCard(vendorData);
-                            vendorReportCard.addClickListener(this::onClickVendorCard);
-                            return vendorReportCard;
-                        }));
+    vendorList.setRenderer(
+        new ComponentRenderer<>(
+            vendorData -> {
+              VendorReportCard vendorReportCard = new VendorReportCard(vendorData);
+              vendorReportCard.addClickListener(this::onClickVendorCard);
+              return vendorReportCard;
+            }));
 
-        itemList.setRenderer(
-                new ComponentRenderer<>(
-                        item -> {
-                            ItemListItem listItem = new ItemListItem(item);
-                            listItem.addClassNames(Padding.Top.XSMALL, Padding.Bottom.XSMALL);
-                            return listItem;
-                        }));
+    itemList.setRenderer(
+        new ComponentRenderer<>(
+            item -> {
+              ItemListItem listItem = new ItemListItem(item);
+              listItem.addClassNames(Padding.Top.XSMALL, Padding.Bottom.XSMALL);
+              return listItem;
+            }));
 
-        updateVendorListItems();
-        updateItemListItems();
-    }
+    updateVendorListItems();
+    updateItemListItems();
+  }
 
-    private void updateVendorListItems() {
-        BoothSelection.get()
-                .ifPresent(
-                        booth -> {
-                            Stream<DataModel.Vendor> allVendors =
-                                    vendors.findByBooth(booth)
-                                            .filter(
-                                                    vendor ->
-                                                            Optional.ofNullable(filterText)
-                                                                    .map(
-                                                                            filter ->
-                                                                                    containsIgnoreCase(
-                                                                                            vendor.key()
-                                                                                                    .vendorId(),
-                                                                                            filter))
-                                                                    .orElse(true));
-                            Stream<ServiceModel.VendorReportData> vendorData =
-                                    allVendors
-                                            .parallel()
-                                            .map(
-                                                    vendor -> {
-                                                        try {
-                                                            return reportingService
-                                                                    .createVendorReportData(
-                                                                            vendor.key());
-                                                        } catch (ReportingException ex) {
-                                                            throw new RuntimeException(ex);
-                                                        }
-                                                    });
-                            vendorList.setItems(vendorData);
-                        });
-    }
-
-    private void updateItemListItems() {
-        Stream<DataModel.PurchaseItem> itemsOfReport;
-        try {
-            if (selectedItem != null) {
-                DataModel.Vendor vendor = selectedItem.getVendor();
-                ItemComparator comparator =
-                        ItemComparator.builder()
-                                .descending(ItemComparator.Field.DateTime)
-                                .ascending(ItemComparator.Field.Price)
-                                .build();
-                ServiceModel.VendorReportData reportData =
-                        reportingService.createVendorReportData(vendor.key());
-                itemsOfReport = reportData.items().stream().sorted(comparator);
-            } else {
-                itemsOfReport = Stream.empty();
-            }
-            itemList.setItems(itemsOfReport);
-        } catch (ReportingException ex) {
-            LOGGER.error("Failed to update item-list items!", ex);
-            Notifications.error(
-                    getTranslation(TranslationKeys.Notifications.GENERIC_ERROR_MESSAGE), ex);
-        }
-    }
-
-    private void onSearchFieldValueChange(ComponentValueChangeEvent<TextField, String> event) {
-        filterText = stripToNull(event.getValue());
-        if (!Objects.equals(event.getValue(), event.getOldValue())) {
-            updateVendorListItems();
-        }
-    }
-
-    private void onClickVendorCard(ClickEvent<Div> event) {
-        if (selectedItem != null) {
-            selectedItem.unselect();
-        }
-        selectedItem = (VendorCard) event.getSource();
-        updateItemListItems();
-        selectedItem.select();
-    }
-
-    private void onClickPrintAll(ClickEvent<Button> buttonClickEvent) {
-        BoothSelection.get()
-                .ifPresent(
-                        booth -> {
-                            DataModel.Vendor.Key[] allVendors =
-                                    vendors.findByBooth(booth)
-                                            .map(DataModel.Vendor::key)
-                                            .toArray(DataModel.Vendor.Key[]::new);
+  private void updateVendorListItems() {
+    BoothSelection.get()
+        .ifPresent(
+            booth -> {
+              Stream<DataModel.Vendor> allVendors =
+                  vendors
+                      .findByBooth(booth)
+                      .filter(
+                          vendor ->
+                              Optional.ofNullable(filterText)
+                                  .map(
+                                      filter -> containsIgnoreCase(vendor.key().vendorId(), filter))
+                                  .orElse(true));
+              Stream<ServiceModel.VendorReportData> vendorData =
+                  allVendors
+                      .parallel()
+                      .map(
+                          vendor -> {
                             try {
-                                URI reportUrl = reportingService.generateVendorReport(allVendors);
-                                NavigateTo.uri(reportUrl).newWindow();
+                              return reportingService.createVendorReportData(vendor.key());
                             } catch (ReportingException ex) {
-                                Notifications.error(ex.getLocalizedMessage(), ex);
+                              throw new RuntimeException(ex);
                             }
-                        });
+                          });
+              vendorList.setItems(vendorData);
+            });
+  }
+
+  private void updateItemListItems() {
+    Stream<DataModel.PurchaseItem> itemsOfReport;
+    try {
+      if (selectedItem != null) {
+        DataModel.Vendor vendor = selectedItem.getVendor();
+        ItemComparator comparator =
+            ItemComparator.builder()
+                .descending(ItemComparator.Field.DateTime)
+                .ascending(ItemComparator.Field.Price)
+                .build();
+        ServiceModel.VendorReportData reportData =
+            reportingService.createVendorReportData(vendor.key());
+        itemsOfReport = reportData.items().stream().sorted(comparator);
+      } else {
+        itemsOfReport = Stream.empty();
+      }
+      itemList.setItems(itemsOfReport);
+    } catch (ReportingException ex) {
+      LOGGER.error("Failed to update item-list items!", ex);
+      Notifications.error(getTranslation(TranslationKeys.Notifications.GENERIC_ERROR_MESSAGE), ex);
     }
+  }
+
+  private void onSearchFieldValueChange(ComponentValueChangeEvent<TextField, String> event) {
+    filterText = stripToNull(event.getValue());
+    if (!Objects.equals(event.getValue(), event.getOldValue())) {
+      updateVendorListItems();
+    }
+  }
+
+  private void onClickVendorCard(ClickEvent<Div> event) {
+    if (selectedItem != null) {
+      selectedItem.unselect();
+    }
+    selectedItem = (VendorCard) event.getSource();
+    updateItemListItems();
+    selectedItem.select();
+  }
+
+  private void onClickPrintAll(ClickEvent<Button> buttonClickEvent) {
+    BoothSelection.get()
+        .ifPresent(
+            booth -> {
+              DataModel.Vendor.Key[] allVendors =
+                  vendors
+                      .findByBooth(booth)
+                      .map(DataModel.Vendor::key)
+                      .toArray(DataModel.Vendor.Key[]::new);
+              try {
+                URI reportUrl = reportingService.generateVendorReport(allVendors);
+                NavigateTo.uri(reportUrl).newWindow();
+              } catch (ReportingException ex) {
+                Notifications.error(ex.getLocalizedMessage(), ex);
+              }
+            });
+  }
 }

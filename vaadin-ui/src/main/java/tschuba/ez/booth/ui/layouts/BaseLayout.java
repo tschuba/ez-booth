@@ -21,61 +21,57 @@ import tschuba.ez.booth.ui.util.UIUtil;
 
 public class BaseLayout extends Composite<Div> implements BeforeEnterObserver, HasDynamicTitle {
 
-    private final PageTitle title;
-    private final Div contentContainer;
-    private final HorizontalLayout titleContainer;
-    private Component content;
+  private final PageTitle title;
+  private final Div contentContainer;
+  private final HorizontalLayout titleContainer;
+  private Component content;
 
-    public BaseLayout() {
-        Div root = getContent();
-        root.addClassNames(
-                Display.FLEX,
-                FlexDirection.COLUMN,
-                Flex.GROW_NONE,
-                JustifyContent.START,
-                Height.FULL);
+  public BaseLayout() {
+    Div root = getContent();
+    root.addClassNames(
+        Display.FLEX, FlexDirection.COLUMN, Flex.GROW_NONE, JustifyContent.START, Height.FULL);
 
-        contentContainer = new Div();
-        contentContainer.addClassNames(Display.GRID, AlignItems.START, JustifyContent.CENTER);
+    contentContainer = new Div();
+    contentContainer.addClassNames(Display.GRID, AlignItems.START, JustifyContent.CENTER);
 
-        root.add(contentContainer);
+    root.add(contentContainer);
 
-        titleContainer = new HorizontalLayout(Alignment.CENTER);
-        contentContainer.add(titleContainer);
+    titleContainer = new HorizontalLayout(Alignment.CENTER);
+    contentContainer.add(titleContainer);
 
-        title = new PageTitle();
-        titleContainer.add(title);
+    title = new PageTitle();
+    titleContainer.add(title);
+  }
+
+  public void setTitle(String title) {
+    this.title.setText(title);
+  }
+
+  public void setTitle(String title, Component titleSuffix) {
+    this.titleContainer
+        .getChildren()
+        .filter(child -> !Objects.equals(child, this.title))
+        .forEach(Component::removeFromParent);
+    setTitle(title);
+    this.titleContainer.add(titleSuffix);
+  }
+
+  protected void setContent(Component content) {
+    if (this.content != null) {
+      contentContainer.replace(this.content, content);
+    } else {
+      contentContainer.add(content);
     }
+    this.content = content;
+  }
 
-    public void setTitle(String title) {
-        this.title.setText(title);
-    }
+  @Override
+  public void beforeEnter(BeforeEnterEvent event) {
+    BoothSelection.checkBeforeEnter(event, this);
+  }
 
-    public void setTitle(String title, Component titleSuffix) {
-        this.titleContainer
-                .getChildren()
-                .filter(child -> !Objects.equals(child, this.title))
-                .forEach(Component::removeFromParent);
-        setTitle(title);
-        this.titleContainer.add(titleSuffix);
-    }
-
-    protected void setContent(Component content) {
-        if (this.content != null) {
-            contentContainer.replace(this.content, content);
-        } else {
-            contentContainer.add(content);
-        }
-        this.content = content;
-    }
-
-    @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-        BoothSelection.checkBeforeEnter(event, this);
-    }
-
-    @Override
-    public String getPageTitle() {
-        return UIUtil.pageTitle(this);
-    }
+  @Override
+  public String getPageTitle() {
+    return UIUtil.pageTitle(this);
+  }
 }

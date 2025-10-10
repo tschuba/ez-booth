@@ -54,166 +54,161 @@ import tschuba.ez.booth.ui.util.*;
 @UIScope
 public class DataExchangeView extends OneColumnLayout {
 
-    public DataExchangeView(@NonNull SelfInfoCard selfInfo, @NonNull TransferCard transferCard) {
-        Main content = new Main();
-        setContent(content);
-        content.add(new HorizontalLayout(selfInfo, transferCard));
+  public DataExchangeView(@NonNull SelfInfoCard selfInfo, @NonNull TransferCard transferCard) {
+    Main content = new Main();
+    setContent(content);
+    content.add(new HorizontalLayout(selfInfo, transferCard));
+  }
+
+  @SpringComponent
+  @UIScope
+  public static class SelfInfoCard extends Composite<Card> {
+
+    private final Environment environment;
+
+    private final Span address = new Span();
+    private final NativeLabel addressLabel = new NativeLabel();
+    private final Span shortAddress = new Span();
+    private final NativeLabel shortAddressLabel = new NativeLabel();
+
+    public SelfInfoCard(@NonNull Environment environment) {
+      this.environment = environment;
+
+      Badges.highlight(address);
+      Badges.highlight(shortAddress);
+
+      HorizontalLayout addressLayout =
+          new HorizontalLayout(Alignment.CENTER, addressLabel, address);
+      addressLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+      addressLayout.addClassNames(Width.FULL);
+
+      HorizontalLayout shortAddressLayout =
+          new HorizontalLayout(Alignment.CENTER, shortAddressLabel, shortAddress);
+      shortAddressLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+      shortAddressLayout.addClassNames(Width.FULL);
+
+      VerticalLayout contentLayout = new VerticalLayout(addressLayout, shortAddressLayout);
+      Spacing.spacing(contentLayout).small();
+      getContent().add(contentLayout);
     }
 
-    @SpringComponent
-    @UIScope
-    public static class SelfInfoCard extends Composite<Card> {
+    @Override
+    protected void onAttach(AttachEvent event) {
+      String externalGrpcAddress = Server.externalGrpcAddress(environment);
+      String shortExternalGrpcAddress = AddressCodec.Exchange.encode(externalGrpcAddress);
 
-        private final Environment environment;
+      getContent().setTitle(getTranslation(SelfInfo.TITLE));
 
-        private final Span address = new Span();
-        private final NativeLabel addressLabel = new NativeLabel();
-        private final Span shortAddress = new Span();
-        private final NativeLabel shortAddressLabel = new NativeLabel();
+      address.setText(externalGrpcAddress);
+      addressLabel.setText(getTranslation(ADDRESS_LABEL__TEXT));
+      shortAddress.setText(shortExternalGrpcAddress);
+      shortAddressLabel.setText(getTranslation(Common.OR));
+    }
+  }
 
-        public SelfInfoCard(@NonNull Environment environment) {
-            this.environment = environment;
+  @SpringComponent
+  @UIScope
+  public static class TransferCard extends Composite<Card> {
 
-            Badges.highlight(address);
-            Badges.highlight(shortAddress);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransferCard.class);
 
-            HorizontalLayout addressLayout =
-                    new HorizontalLayout(Alignment.CENTER, addressLabel, address);
-            addressLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
-            addressLayout.addClassNames(Width.FULL);
+    private final BoothService booths;
+    private final DataExchangeClient dataExchangeClient;
 
-            HorizontalLayout shortAddressLayout =
-                    new HorizontalLayout(Alignment.CENTER, shortAddressLabel, shortAddress);
-            shortAddressLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
-            shortAddressLayout.addClassNames(Width.FULL);
+    private final TextField addressField = new TextField();
+    private final Button transferButton = new Button(PLAY_SOLID.create());
+    private final Paragraph description = new Paragraph();
+    private final Popover busyIndicator = new Popover();
+    private final Span busyIndicatorText = new Span();
 
-            VerticalLayout contentLayout = new VerticalLayout(addressLayout, shortAddressLayout);
-            Spacing.spacing(contentLayout).small();
-            getContent().add(contentLayout);
-        }
+    public TransferCard(
+        @NonNull BoothService booths, @NonNull DataExchangeClient dataExchangeClient) {
+      this.booths = booths;
+      this.dataExchangeClient = dataExchangeClient;
 
-        @Override
-        protected void onAttach(AttachEvent event) {
-            String externalGrpcAddress = Server.externalGrpcAddress(environment);
-            String shortExternalGrpcAddress = AddressCodec.Exchange.encode(externalGrpcAddress);
+      addressField.setId("data-exchange-target");
+      addressField.addClassNames(Width.FULL);
+      addressField.setRequired(true);
+      addressField.setRequiredIndicatorVisible(true);
+      addressField.setMinLength(2);
+      addressField.setAutoselect(true);
+      addressField.setAutocomplete(Autocomplete.OFF);
+      addressField.setPattern(Constraints.DataExchange.Transfer.ADDRESS_PATTERN);
+      addressField.addValueChangeListener(this::onAddressChange);
 
-            getContent().setTitle(getTranslation(SelfInfo.TITLE));
+      transferButton.setEnabled(false);
+      Buttons.disableUntilAfterClick(transferButton, this::onClickTransferButton);
 
-            address.setText(externalGrpcAddress);
-            addressLabel.setText(getTranslation(ADDRESS_LABEL__TEXT));
-            shortAddress.setText(shortExternalGrpcAddress);
-            shortAddressLabel.setText(getTranslation(Common.OR));
-        }
+      ProgressBar progressBar = new ProgressBar();
+      progressBar.setIndeterminate(true);
+      busyIndicator.setTarget(transferButton);
+      busyIndicator.setModal(true);
+      busyIndicator.setBackdropVisible(true);
+      busyIndicator.setOpenOnClick(false);
+      busyIndicator.setOpenOnFocus(false);
+      busyIndicator.setOpenOnHover(false);
+      busyIndicator.setCloseOnEsc(false);
+      busyIndicator.setCloseOnOutsideClick(false);
+      busyIndicator.setPosition(PopoverPosition.TOP);
+      busyIndicator.add(new VerticalLayout(busyIndicatorText, progressBar));
+
+      description.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
+
+      getContent().setSubtitle(description);
+      getContent().add(new VerticalLayout(addressField, transferButton), busyIndicator);
     }
 
-    @SpringComponent
-    @UIScope
-    public static class TransferCard extends Composite<Card> {
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+      Optional<DataModel.Booth> currentBooth = BoothSelection.get().flatMap(booths::findById);
+      getContent().setTitle(getTranslation(Transfer.TITLE));
+      addressField.setLabel(getTranslation(Transfer.ADDRESS_FIELD__LABEL));
+      transferButton.setText(getTranslation(Transfer.TRANSFER_BUTTON__LABEL));
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(TransferCard.class);
+      if (currentBooth.isEmpty()) {
+        this.getContent().setVisible(false);
+      }
 
-        private final BoothService booths;
-        private final DataExchangeClient dataExchangeClient;
-
-        private final TextField addressField = new TextField();
-        private final Button transferButton = new Button(PLAY_SOLID.create());
-        private final Paragraph description = new Paragraph();
-        private final Popover busyIndicator = new Popover();
-        private final Span busyIndicatorText = new Span();
-
-        public TransferCard(
-                @NonNull BoothService booths, @NonNull DataExchangeClient dataExchangeClient) {
-            this.booths = booths;
-            this.dataExchangeClient = dataExchangeClient;
-
-            addressField.setId("data-exchange-target");
-            addressField.addClassNames(Width.FULL);
-            addressField.setRequired(true);
-            addressField.setRequiredIndicatorVisible(true);
-            addressField.setMinLength(2);
-            addressField.setAutoselect(true);
-            addressField.setAutocomplete(Autocomplete.OFF);
-            addressField.setPattern(Constraints.DataExchange.Transfer.ADDRESS_PATTERN);
-            addressField.addValueChangeListener(this::onAddressChange);
-
-            transferButton.setEnabled(false);
-            Buttons.disableUntilAfterClick(transferButton, this::onClickTransferButton);
-
-            ProgressBar progressBar = new ProgressBar();
-            progressBar.setIndeterminate(true);
-            busyIndicator.setTarget(transferButton);
-            busyIndicator.setModal(true);
-            busyIndicator.setBackdropVisible(true);
-            busyIndicator.setOpenOnClick(false);
-            busyIndicator.setOpenOnFocus(false);
-            busyIndicator.setOpenOnHover(false);
-            busyIndicator.setCloseOnEsc(false);
-            busyIndicator.setCloseOnOutsideClick(false);
-            busyIndicator.setPosition(PopoverPosition.TOP);
-            busyIndicator.add(new VerticalLayout(busyIndicatorText, progressBar));
-
-            description.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
-
-            getContent().setSubtitle(description);
-            getContent().add(new VerticalLayout(addressField, transferButton), busyIndicator);
-        }
-
-        @Override
-        protected void onAttach(AttachEvent attachEvent) {
-            Optional<DataModel.Booth> currentBooth = BoothSelection.get().flatMap(booths::findById);
-            getContent().setTitle(getTranslation(Transfer.TITLE));
-            addressField.setLabel(getTranslation(Transfer.ADDRESS_FIELD__LABEL));
-            transferButton.setText(getTranslation(Transfer.TRANSFER_BUTTON__LABEL));
-
-            if (currentBooth.isEmpty()) {
-                this.getContent().setVisible(false);
-            }
-
-            busyIndicatorText.setText(getTranslation(Transfer.TRANSFER_IN_PROGRESS__TEXT));
-            description.setText(
-                    currentBooth
-                            .map(
-                                    booth ->
-                                            getTranslation(
-                                                    Transfer.TRANSFER_DESCRIPTION__TEXT,
-                                                    booth.description()))
-                            .orElse(""));
-        }
-
-        private void onAddressChange(ComponentValueChangeEvent<TextField, String> event) {
-            transferButton.setEnabled(!event.getSource().isInvalid());
-        }
-
-        private void onClickTransferButton(ClickEvent<Button> event) {
-            String input = addressField.getValue();
-            Try<String> decodedValue = AddressCodec.Exchange.tryDecode(input);
-            if (decodedValue.failed()) {
-                LOGGER.debug("Invalid target address entered: {}", input);
-                addressField.focus();
-                Notifications.error(getTranslation(Transfer.NOTIFICATION__INVALID_ADDRESS, input));
-                return;
-            }
-            String targetAddress = decodedValue.get();
-
-            DataModel.Booth.Key booth = BoothSelection.get().orElseThrow();
-            LOGGER.debug("Starting data transfer to {} for {}", targetAddress, booth.boothId());
-            try {
-                addressField.setVisible(false);
-                busyIndicator.open();
-
-                dataExchangeClient.exchangeDataWith(targetAddress, booth);
-                LOGGER.debug(
-                        "Data transfer to {} for {} completed successfully.",
-                        targetAddress,
-                        booth.boothId());
-                Notifications.success(getTranslation(Transfer.NOTIFICATION__TRANSFER_COMPLETED));
-            } catch (Exception ex) {
-                LOGGER.error("Data transfer to {} for {} failed!", targetAddress, booth, ex);
-                Notifications.error(getTranslation(Transfer.NOTIFICATION__TRANSFER_FAILED), ex);
-            } finally {
-                busyIndicator.close();
-                addressField.setVisible(true);
-            }
-        }
+      busyIndicatorText.setText(getTranslation(Transfer.TRANSFER_IN_PROGRESS__TEXT));
+      description.setText(
+          currentBooth
+              .map(
+                  booth -> getTranslation(Transfer.TRANSFER_DESCRIPTION__TEXT, booth.description()))
+              .orElse(""));
     }
+
+    private void onAddressChange(ComponentValueChangeEvent<TextField, String> event) {
+      transferButton.setEnabled(!event.getSource().isInvalid());
+    }
+
+    private void onClickTransferButton(ClickEvent<Button> event) {
+      String input = addressField.getValue();
+      Try<String> decodedValue = AddressCodec.Exchange.tryDecode(input);
+      if (decodedValue.failed()) {
+        LOGGER.debug("Invalid target address entered: {}", input);
+        addressField.focus();
+        Notifications.error(getTranslation(Transfer.NOTIFICATION__INVALID_ADDRESS, input));
+        return;
+      }
+      String targetAddress = decodedValue.get();
+
+      DataModel.Booth.Key booth = BoothSelection.get().orElseThrow();
+      LOGGER.debug("Starting data transfer to {} for {}", targetAddress, booth.boothId());
+      try {
+        addressField.setVisible(false);
+        busyIndicator.open();
+
+        dataExchangeClient.exchangeDataWith(targetAddress, booth);
+        LOGGER.debug(
+            "Data transfer to {} for {} completed successfully.", targetAddress, booth.boothId());
+        Notifications.success(getTranslation(Transfer.NOTIFICATION__TRANSFER_COMPLETED));
+      } catch (Exception ex) {
+        LOGGER.error("Data transfer to {} for {} failed!", targetAddress, booth, ex);
+        Notifications.error(getTranslation(Transfer.NOTIFICATION__TRANSFER_FAILED), ex);
+      } finally {
+        busyIndicator.close();
+        addressField.setVisible(true);
+      }
+    }
+  }
 }

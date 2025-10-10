@@ -8,11 +8,11 @@ package tschuba.ez.booth.services;
  * Exception indicating an error during reporting operations.
  */
 public class ReportingException extends RuntimeException {
-    public ReportingException(String message) {
-        super(message);
-    }
+  public ReportingException(String message) {
+    super(message);
+  }
 
-    public ReportingException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public ReportingException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

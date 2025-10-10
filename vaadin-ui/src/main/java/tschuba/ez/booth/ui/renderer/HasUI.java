@@ -14,9 +14,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
 public abstract class HasUI {
-    private final UI ui;
+  private final UI ui;
 
-    static <T extends HasUI> T of(Optional<UI> ui, Function<UI, T> creator) {
-        return creator.apply(ui.orElseGet(UI::getCurrent));
-    }
+  static <T extends HasUI> T of(Optional<UI> ui, Function<UI, T> creator) {
+    return creator.apply(ui.orElseGet(UI::getCurrent));
+  }
 }

@@ -10,11 +10,11 @@ import tschuba.ez.booth.model.DataModel;
 
 @Getter
 public class CreateEventFormSubmitEvent extends ComponentEvent<UpsertEventForm> {
-    private final DataModel.Booth booth;
+  private final DataModel.Booth booth;
 
-    public CreateEventFormSubmitEvent(
-            UpsertEventForm source, boolean fromClient, DataModel.Booth booth) {
-        super(source, fromClient);
-        this.booth = booth;
-    }
+  public CreateEventFormSubmitEvent(
+      UpsertEventForm source, boolean fromClient, DataModel.Booth booth) {
+    super(source, fromClient);
+    this.booth = booth;
+  }
 }

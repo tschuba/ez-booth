@@ -10,8 +10,8 @@ import tschuba.ez.booth.services.PurchaseService;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
 
 public class PurchaseGrid<F>
-        extends ModelGrid<DataModel.Purchase, ModelFilter<DataModel.Purchase, F>, F> {
-    public PurchaseGrid(PurchaseService purchaseService) {
-        super(() -> BoothSelection.get().map(purchaseService::findByBooth).orElse(Stream.empty()));
-    }
+    extends ModelGrid<DataModel.Purchase, ModelFilter<DataModel.Purchase, F>, F> {
+  public PurchaseGrid(PurchaseService purchaseService) {
+    super(() -> BoothSelection.get().map(purchaseService::findByBooth).orElse(Stream.empty()));
+  }
 }

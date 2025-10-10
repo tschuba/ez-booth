@@ -10,11 +10,11 @@ import tschuba.ez.booth.services.ServiceModel;
 
 @Getter
 public class CheckoutConfirmedEvent extends ComponentEvent<CheckoutConfirmationDialog> {
-    private final ServiceModel.Checkout checkout;
+  private final ServiceModel.Checkout checkout;
 
-    public CheckoutConfirmedEvent(
-            CheckoutConfirmationDialog source, boolean fromClient, ServiceModel.Checkout checkout) {
-        super(source, fromClient);
-        this.checkout = checkout;
-    }
+  public CheckoutConfirmedEvent(
+      CheckoutConfirmationDialog source, boolean fromClient, ServiceModel.Checkout checkout) {
+    super(source, fromClient);
+    this.checkout = checkout;
+  }
 }

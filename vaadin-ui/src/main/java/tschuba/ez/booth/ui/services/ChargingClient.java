@@ -16,25 +16,25 @@ import tschuba.ez.booth.services.ServiceModel;
 
 @Service
 public class ChargingClient implements ChargingService {
-    private final ChargingServiceGrpc.ChargingServiceBlockingStub client;
+  private final ChargingServiceGrpc.ChargingServiceBlockingStub client;
 
-    @Autowired
-    public ChargingClient(@NonNull ChargingServiceGrpc.ChargingServiceBlockingStub client) {
-        this.client = client;
-    }
+  @Autowired
+  public ChargingClient(@NonNull ChargingServiceGrpc.ChargingServiceBlockingStub client) {
+    this.client = client;
+  }
 
-    @Override
-    public @NonNull ServiceModel.ChargedFees calculateFees(DataModel.Vendor.@NonNull Key vendor) {
-        ProtoServices.ChargedFees chargedFees =
-                client.calculateFees(ProtoMapper.objectToMessage(vendor));
-        return ProtoMapper.messageToObject(chargedFees);
-    }
+  @Override
+  public @NonNull ServiceModel.ChargedFees calculateFees(DataModel.Vendor.@NonNull Key vendor) {
+    ProtoServices.ChargedFees chargedFees =
+        client.calculateFees(ProtoMapper.objectToMessage(vendor));
+    return ProtoMapper.messageToObject(chargedFees);
+  }
 
-    @Override
-    public @NonNull ServiceModel.Balance.Output calculateBalance(
-            ServiceModel.Balance.@NonNull Input input) {
-        ProtoServices.SalesBalance balance =
-                client.calculateBalance(ProtoMapper.objectToMessage(input));
-        return ProtoMapper.messageToObject(balance);
-    }
+  @Override
+  public @NonNull ServiceModel.Balance.Output calculateBalance(
+      ServiceModel.Balance.@NonNull Input input) {
+    ProtoServices.SalesBalance balance =
+        client.calculateBalance(ProtoMapper.objectToMessage(input));
+    return ProtoMapper.messageToObject(balance);
+  }
 }

@@ -13,11 +13,11 @@ import tschuba.ez.booth.model.DataModel;
  * Service interface for managing vendors.
  */
 public interface VendorService {
-    @NonNull
-    Stream<DataModel.Vendor> findByBooth(DataModel.Booth.Key booth);
+  @NonNull
+  Stream<DataModel.Vendor> findByBooth(DataModel.Booth.Key booth);
 
-    @NonNull
-    Optional<DataModel.Vendor> findById(@NonNull DataModel.Vendor.Key key);
+  @NonNull
+  Optional<DataModel.Vendor> findById(@NonNull DataModel.Vendor.Key key);
 
-    void save(@NonNull DataModel.Vendor vendor);
+  void save(@NonNull DataModel.Vendor vendor);
 }

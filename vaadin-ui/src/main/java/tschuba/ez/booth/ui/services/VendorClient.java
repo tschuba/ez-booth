@@ -22,30 +22,30 @@ import tschuba.ez.booth.services.VendorService;
 @Service
 public class VendorClient implements VendorService {
 
-    private final VendorServiceGrpc.VendorServiceBlockingStub client;
+  private final VendorServiceGrpc.VendorServiceBlockingStub client;
 
-    @Autowired
-    public VendorClient(@NonNull VendorServiceGrpc.VendorServiceBlockingStub client) {
-        this.client = client;
-    }
+  @Autowired
+  public VendorClient(@NonNull VendorServiceGrpc.VendorServiceBlockingStub client) {
+    this.client = client;
+  }
 
-    @Override
-    public @NonNull Stream<DataModel.Vendor> findByBooth(DataModel.Booth.Key booth) {
-        Iterator<ProtoModel.Vendor> vendors =
-                client.getVendorsByBooth(ProtoMapper.objectToMessage(booth));
-        return StreamSupport.stream(
-                        Spliterators.spliteratorUnknownSize(vendors, Spliterator.ORDERED), false)
-                .map(ProtoMapper::messageToObject);
-    }
+  @Override
+  public @NonNull Stream<DataModel.Vendor> findByBooth(DataModel.Booth.Key booth) {
+    Iterator<ProtoModel.Vendor> vendors =
+        client.getVendorsByBooth(ProtoMapper.objectToMessage(booth));
+    return StreamSupport.stream(
+            Spliterators.spliteratorUnknownSize(vendors, Spliterator.ORDERED), false)
+        .map(ProtoMapper::messageToObject);
+  }
 
-    @Override
-    public @NonNull Optional<DataModel.Vendor> findById(@NonNull DataModel.Vendor.Key key) {
-        ProtoModel.Vendor vendor = client.getVendorByKey(ProtoMapper.objectToMessage(key));
-        return Optional.ofNullable(vendor).map(ProtoMapper::messageToObject);
-    }
+  @Override
+  public @NonNull Optional<DataModel.Vendor> findById(@NonNull DataModel.Vendor.Key key) {
+    ProtoModel.Vendor vendor = client.getVendorByKey(ProtoMapper.objectToMessage(key));
+    return Optional.ofNullable(vendor).map(ProtoMapper::messageToObject);
+  }
 
-    @Override
-    public void save(DataModel.@NonNull Vendor vendor) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
+  @Override
+  public void save(DataModel.@NonNull Vendor vendor) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
 }

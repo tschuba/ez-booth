@@ -4,25 +4,24 @@
  */
 package tschuba.ez.booth.ui.lifecycle;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.time.Duration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("tschuba.ez.booth.ui.browser")
 public class BrowserLauncherConfig {
-    private final boolean launch;
-    private final Duration delay;
+  private final boolean launch;
+  private final Duration delay;
 
-    public BrowserLauncherConfig(boolean launch, Duration delay) {
-        this.launch = launch;
-        this.delay = delay;
-    }
+  public BrowserLauncherConfig(boolean launch, Duration delay) {
+    this.launch = launch;
+    this.delay = delay;
+  }
 
-    public boolean launch() {
-        return launch;
-    }
+  public boolean launch() {
+    return launch;
+  }
 
-    public Duration delay() {
-        return delay;
-    }
+  public Duration delay() {
+    return delay;
+  }
 }

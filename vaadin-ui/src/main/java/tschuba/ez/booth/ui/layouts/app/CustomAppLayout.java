@@ -43,202 +43,193 @@ import tschuba.ez.booth.ui.views.BoothSelectionView;
 
 @Tag("basarix-app-layout")
 public class CustomAppLayout extends Component implements RouterLayout, HasStyle {
-    private final Div subLayout;
-    private final Tabs tabs;
-    private Component content;
+  private final Div subLayout;
+  private final Tabs tabs;
+  private Component content;
 
-    protected CustomAppLayout(
-            @NonNull final BoothService booths,
-            @NonNull final List<MainMenuItem> menuItems,
-            @NonNull Environment environment) {
-        Div rootLayout = new Div();
-        rootLayout.addClassNames(Display.FLEX, FlexDirection.ROW, Flex.AUTO);
-        rootLayout.setHeightFull();
-        add(rootLayout);
+  protected CustomAppLayout(
+      @NonNull final BoothService booths,
+      @NonNull final List<MainMenuItem> menuItems,
+      @NonNull Environment environment) {
+    Div rootLayout = new Div();
+    rootLayout.addClassNames(Display.FLEX, FlexDirection.ROW, Flex.AUTO);
+    rootLayout.setHeightFull();
+    add(rootLayout);
 
-        tabs = new Tabs();
-        if (!menuItems.isEmpty()) {
-            tabs.setOrientation(Tabs.Orientation.VERTICAL);
-            menuItems.forEach(tabs::add);
+    tabs = new Tabs();
+    if (!menuItems.isEmpty()) {
+      tabs.setOrientation(Tabs.Orientation.VERTICAL);
+      menuItems.forEach(tabs::add);
 
-            ToggleButton toggleButton =
-                    new ToggleButton(Icons.large(LineAwesomeIcon.BARS_SOLID.create()));
-            toggleButton.addThemeVariants(
-                    ButtonVariant.LUMO_LARGE,
-                    ButtonVariant.LUMO_ICON,
-                    ButtonVariant.LUMO_TERTIARY,
-                    ButtonVariant.LUMO_CONTRAST);
-            toggleButton.addClassNames(
-                    Padding.XSMALL,
-                    Padding.Top.NONE,
-                    Margin.XSMALL,
-                    Margin.Top.SMALL,
-                    Border.BOTTOM,
-                    BorderColor.PRIMARY,
-                    BorderRadius.NONE);
-            toggleButton.addClickListener(this::onClickToggle);
-            toggleButton.addToggleListener(event -> updateToggleButton(event.getSource()));
-            updateToggleButton(toggleButton);
+      ToggleButton toggleButton =
+          new ToggleButton(Icons.large(LineAwesomeIcon.BARS_SOLID.create()));
+      toggleButton.addThemeVariants(
+          ButtonVariant.LUMO_LARGE,
+          ButtonVariant.LUMO_ICON,
+          ButtonVariant.LUMO_TERTIARY,
+          ButtonVariant.LUMO_CONTRAST);
+      toggleButton.addClassNames(
+          Padding.XSMALL,
+          Padding.Top.NONE,
+          Margin.XSMALL,
+          Margin.Top.SMALL,
+          Border.BOTTOM,
+          BorderColor.PRIMARY,
+          BorderRadius.NONE);
+      toggleButton.addClickListener(this::onClickToggle);
+      toggleButton.addToggleListener(event -> updateToggleButton(event.getSource()));
+      updateToggleButton(toggleButton);
 
-            Div leftBar = new Div(toggleButton, tabs);
-            leftBar.addClassNames(Background.CONTRAST_10);
-            rootLayout.add(leftBar);
-        }
-
-        subLayout = new Div();
-        subLayout.addClassNames(Display.FLEX, FlexDirection.COLUMN, Flex.AUTO);
-        rootLayout.add(subLayout);
-
-        HorizontalLayout topBar = new HorizontalLayout();
-        topBar.setWidthFull();
-        topBar.addClassNames(
-                Padding.Horizontal.SMALL,
-                Padding.Vertical.XSMALL,
-                Border.BOTTOM,
-                BorderColor.CONTRAST_10);
-        topBar.setAlignItems(FlexComponent.Alignment.CENTER);
-        subLayout.add(topBar);
-
-        H1 appName = new H1(getTranslation(TITLE));
-        appName.addClassNames(Margin.Vertical.MEDIUM, Margin.End.AUTO, FontSize.LARGE);
-        if (menuItems.isEmpty()) {
-            appName.addClassNames(Padding.Left.LARGE);
-        }
-        topBar.add(appName);
-
-        Optional<DataModel.Booth> selectedBooth = BoothSelection.get().flatMap(booths::findById);
-        selectedBooth.ifPresent(
-                booth -> {
-                    RouterLink eventLink = new RouterLink();
-                    eventLink.setRoute(BoothSelectionView.class);
-                    eventLink.addClassNames(Margin.Right.MEDIUM);
-
-                    Span descriptionText = new Span(booth.description());
-                    descriptionText.addClassNames(FontWeight.MEDIUM);
-                    eventLink.add(descriptionText);
-
-                    Button boothDetailsButton = new Button();
-                    boothDetailsButton.setIcon(LineAwesomeIcon.INFO_CIRCLE_SOLID.create());
-                    boothDetailsButton.addClassNames(Padding.NONE);
-                    boothDetailsButton.addThemeVariants(ButtonVariant.LUMO_ICON);
-                    boothDetailsButton.addClickListener(
-                            _ -> {
-                                RouteParameters routeParams =
-                                        Routing.Parameters.builder().booth(booth.key()).build();
-                                NavigateTo.view(BoothDetailsView.class, routeParams)
-                                        .currentWindow();
-                            });
-                    Tooltip.forComponent(boothDetailsButton)
-                            .setText(
-                                    getTranslation(
-                                            TranslationKeys.BoothSelectionView.INFO_BUTTON__TEXT));
-
-                    Tooltip.forComponent(eventLink)
-                            .withText(getTranslation(BOOTH_LINK__TOOLTIP_TEXT))
-                            .withPosition(Tooltip.TooltipPosition.END_BOTTOM);
-
-                    topBar.add(eventLink, boothDetailsButton);
-                });
-        if (selectedBooth.isEmpty()) {
-            Button addressInfoButton = new Button(LineAwesomeIcon.PASSPORT_SOLID.create());
-
-            String address = Server.externalGrpcAddress(environment);
-            String shortAddress = AddressCodec.Exchange.encode(address);
-
-            Span addressBadge = Badges.highlight(new Span(address));
-            Span shortAddressBadge = Badges.highlight(new Span(shortAddress));
-            HorizontalLayout addressLayout =
-                    new HorizontalLayout(addressBadge, new Span(" / "), shortAddressBadge);
-            Spacing.spacing(addressLayout).xsmall();
-
-            Popover popover = new Popover();
-            popover.setOpenOnHover(true);
-            popover.setOpenOnClick(true);
-            popover.setCloseOnOutsideClick(true);
-            popover.setCloseOnEsc(true);
-            popover.setPosition(PopoverPosition.BOTTOM_END);
-            popover.setTarget(addressInfoButton);
-            popover.add(addressLayout);
-
-            topBar.add(addressInfoButton, popover);
-        }
-
-        Button themeVariantButton = new Button();
-        themeVariantButton.setIcon(LineAwesomeIcon.ADJUST_SOLID.create());
-        themeVariantButton.addClickListener(
-                clickEvent -> {
-                    ThemeList themeList = UI.getCurrent().getElement().getThemeList();
-                    if (themeList.contains(Lumo.DARK)) {
-                        themeList.remove(Lumo.DARK);
-                    } else {
-                        themeList.add(Lumo.DARK);
-                    }
-                });
-        topBar.add(themeVariantButton);
-
-        Tooltip.forComponent(themeVariantButton)
-                .withText(getTranslation(TOGGLE_THEME_BUTTON__TOOLTIP_TEXT));
+      Div leftBar = new Div(toggleButton, tabs);
+      leftBar.addClassNames(Background.CONTRAST_10);
+      rootLayout.add(leftBar);
     }
 
-    private void onClickToggle(ClickEvent<Button> clickEvent) {
-        ToggleButton toggleButton = (ToggleButton) clickEvent.getSource();
-        toggleButton.toggle();
+    subLayout = new Div();
+    subLayout.addClassNames(Display.FLEX, FlexDirection.COLUMN, Flex.AUTO);
+    rootLayout.add(subLayout);
 
-        tabs.getChildren()
-                .map(component -> (MainMenuItem) component)
-                .forEach(MainMenuItem::toggleText);
+    HorizontalLayout topBar = new HorizontalLayout();
+    topBar.setWidthFull();
+    topBar.addClassNames(
+        Padding.Horizontal.SMALL, Padding.Vertical.XSMALL, Border.BOTTOM, BorderColor.CONTRAST_10);
+    topBar.setAlignItems(FlexComponent.Alignment.CENTER);
+    subLayout.add(topBar);
+
+    H1 appName = new H1(getTranslation(TITLE));
+    appName.addClassNames(Margin.Vertical.MEDIUM, Margin.End.AUTO, FontSize.LARGE);
+    if (menuItems.isEmpty()) {
+      appName.addClassNames(Padding.Left.LARGE);
+    }
+    topBar.add(appName);
+
+    Optional<DataModel.Booth> selectedBooth = BoothSelection.get().flatMap(booths::findById);
+    selectedBooth.ifPresent(
+        booth -> {
+          RouterLink eventLink = new RouterLink();
+          eventLink.setRoute(BoothSelectionView.class);
+          eventLink.addClassNames(Margin.Right.MEDIUM);
+
+          Span descriptionText = new Span(booth.description());
+          descriptionText.addClassNames(FontWeight.MEDIUM);
+          eventLink.add(descriptionText);
+
+          Button boothDetailsButton = new Button();
+          boothDetailsButton.setIcon(LineAwesomeIcon.INFO_CIRCLE_SOLID.create());
+          boothDetailsButton.addClassNames(Padding.NONE);
+          boothDetailsButton.addThemeVariants(ButtonVariant.LUMO_ICON);
+          boothDetailsButton.addClickListener(
+              _ -> {
+                RouteParameters routeParams =
+                    Routing.Parameters.builder().booth(booth.key()).build();
+                NavigateTo.view(BoothDetailsView.class, routeParams).currentWindow();
+              });
+          Tooltip.forComponent(boothDetailsButton)
+              .setText(getTranslation(TranslationKeys.BoothSelectionView.INFO_BUTTON__TEXT));
+
+          Tooltip.forComponent(eventLink)
+              .withText(getTranslation(BOOTH_LINK__TOOLTIP_TEXT))
+              .withPosition(Tooltip.TooltipPosition.END_BOTTOM);
+
+          topBar.add(eventLink, boothDetailsButton);
+        });
+    if (selectedBooth.isEmpty()) {
+      Button addressInfoButton = new Button(LineAwesomeIcon.PASSPORT_SOLID.create());
+
+      String address = Server.externalGrpcAddress(environment);
+      String shortAddress = AddressCodec.Exchange.encode(address);
+
+      Span addressBadge = Badges.highlight(new Span(address));
+      Span shortAddressBadge = Badges.highlight(new Span(shortAddress));
+      HorizontalLayout addressLayout =
+          new HorizontalLayout(addressBadge, new Span(" / "), shortAddressBadge);
+      Spacing.spacing(addressLayout).xsmall();
+
+      Popover popover = new Popover();
+      popover.setOpenOnHover(true);
+      popover.setOpenOnClick(true);
+      popover.setCloseOnOutsideClick(true);
+      popover.setCloseOnEsc(true);
+      popover.setPosition(PopoverPosition.BOTTOM_END);
+      popover.setTarget(addressInfoButton);
+      popover.add(addressLayout);
+
+      topBar.add(addressInfoButton, popover);
     }
 
-    private void updateToggleButton(ToggleButton button) {
-        String[] borderClassNames = {Border.BOTTOM, BorderColor.PRIMARY, BorderRadius.NONE};
-        button.removeClassNames(borderClassNames);
-        if (!button.isToggled()) {
-            button.addClassNames(borderClassNames);
-        }
+    Button themeVariantButton = new Button();
+    themeVariantButton.setIcon(LineAwesomeIcon.ADJUST_SOLID.create());
+    themeVariantButton.addClickListener(
+        clickEvent -> {
+          ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+          if (themeList.contains(Lumo.DARK)) {
+            themeList.remove(Lumo.DARK);
+          } else {
+            themeList.add(Lumo.DARK);
+          }
+        });
+    topBar.add(themeVariantButton);
+
+    Tooltip.forComponent(themeVariantButton)
+        .withText(getTranslation(TOGGLE_THEME_BUTTON__TOOLTIP_TEXT));
+  }
+
+  private void onClickToggle(ClickEvent<Button> clickEvent) {
+    ToggleButton toggleButton = (ToggleButton) clickEvent.getSource();
+    toggleButton.toggle();
+
+    tabs.getChildren().map(component -> (MainMenuItem) component).forEach(MainMenuItem::toggleText);
+  }
+
+  private void updateToggleButton(ToggleButton button) {
+    String[] borderClassNames = {Border.BOTTOM, BorderColor.PRIMARY, BorderRadius.NONE};
+    button.removeClassNames(borderClassNames);
+    if (!button.isToggled()) {
+      button.addClassNames(borderClassNames);
     }
+  }
 
-    @Override
-    public void showRouterLayoutContent(HasElement content) {
-        Component target = null;
-        if (content != null) {
-            target =
-                    content.getElement()
-                            .getComponent()
-                            .orElseThrow(
-                                    () ->
-                                            new IllegalArgumentException(
-                                                    "AppLayout content must be a Component"));
-        }
-        setContent(target);
+  @Override
+  public void showRouterLayoutContent(HasElement content) {
+    Component target = null;
+    if (content != null) {
+      target =
+          content
+              .getElement()
+              .getComponent()
+              .orElseThrow(
+                  () -> new IllegalArgumentException("AppLayout content must be a Component"));
     }
+    setContent(target);
+  }
 
-    private void setContent(Component content) {
-        removeContent();
+  private void setContent(Component content) {
+    removeContent();
 
-        // select menu item matching content
-        tabs.getChildren()
-                .map(tab -> (MainMenuItem) tab)
-                .filter(menuItem -> Objects.equals(menuItem.getView(), content.getClass()))
-                .forEach(tabs::setSelectedTab);
+    // select menu item matching content
+    tabs.getChildren()
+        .map(tab -> (MainMenuItem) tab)
+        .filter(menuItem -> Objects.equals(menuItem.getView(), content.getClass()))
+        .forEach(tabs::setSelectedTab);
 
-        if (content != null) {
-            this.content = content;
-            subLayout.add(content);
-        }
+    if (content != null) {
+      this.content = content;
+      subLayout.add(content);
     }
+  }
 
-    private void removeContent() {
-        remove(this.content);
-        this.content = null;
-    }
+  private void removeContent() {
+    remove(this.content);
+    this.content = null;
+  }
 
-    private void add(Component component) {
-        getElement().appendChild(component.getElement());
-    }
+  private void add(Component component) {
+    getElement().appendChild(component.getElement());
+  }
 
-    private void remove(Component component) {
-        if (component != null) {
-            component.getElement().removeFromParent();
-        }
+  private void remove(Component component) {
+    if (component != null) {
+      component.getElement().removeFromParent();
     }
+  }
 }

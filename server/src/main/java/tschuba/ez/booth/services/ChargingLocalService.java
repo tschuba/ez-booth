@@ -26,76 +26,71 @@ import tschuba.ez.booth.model.EntityModel;
 @Service
 public class ChargingLocalService implements ChargingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChargingLocalService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ChargingLocalService.class);
 
-    private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
-    private static final MathContext BALANCE_MATH_CONTEXT =
-            new MathContext(MathContext.DECIMAL64.getPrecision(), ROUNDING_MODE);
+  private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
+  private static final MathContext BALANCE_MATH_CONTEXT =
+      new MathContext(MathContext.DECIMAL64.getPrecision(), ROUNDING_MODE);
 
-    private final BoothRepository booths;
-    private final PurchaseItemRepository purchaseItems;
+  private final BoothRepository booths;
+  private final PurchaseItemRepository purchaseItems;
 
-    @Autowired
-    public ChargingLocalService(
-            @NonNull BoothRepository booths, @NonNull PurchaseItemRepository purchaseItems) {
-        this.booths = booths;
-        this.purchaseItems = purchaseItems;
+  @Autowired
+  public ChargingLocalService(
+      @NonNull BoothRepository booths, @NonNull PurchaseItemRepository purchaseItems) {
+    this.booths = booths;
+    this.purchaseItems = purchaseItems;
+  }
+
+  @Override
+  @NonNull
+  public ServiceModel.ChargedFees calculateFees(DataModel.Vendor.@NonNull Key vendor) {
+    EntityModel.Booth booth =
+        booths
+            .findById(EntitiesMapper.objectToEntity(vendor.booth()))
+            .orElseThrow(() -> new RecordNotFoundException("Booth not found: " + vendor.booth()));
+
+    BigDecimal vendorItemsSum =
+        purchaseItems
+            .findAllByVendor(EntitiesMapper.objectToEntity(vendor))
+            .map(EntityModel.PurchaseItem::getPrice)
+            .reduce(BigDecimal::add)
+            .orElse(BigDecimal.ZERO);
+    LOGGER.debug(
+        "Calculating fees for vendor {}: itemsSum={}, booth={}", vendor, vendorItemsSum, booth);
+
+    ServiceModel.ChargingConfig chargingConfig =
+        ServiceModel.ChargingConfig.of(EntitiesMapper.entityToObject(booth));
+    ServiceModel.ChargedFees chargedFees = chargingConfig.calculateFees(vendorItemsSum);
+    LOGGER.debug("Calculated fees for vendor {}: {}", vendor, chargedFees);
+    return chargedFees;
+  }
+
+  @Override
+  @NonNull
+  public ServiceModel.Balance.Output calculateBalance(@NonNull ServiceModel.Balance.Input input) {
+    LOGGER.debug("Calculating balance for input: {}", input);
+    BigDecimal totalSalesAmount = input.totalSalesAmount();
+    ServiceModel.ChargingConfig chargingConfig = input.chargingConfig();
+    ServiceModel.ChargedFees chargedFees = chargingConfig.calculateFees(totalSalesAmount);
+    BigDecimal totalRevenue = totalSalesAmount.subtract(chargedFees.total());
+    LOGGER.debug(
+        "Calculated balance: totalSalesAmount={}, chargedFees={}, totalRevenue={}",
+        totalSalesAmount,
+        chargedFees.total(),
+        totalRevenue);
+
+    BigDecimal roundingStep = chargingConfig.roundingStep();
+    if (roundingStep.compareTo(BigDecimal.ZERO) != 0) {
+      BigDecimal remainder = totalRevenue.remainder(roundingStep, BALANCE_MATH_CONTEXT);
+      if (remainder.compareTo(BigDecimal.ZERO) != 0) {
+        totalRevenue = totalRevenue.add(roundingStep.subtract(remainder));
+      }
     }
 
-    @Override
-    @NonNull
-    public ServiceModel.ChargedFees calculateFees(DataModel.Vendor.@NonNull Key vendor) {
-        EntityModel.Booth booth =
-                booths.findById(EntitiesMapper.objectToEntity(vendor.booth()))
-                        .orElseThrow(
-                                () ->
-                                        new RecordNotFoundException(
-                                                "Booth not found: " + vendor.booth()));
-
-        BigDecimal vendorItemsSum =
-                purchaseItems
-                        .findAllByVendor(EntitiesMapper.objectToEntity(vendor))
-                        .map(EntityModel.PurchaseItem::getPrice)
-                        .reduce(BigDecimal::add)
-                        .orElse(BigDecimal.ZERO);
-        LOGGER.debug(
-                "Calculating fees for vendor {}: itemsSum={}, booth={}",
-                vendor,
-                vendorItemsSum,
-                booth);
-
-        ServiceModel.ChargingConfig chargingConfig =
-                ServiceModel.ChargingConfig.of(EntitiesMapper.entityToObject(booth));
-        ServiceModel.ChargedFees chargedFees = chargingConfig.calculateFees(vendorItemsSum);
-        LOGGER.debug("Calculated fees for vendor {}: {}", vendor, chargedFees);
-        return chargedFees;
-    }
-
-    @Override
-    @NonNull
-    public ServiceModel.Balance.Output calculateBalance(@NonNull ServiceModel.Balance.Input input) {
-        LOGGER.debug("Calculating balance for input: {}", input);
-        BigDecimal totalSalesAmount = input.totalSalesAmount();
-        ServiceModel.ChargingConfig chargingConfig = input.chargingConfig();
-        ServiceModel.ChargedFees chargedFees = chargingConfig.calculateFees(totalSalesAmount);
-        BigDecimal totalRevenue = totalSalesAmount.subtract(chargedFees.total());
-        LOGGER.debug(
-                "Calculated balance: totalSalesAmount={}, chargedFees={}, totalRevenue={}",
-                totalSalesAmount,
-                chargedFees.total(),
-                totalRevenue);
-
-        BigDecimal roundingStep = chargingConfig.roundingStep();
-        if (roundingStep.compareTo(BigDecimal.ZERO) != 0) {
-            BigDecimal remainder = totalRevenue.remainder(roundingStep, BALANCE_MATH_CONTEXT);
-            if (remainder.compareTo(BigDecimal.ZERO) != 0) {
-                totalRevenue = totalRevenue.add(roundingStep.subtract(remainder));
-            }
-        }
-
-        return ServiceModel.Balance.Output.builder()
-                .totalRevenue(totalRevenue)
-                .chargedFees(chargedFees)
-                .build();
-    }
+    return ServiceModel.Balance.Output.builder()
+        .totalRevenue(totalRevenue)
+        .chargedFees(chargedFees)
+        .build();
+  }
 }

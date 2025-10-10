@@ -10,14 +10,14 @@ import java.util.UUID;
  * Utility class for generating unique IDs.
  */
 public class Ids {
-    private Ids() {}
+  private Ids() {}
 
-    /**
-     * Generates a new random UUID as a string.
-     *
-     * @return a new random UUID string
-     */
-    public static String UUID() {
-        return UUID.randomUUID().toString();
-    }
+  /**
+   * Generates a new random UUID as a string.
+   *
+   * @return a new random UUID string
+   */
+  public static String UUID() {
+    return UUID.randomUUID().toString();
+  }
 }

@@ -12,8 +12,8 @@ import org.springframework.core.env.Environment;
 import tschuba.ez.booth.services.BoothService;
 
 public class BasicAppLayout extends CustomAppLayout {
-    @Autowired
-    public BasicAppLayout(@NonNull BoothService booths, @NonNull Environment environment) {
-        super(booths, emptyList(), environment);
-    }
+  @Autowired
+  public BasicAppLayout(@NonNull BoothService booths, @NonNull Environment environment) {
+    super(booths, emptyList(), environment);
+  }
 }
