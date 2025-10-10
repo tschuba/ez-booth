@@ -113,7 +113,7 @@
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <!-- optional: limit format enforcement to just the files changed by this feature branch -->
+                    <!-- limit format enforcement to just the files changed by this feature branch -->
                     <ratchetFrom>origin/main</ratchetFrom>
                     <formats>
                         <format>
@@ -132,8 +132,8 @@
                     <java>
                         <googleJavaFormat>
                             <version>1.29.0</version>
-                            <style>AOSP</style>
-                            <reflowLongStrings>true</reflowLongStrings>
+                            <style>GOOGLE</style>
+                            <reflowLongStrings>false</reflowLongStrings>
                             <formatJavadoc>false</formatJavadoc>
                         </googleJavaFormat>
                         <licenseHeader>
@@ -144,6 +144,13 @@
                         </licenseHeader>
                     </java>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

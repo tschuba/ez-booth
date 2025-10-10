@@ -16,33 +16,33 @@ import org.junit.jupiter.params.provider.ValueSource;
  */
 class ConstraintsTest {
 
-    @ParameterizedTest
-    @ValueSource(
-            strings = {
-                "example.com",
-                "example.com",
-                "example.com:8080",
-                "example.com:8080",
-                "192.168.0.1:8080",
-            })
-    void testDataExchangeAddressPatternShouldMatchValidInput(String input) {
-        assertThat(Pattern.matches(ADDRESS_PATTERN, input))
-                .as("Input should match the data exchange address pattern")
-                .isTrue();
-    }
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "example.com",
+        "example.com",
+        "example.com:8080",
+        "example.com:8080",
+        "192.168.0.1:8080",
+      })
+  void testDataExchangeAddressPatternShouldMatchValidInput(String input) {
+    assertThat(Pattern.matches(ADDRESS_PATTERN, input))
+        .as("Input should match the data exchange address pattern")
+        .isTrue();
+  }
 
-    @ParameterizedTest
-    @ValueSource(
-            strings = {
-                "http://invalid-url",
-                "https://invalid-url",
-                "ftp://example.com",
-                "https://example.com:invalid-port",
-                "example.com/path/to/resource"
-            })
-    void testDataExchangeAddressPatternShouldNotMatchInvalidInput(String input) {
-        assertThat(Pattern.matches(ADDRESS_PATTERN, input))
-                .as("Input should not match the data exchange address pattern")
-                .isFalse();
-    }
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "http://invalid-url",
+        "https://invalid-url",
+        "ftp://example.com",
+        "https://example.com:invalid-port",
+        "example.com/path/to/resource"
+      })
+  void testDataExchangeAddressPatternShouldNotMatchInvalidInput(String input) {
+    assertThat(Pattern.matches(ADDRESS_PATTERN, input))
+        .as("Input should not match the data exchange address pattern")
+        .isFalse();
+  }
 }

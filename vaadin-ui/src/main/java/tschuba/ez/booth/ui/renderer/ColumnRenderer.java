@@ -12,23 +12,23 @@ import tschuba.ez.booth.model.DataModel;
 
 public class ColumnRenderer {
 
-    public static class Purchase {
-        public static ComponentRenderer<Span, DataModel.Purchase> sum(
-                @NonNull final I18N.LocaleFormat format) {
-            return new ComponentRenderer<>(
-                    Span::new,
-                    (span, purchase) -> {
-                        span.setText(format.currency(purchase.value()));
-                    });
-        }
-
-        public static ComponentRenderer<Span, DataModel.Purchase> dateTime(
-                @NonNull final I18N.LocaleFormat format) {
-            return new ComponentRenderer<>(
-                    Span::new,
-                    (span, purchase) -> {
-                        span.setText(format.dateTime(purchase.purchasedOn()));
-                    });
-        }
+  public static class Purchase {
+    public static ComponentRenderer<Span, DataModel.Purchase> sum(
+        @NonNull final I18N.LocaleFormat format) {
+      return new ComponentRenderer<>(
+          Span::new,
+          (span, purchase) -> {
+            span.setText(format.currency(purchase.value()));
+          });
     }
+
+    public static ComponentRenderer<Span, DataModel.Purchase> dateTime(
+        @NonNull final I18N.LocaleFormat format) {
+      return new ComponentRenderer<>(
+          Span::new,
+          (span, purchase) -> {
+            span.setText(format.dateTime(purchase.purchasedOn()));
+          });
+    }
+  }
 }

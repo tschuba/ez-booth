@@ -20,28 +20,28 @@ import tschuba.ez.booth.services.ServiceModel;
 
 @Service
 public class ReportingClient implements ReportingService {
-    private final ReportingServiceGrpc.ReportingServiceBlockingStub client;
+  private final ReportingServiceGrpc.ReportingServiceBlockingStub client;
 
-    @Autowired
-    public ReportingClient(@NonNull ReportingServiceGrpc.ReportingServiceBlockingStub client) {
-        this.client = client;
-    }
+  @Autowired
+  public ReportingClient(@NonNull ReportingServiceGrpc.ReportingServiceBlockingStub client) {
+    this.client = client;
+  }
 
-    @Override
-    public @NonNull ServiceModel.VendorReportData createVendorReportData(
-            DataModel.Vendor.@NonNull Key vendor) {
-        ProtoServices.VendorReportData vendorReportData =
-                client.createVendorReportData(ProtoMapper.objectToMessage(vendor));
-        return ProtoMapper.messageToObject(vendorReportData);
-    }
+  @Override
+  public @NonNull ServiceModel.VendorReportData createVendorReportData(
+      DataModel.Vendor.@NonNull Key vendor) {
+    ProtoServices.VendorReportData vendorReportData =
+        client.createVendorReportData(ProtoMapper.objectToMessage(vendor));
+    return ProtoMapper.messageToObject(vendorReportData);
+  }
 
-    @Override
-    public @NonNull URI generateVendorReport(@NotNull DataModel.Vendor.@NonNull Key... vendors) {
-        ProtoServices.VendorReportInput.Builder inputBuilder =
-                ProtoServices.VendorReportInput.newBuilder();
-        Arrays.stream(vendors).map(ProtoMapper::objectToMessage).forEach(inputBuilder::addVendor);
+  @Override
+  public @NonNull URI generateVendorReport(@NotNull DataModel.Vendor.@NonNull Key... vendors) {
+    ProtoServices.VendorReportInput.Builder inputBuilder =
+        ProtoServices.VendorReportInput.newBuilder();
+    Arrays.stream(vendors).map(ProtoMapper::objectToMessage).forEach(inputBuilder::addVendor);
 
-        ProtoCore.URI reportUri = client.generateVendorReport(inputBuilder.build());
-        return ProtoMapper.messageToObject(reportUri);
-    }
+    ProtoCore.URI reportUri = client.generateVendorReport(inputBuilder.build());
+    return ProtoMapper.messageToObject(reportUri);
+  }
 }

@@ -27,39 +27,39 @@ import tschuba.ez.booth.ui.views.VendorReportPrintView;
  */
 public class VendorReportCard extends VendorCard {
 
-    private final Span itemCount = new Span();
-    private final Span revenue = new Span();
-    private final Button printButton = new Button();
+  private final Span itemCount = new Span();
+  private final Span revenue = new Span();
+  private final Button printButton = new Button();
 
-    public VendorReportCard(@Nonnull ServiceModel.VendorReportData vendorData) {
-        super(vendorData.vendor());
+  public VendorReportCard(@Nonnull ServiceModel.VendorReportData vendorData) {
+    super(vendorData.vendor());
 
-        itemCount.addClassNames(FontSize.XSMALL);
-        itemCount.setText(Integer.toString(vendorData.items().size()));
+    itemCount.addClassNames(FontSize.XSMALL);
+    itemCount.setText(Integer.toString(vendorData.items().size()));
 
-        revenue.addClassNames(FontSize.XSMALL);
-        I18N.LocaleFormat format = I18N.current().format(getLocale());
-        revenue.setText(format.currency(vendorData.salesSum()));
+    revenue.addClassNames(FontSize.XSMALL);
+    I18N.LocaleFormat format = I18N.format(getLocale());
+    revenue.setText(format.currency(vendorData.salesSum()));
 
-        printButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
-        printButton.addClassNames(Margin.NONE);
-        printButton.setIcon(LineAwesomeIcon.RECEIPT_SOLID.create());
-        printButton.addClickListener(this::onClickPrint);
+    printButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+    printButton.addClassNames(Margin.NONE);
+    printButton.setIcon(LineAwesomeIcon.RECEIPT_SOLID.create());
+    printButton.addClickListener(this::onClickPrint);
 
-        add(itemCount, revenue, printButton);
-    }
+    add(itemCount, revenue, printButton);
+  }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        super.onAttach(attachEvent);
+  @Override
+  protected void onAttach(AttachEvent attachEvent) {
+    super.onAttach(attachEvent);
 
-        Tooltip.forComponent(printButton).withText(getTranslation(BUTTON_PRINT_RECEIPT__TOOLTIP));
-        Tooltip.forComponent(revenue).withText(getTranslation(REVENUE__TOOLTIP));
-        Tooltip.forComponent(itemCount).withText(getTranslation(ITEM_COUNT__TOOLTIP));
-    }
+    Tooltip.forComponent(printButton).withText(getTranslation(BUTTON_PRINT_RECEIPT__TOOLTIP));
+    Tooltip.forComponent(revenue).withText(getTranslation(REVENUE__TOOLTIP));
+    Tooltip.forComponent(itemCount).withText(getTranslation(ITEM_COUNT__TOOLTIP));
+  }
 
-    private void onClickPrint(ClickEvent<Button> clickEvent) {
-        DataModel.Vendor.Key vendorKey = getVendor().key();
-        VendorReportPrintView.newWindowFor(vendorKey);
-    }
+  private void onClickPrint(ClickEvent<Button> clickEvent) {
+    DataModel.Vendor.Key vendorKey = getVendor().key();
+    VendorReportPrintView.newWindowFor(vendorKey);
+  }
 }

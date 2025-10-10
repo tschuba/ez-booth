@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.services;
 
 import io.grpc.stub.StreamObserver;
@@ -19,42 +23,45 @@ import tschuba.ez.booth.proto.ProtoServices;
 @GrpcService
 public class ChargingGrpcService extends ChargingServiceGrpc.ChargingServiceImplBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChargingGrpcService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ChargingGrpcService.class);
 
-    private final ChargingLocalService localService;
+  private final ChargingLocalService localService;
 
-    @Autowired
-    ChargingGrpcService(@NonNull ChargingLocalService localService) {
-        this.localService = localService;
+  @Autowired
+  ChargingGrpcService(@NonNull ChargingLocalService localService) {
+    this.localService = localService;
+  }
+
+  @Override
+  public void calculateFees(
+      ProtoModel.VendorKey request, StreamObserver<ProtoServices.ChargedFees> responseObserver) {
+    try {
+      DataModel.Vendor.Key vendor = ProtoMapper.messageToObject(request);
+      ServiceModel.ChargedFees chargedFees = localService.calculateFees(vendor);
+
+      ProtoServices.ChargedFees chargedFeesMsg = ProtoMapper.objectToMessage(chargedFees);
+      responseObserver.onNext(chargedFeesMsg);
+      responseObserver.onCompleted();
+    } catch (Exception ex) {
+      LOGGER.error("Error calculating fees for vendor: {}", request, ex);
+      responseObserver.onError(ex);
     }
+  }
 
-    @Override
-    public void calculateFees(ProtoModel.VendorKey request, StreamObserver<ProtoServices.ChargedFees> responseObserver) {
-        try {
-            DataModel.Vendor.Key vendor = ProtoMapper.messageToObject(request);
-            ServiceModel.ChargedFees chargedFees = localService.calculateFees(vendor);
+  @Override
+  public void calculateBalance(
+      ProtoServices.BalanceInput request,
+      StreamObserver<ProtoServices.SalesBalance> responseObserver) {
+    try {
+      ServiceModel.Balance.Input input = ProtoMapper.messageToObject(request);
+      ServiceModel.Balance.Output output = localService.calculateBalance(input);
 
-            ProtoServices.ChargedFees chargedFeesMsg = ProtoMapper.objectToMessage(chargedFees);
-            responseObserver.onNext(chargedFeesMsg);
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            LOGGER.error("Error calculating fees for vendor: {}", request, ex);
-            responseObserver.onError(ex);
-        }
+      ProtoServices.SalesBalance balanceMsg = ProtoMapper.objectToMessage(output);
+      responseObserver.onNext(balanceMsg);
+      responseObserver.onCompleted();
+    } catch (Exception ex) {
+      LOGGER.error("Error calculating balance: {}", request, ex);
+      responseObserver.onError(ex);
     }
-
-    @Override
-    public void calculateBalance(ProtoServices.BalanceInput request, StreamObserver<ProtoServices.SalesBalance> responseObserver) {
-        try {
-            ServiceModel.Balance.Input input = ProtoMapper.messageToObject(request);
-            ServiceModel.Balance.Output output = localService.calculateBalance(input);
-
-            ProtoServices.SalesBalance balanceMsg = ProtoMapper.objectToMessage(output);
-            responseObserver.onNext(balanceMsg);
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            LOGGER.error("Error calculating balance: {}", request, ex);
-            responseObserver.onError(ex);
-        }
-    }
+  }
 }

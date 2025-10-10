@@ -19,28 +19,25 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * that any file-based directories exist, creating them if necessary.
  */
 public class ReportingPathsInitializer
-        implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+    implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReportingPathsInitializer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ReportingPathsInitializer.class);
 
-    @Override
-    public void onApplicationEvent(@NonNull ApplicationEnvironmentPreparedEvent event) {
-        ConfigurableEnvironment environment = event.getEnvironment();
-        Reports.Config.targetBasePath(environment)
-                .ifPresent(
-                        path -> {
-                            LOGGER.info("Report output path configured: {}", path.toAbsolutePath());
-                            if (!Files.exists(path)) {
-                                try {
-                                    LOGGER.info("Creating static content location: {}", path);
-                                    Files.createDirectories(path);
-                                } catch (IOException ex) {
-                                    LOGGER.error(
-                                            "Failed to create static content location: {}",
-                                            path,
-                                            ex);
-                                }
-                            }
-                        });
-    }
+  @Override
+  public void onApplicationEvent(@NonNull ApplicationEnvironmentPreparedEvent event) {
+    ConfigurableEnvironment environment = event.getEnvironment();
+    Reports.Config.targetBasePath(environment)
+        .ifPresent(
+            path -> {
+              LOGGER.info("Report output path configured: {}", path.toAbsolutePath());
+              if (!Files.exists(path)) {
+                try {
+                  LOGGER.info("Creating static content location: {}", path);
+                  Files.createDirectories(path);
+                } catch (IOException ex) {
+                  LOGGER.error("Failed to create static content location: {}", path, ex);
+                }
+              }
+            });
+  }
 }

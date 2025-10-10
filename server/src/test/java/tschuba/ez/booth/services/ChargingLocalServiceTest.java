@@ -21,46 +21,45 @@ import tschuba.ez.booth.data.PurchaseItemRepository;
 
 class ChargingLocalServiceTest {
 
-    private ChargingLocalService chargingService;
+  private ChargingLocalService chargingService;
 
-    @BeforeEach
-    void setUp() {
-        chargingService =
-                new ChargingLocalService(
-                        mock(BoothRepository.class), mock(PurchaseItemRepository.class));
-    }
+  @BeforeEach
+  void setUp() {
+    chargingService =
+        new ChargingLocalService(mock(BoothRepository.class), mock(PurchaseItemRepository.class));
+  }
 
-    private static Stream<Arguments> provideCalculateBalanceInput() {
-        return Stream.of(
-                arguments(
-                        ServiceModel.Balance.Input.builder()
-                                .totalSalesAmount(BigDecimal.valueOf(59))
-                                .chargingConfig(
-                                        ServiceModel.ChargingConfig.builder()
-                                                .participationFee(BigDecimal.ONE)
-                                                .salesFee(BigDecimal.valueOf(15))
-                                                .roundingStep(BigDecimal.valueOf(0.5))
-                                                .build())
-                                .build(),
-                        BigDecimal.valueOf(49.5),
-                        BigDecimal.valueOf(9.85)));
-    }
+  private static Stream<Arguments> provideCalculateBalanceInput() {
+    return Stream.of(
+        arguments(
+            ServiceModel.Balance.Input.builder()
+                .totalSalesAmount(BigDecimal.valueOf(59))
+                .chargingConfig(
+                    ServiceModel.ChargingConfig.builder()
+                        .participationFee(BigDecimal.ONE)
+                        .salesFee(BigDecimal.valueOf(15))
+                        .roundingStep(BigDecimal.valueOf(0.5))
+                        .build())
+                .build(),
+            BigDecimal.valueOf(49.5),
+            BigDecimal.valueOf(9.85)));
+  }
 
-    @ParameterizedTest
-    @MethodSource("provideCalculateBalanceInput")
-    void testCalculateBalance(
-            @NonNull ServiceModel.Balance.Input input,
-            @NonNull BigDecimal expectedTotalRevenue,
-            @NonNull BigDecimal expectedTotalFees) {
-        ServiceModel.Balance.Output actualBalance = chargingService.calculateBalance(input);
-        assertThat(actualBalance)
-                .extracting(ServiceModel.Balance.Output::totalRevenue)
-                .asInstanceOf(InstanceOfAssertFactories.BIG_DECIMAL)
-                .isEqualByComparingTo(expectedTotalRevenue);
-        assertThat(actualBalance)
-                .extracting(ServiceModel.Balance.Output::chargedFees)
-                .extracting(ServiceModel.ChargedFees::total)
-                .asInstanceOf(InstanceOfAssertFactories.BIG_DECIMAL)
-                .isEqualByComparingTo(expectedTotalFees);
-    }
+  @ParameterizedTest
+  @MethodSource("provideCalculateBalanceInput")
+  void testCalculateBalance(
+      @NonNull ServiceModel.Balance.Input input,
+      @NonNull BigDecimal expectedTotalRevenue,
+      @NonNull BigDecimal expectedTotalFees) {
+    ServiceModel.Balance.Output actualBalance = chargingService.calculateBalance(input);
+    assertThat(actualBalance)
+        .extracting(ServiceModel.Balance.Output::totalRevenue)
+        .asInstanceOf(InstanceOfAssertFactories.BIG_DECIMAL)
+        .isEqualByComparingTo(expectedTotalRevenue);
+    assertThat(actualBalance)
+        .extracting(ServiceModel.Balance.Output::chargedFees)
+        .extracting(ServiceModel.ChargedFees::total)
+        .asInstanceOf(InstanceOfAssertFactories.BIG_DECIMAL)
+        .isEqualByComparingTo(expectedTotalFees);
+  }
 }

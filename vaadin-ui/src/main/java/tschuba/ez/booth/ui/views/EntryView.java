@@ -17,16 +17,16 @@ import tschuba.ez.booth.ui.layouts.app.BasicAppLayout;
 @SpringComponent
 @UIScope
 public class EntryView extends BoothSelectionView {
-    public EntryView(@Autowired BoothService boothService) {
-        super(boothService);
-    }
+  public EntryView(@Autowired BoothService boothService) {
+    super(boothService);
+  }
 
-    @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-        super.beforeEnter(event);
+  @Override
+  public void beforeEnter(BeforeEnterEvent event) {
+    super.beforeEnter(event);
 
-        if (BoothSelection.get().isPresent()) {
-            event.rerouteTo(CheckoutView.class);
-        }
+    if (BoothSelection.get().isPresent()) {
+      event.rerouteTo(CheckoutView.class);
     }
+  }
 }

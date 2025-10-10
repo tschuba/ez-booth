@@ -12,10 +12,10 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Icons {
 
-    static final String LUMO_ICON_SIZE_L = "var(--lumo-icon-size-l)";
+  static final String LUMO_ICON_SIZE_L = "var(--lumo-icon-size-l)";
 
-    public static <T extends AbstractIcon<?>> T large(@NonNull T icon) {
-        icon.setSize(LUMO_ICON_SIZE_L);
-        return icon;
-    }
+  public static <T extends AbstractIcon<?>> T large(@NonNull T icon) {
+    icon.setSize(LUMO_ICON_SIZE_L);
+    return icon;
+  }
 }

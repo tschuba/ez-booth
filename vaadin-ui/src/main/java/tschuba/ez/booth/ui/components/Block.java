@@ -17,39 +17,39 @@ import java.util.stream.Stream;
 
 @Tag(Tag.DIV)
 public class Block extends HtmlComponent {
-    private final Div titleContainer;
-    private final Div contentContainer;
+  private final Div titleContainer;
+  private final Div contentContainer;
 
-    public Block() {
-        titleContainer = new Div();
-        titleContainer.addClassNames(
-                FontWeight.MEDIUM,
-                Background.CONTRAST_5,
-                BorderRadius.MEDIUM,
-                Padding.Left.SMALL,
-                Padding.Right.SMALL,
-                Padding.Top.XSMALL,
-                Padding.Bottom.XSMALL);
+  public Block() {
+    titleContainer = new Div();
+    titleContainer.addClassNames(
+        FontWeight.MEDIUM,
+        Background.CONTRAST_5,
+        BorderRadius.MEDIUM,
+        Padding.Left.SMALL,
+        Padding.Right.SMALL,
+        Padding.Top.XSMALL,
+        Padding.Bottom.XSMALL);
 
-        contentContainer = new Div();
-        contentContainer.addClassNames(Padding.SMALL);
+    contentContainer = new Div();
+    contentContainer.addClassNames(Padding.SMALL);
 
-        Element thisElement = getElement();
-        Stream.of(titleContainer, contentContainer)
-                .map(HasElement::getElement)
-                .forEach(thisElement::appendChild);
-    }
+    Element thisElement = getElement();
+    Stream.of(titleContainer, contentContainer)
+        .map(HasElement::getElement)
+        .forEach(thisElement::appendChild);
+  }
 
-    public void setTitle(String title) {
-        titleContainer.setText(title);
-    }
+  public void setTitle(String title) {
+    titleContainer.setText(title);
+  }
 
-    public void setContent(Component... content) {
-        this.contentContainer.removeAll();
-        this.contentContainer.add(content);
-    }
+  public void setContent(Component... content) {
+    this.contentContainer.removeAll();
+    this.contentContainer.add(content);
+  }
 
-    public void setContent(String text) {
-        this.setContent(new Span(text));
-    }
+  public void setContent(String text) {
+    this.setContent(new Span(text));
+  }
 }

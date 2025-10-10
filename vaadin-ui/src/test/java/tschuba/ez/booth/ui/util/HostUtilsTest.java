@@ -20,71 +20,67 @@ import org.springframework.web.util.UriComponents;
 /** Test class for {@link HostUtils} */
 class HostUtilsTest {
 
-    @Test
-    void testExternalHostAddress() {
-        assertThatNoException()
+  @Test
+  void testExternalHostAddress() {
+    assertThatNoException()
+        .isThrownBy(
+            () -> {
+              String externalHostAddress = Server.externalHostAddress();
+              assertThat(externalHostAddress).isNotIn("127.0.0.1", "localhost");
+            });
+  }
+
+  @Test
+  void testExternalHostAddressShouldThrowIfHostIsUnknown() {
+    try (MockedStatic<InetAddress> addressMockedStatic = mockStatic(InetAddress.class)) {
+      addressMockedStatic.when(InetAddress::getLocalHost).thenThrow(UnknownHostException.class);
+
+      assertThatExceptionOfType(RuntimeException.class)
+          .isThrownBy(Server::externalHostAddress)
+          .withMessage("Host unknown!");
+    }
+  }
+
+  @Test
+  void testExternalUrlBuilder() {
+    withUriBuilder(
+        builder ->
+            assertThatNoException()
+                .isThrownBy(() -> assertThat(Server.externalUrlBuilder()).isNotNull()));
+  }
+
+  @Test
+  void testExternalUrl() {
+    withUriBuilder(
+        builder ->
+            assertThatNoException()
                 .isThrownBy(
-                        () -> {
-                            String externalHostAddress = Server.externalHostAddress();
-                            assertThat(externalHostAddress).isNotIn("127.0.0.1", "localhost");
-                        });
+                    () ->
+                        assertThat(Server.externalUrl())
+                            .isNotNull()
+                            .extracting(URI::getHost)
+                            .isNotIn("127.0.0.1", "localhost")));
+  }
+
+  private static void withUriBuilder(Consumer<ServletUriComponentsBuilder> consumer) {
+    try (MockedStatic<ServletUriComponentsBuilder> builderStaticMock =
+        Mockito.mockStatic(ServletUriComponentsBuilder.class)) {
+      UriComponents componentsMock = mock(UriComponents.class);
+      ServletUriComponentsBuilder builder = mock(ServletUriComponentsBuilder.class);
+      doAnswer(
+              invocation -> {
+                String host = invocation.getArgument(0);
+                when(componentsMock.toUri()).thenReturn(new URI("http", host, null, null));
+                return builder;
+              })
+          .when(builder)
+          .host(any());
+      when(builder.build()).thenReturn(componentsMock);
+
+      builderStaticMock
+          .when(ServletUriComponentsBuilder::fromCurrentContextPath)
+          .thenReturn(builder);
+      consumer.accept(builder);
     }
-
-    @Test
-    void testExternalHostAddressShouldThrowIfHostIsUnknown() {
-        try (MockedStatic<InetAddress> addressMockedStatic = mockStatic(InetAddress.class)) {
-            addressMockedStatic
-                    .when(InetAddress::getLocalHost)
-                    .thenThrow(UnknownHostException.class);
-
-            assertThatExceptionOfType(RuntimeException.class)
-                    .isThrownBy(Server::externalHostAddress)
-                    .withMessage("Host unknown!");
-        }
-    }
-
-    @Test
-    void testExternalUrlBuilder() {
-        withUriBuilder(
-                builder ->
-                        assertThatNoException()
-                                .isThrownBy(
-                                        () -> assertThat(Server.externalUrlBuilder()).isNotNull()));
-    }
-
-    @Test
-    void testExternalUrl() {
-        withUriBuilder(
-                builder ->
-                        assertThatNoException()
-                                .isThrownBy(
-                                        () ->
-                                                assertThat(Server.externalUrl())
-                                                        .isNotNull()
-                                                        .extracting(URI::getHost)
-                                                        .isNotIn("127.0.0.1", "localhost")));
-    }
-
-    private static void withUriBuilder(Consumer<ServletUriComponentsBuilder> consumer) {
-        try (MockedStatic<ServletUriComponentsBuilder> builderStaticMock =
-                Mockito.mockStatic(ServletUriComponentsBuilder.class)) {
-            UriComponents componentsMock = mock(UriComponents.class);
-            ServletUriComponentsBuilder builder = mock(ServletUriComponentsBuilder.class);
-            doAnswer(
-                            invocation -> {
-                                String host = invocation.getArgument(0);
-                                when(componentsMock.toUri())
-                                        .thenReturn(new URI("http", host, null, null));
-                                return builder;
-                            })
-                    .when(builder)
-                    .host(any());
-            when(builder.build()).thenReturn(componentsMock);
-
-            builderStaticMock
-                    .when(ServletUriComponentsBuilder::fromCurrentContextPath)
-                    .thenReturn(builder);
-            consumer.accept(builder);
-        }
-    }
+  }
 }

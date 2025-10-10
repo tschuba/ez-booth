@@ -15,7 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ConfigurationPropertiesScan(basePackages = "tschuba.ez.booth")
 @EnableConfigurationProperties
 public class ServerApplication {
-    static void main(String[] args) {
-        SpringApplication.run(ServerApplication.class, args);
-    }
+  static void main(String[] args) {
+    SpringApplication.run(ServerApplication.class, args);
+  }
 }

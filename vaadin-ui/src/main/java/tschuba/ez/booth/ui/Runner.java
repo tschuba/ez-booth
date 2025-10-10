@@ -17,7 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ConfigurationPropertiesScan(basePackages = "tschuba.ez.booth")
 @NoArgsConstructor(access = PRIVATE)
 public class Runner {
-    public static void main(String[] args) {
-        SpringApplication.run(Runner.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(Runner.class, args);
+  }
 }

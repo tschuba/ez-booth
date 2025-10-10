@@ -25,48 +25,48 @@ import tschuba.ez.booth.services.ServiceModel;
 
 @Getter
 public class PurchaseItemBadge extends Button {
-    private final ServiceModel.CheckoutItem item;
+  private final ServiceModel.CheckoutItem item;
 
-    public PurchaseItemBadge(ServiceModel.CheckoutItem item) {
-        this.item = item;
+  public PurchaseItemBadge(ServiceModel.CheckoutItem item) {
+    this.item = item;
 
-        DataModel.Vendor.Key vendor = item.vendor();
+    DataModel.Vendor.Key vendor = item.vendor();
 
-        addClassNames(BorderRadius.MEDIUM, Background.CONTRAST_5, TextColor.BODY);
-        setIcon(LineAwesomeIcon.TRASH_SOLID.create());
-        setIconAfterText(true);
-        addClickListener(this::onDeleteButtonClick);
+    addClassNames(BorderRadius.MEDIUM, Background.CONTRAST_5, TextColor.BODY);
+    setIcon(LineAwesomeIcon.TRASH_SOLID.create());
+    setIconAfterText(true);
+    addClickListener(this::onDeleteButtonClick);
 
-        I18N.LocaleFormat format = I18N.format(getLocale());
-        Format decimalFormat = format.currency();
-        setText(decimalFormat.format(item.price()));
+    I18N.LocaleFormat format = I18N.format(getLocale());
+    Format decimalFormat = format.currency();
+    setText(decimalFormat.format(item.price()));
 
-        Span vendorSpan = new Span();
-        String vendorId = getTranslation(ID__FORMAT_SHORT, vendor.vendorId());
-        vendorSpan.setText(vendorId);
-        vendorSpan.addClassNames(Margin.End.XSMALL);
+    Span vendorSpan = new Span();
+    String vendorId = getTranslation(ID__FORMAT_SHORT, vendor.vendorId());
+    vendorSpan.setText(vendorId);
+    vendorSpan.addClassNames(Margin.End.XSMALL);
 
-        Span priceSpan = new Span(decimalFormat.format(item.price()));
-        priceSpan.addClassNames(Margin.End.SMALL);
+    Span priceSpan = new Span(decimalFormat.format(item.price()));
+    priceSpan.addClassNames(Margin.End.SMALL);
 
-        Button deleteButton = new Button();
-        deleteButton.setIcon(LineAwesomeIcon.TRASH_SOLID.create());
-        deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_SMALL);
-        deleteButton.addClickListener(this::onDeleteButtonClick);
+    Button deleteButton = new Button();
+    deleteButton.setIcon(LineAwesomeIcon.TRASH_SOLID.create());
+    deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_SMALL);
+    deleteButton.addClickListener(this::onDeleteButtonClick);
+  }
+
+  public void addItemDeletedEventListener(ComponentEventListener<ItemDeletedEvent> listener) {
+    addListener(ItemDeletedEvent.class, listener);
+  }
+
+  private void onDeleteButtonClick(ClickEvent<Button> event) {
+    removeFromParent();
+    fireEvent(new ItemDeletedEvent(this, false));
+  }
+
+  public static class ItemDeletedEvent extends ComponentEvent<PurchaseItemBadge> {
+    private ItemDeletedEvent(PurchaseItemBadge source, boolean fromClient) {
+      super(source, fromClient);
     }
-
-    public void addItemDeletedEventListener(ComponentEventListener<ItemDeletedEvent> listener) {
-        addListener(ItemDeletedEvent.class, listener);
-    }
-
-    private void onDeleteButtonClick(ClickEvent<Button> event) {
-        removeFromParent();
-        fireEvent(new ItemDeletedEvent(this, false));
-    }
-
-    public static class ItemDeletedEvent extends ComponentEvent<PurchaseItemBadge> {
-        private ItemDeletedEvent(PurchaseItemBadge source, boolean fromClient) {
-            super(source, fromClient);
-        }
-    }
+  }
 }

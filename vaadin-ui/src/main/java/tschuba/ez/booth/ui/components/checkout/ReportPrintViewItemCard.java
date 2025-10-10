@@ -9,8 +9,8 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.ui.components.ItemListItem;
 
 public class ReportPrintViewItemCard extends ItemListItem {
-    public ReportPrintViewItemCard(DataModel.PurchaseItem item) {
-        super(item);
-        addClassNames(LumoUtility.FlexDirection.COLUMN_REVERSE, LumoUtility.AlignItems.END);
-    }
+  public ReportPrintViewItemCard(DataModel.PurchaseItem item) {
+    super(item);
+    addClassNames(LumoUtility.FlexDirection.COLUMN_REVERSE, LumoUtility.AlignItems.END);
+  }
 }

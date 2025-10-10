@@ -16,22 +16,21 @@ import org.junit.jupiter.params.provider.ValueSource;
  * Test class for {@link RefreshEvent}.
  */
 class RefreshEventTest {
-    @Test
-    void testConstructorShouldThrowIfSourceIsNull() {
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> new RefreshEvent(null, false))
-                .withMessage("null source");
-    }
+  @Test
+  void testConstructorShouldThrowIfSourceIsNull() {
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> new RefreshEvent(null, false))
+        .withMessage("null source");
+  }
 
-    @Test
-    void testConstructorShouldSucceedIfSourceIsNotNull() {
-        assertThatNoException().isThrownBy(() -> new RefreshEvent(mock(Component.class), false));
-    }
+  @Test
+  void testConstructorShouldSucceedIfSourceIsNotNull() {
+    assertThatNoException().isThrownBy(() -> new RefreshEvent(mock(Component.class), false));
+  }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void testConstructorShouldSucceedForAnyFromClientValue(boolean fromClient) {
-        assertThatNoException()
-                .isThrownBy(() -> new RefreshEvent(mock(Component.class), fromClient));
-    }
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testConstructorShouldSucceedForAnyFromClientValue(boolean fromClient) {
+    assertThatNoException().isThrownBy(() -> new RefreshEvent(mock(Component.class), fromClient));
+  }
 }

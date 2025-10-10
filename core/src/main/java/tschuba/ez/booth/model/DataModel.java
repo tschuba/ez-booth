@@ -15,68 +15,64 @@ import lombok.NonNull;
 
 public final class DataModel {
 
-    private DataModel() {}
+  private DataModel() {}
+
+  @Builder(toBuilder = true)
+  public record Booth(
+      Key key,
+      String description,
+      LocalDate date,
+      BigDecimal participationFee,
+      BigDecimal salesFee,
+      BigDecimal feesRoundingStep,
+      boolean closed,
+      LocalDateTime closedOn) {
 
     @Builder(toBuilder = true)
-    public record Booth(
-            Key key,
-            String description,
-            LocalDate date,
-            BigDecimal participationFee,
-            BigDecimal salesFee,
-            BigDecimal feesRoundingStep,
-            boolean closed,
-            LocalDateTime closedOn) {
-
-        @Builder(toBuilder = true)
-        public record Key(String boothId) implements Comparable<Key> {
-            @Override
-            public int compareTo(@NonNull Key key) {
-                return Comparator.comparing(Key::boothId).compare(this, key);
-            }
-        }
+    public record Key(String boothId) implements Comparable<Key> {
+      @Override
+      public int compareTo(@NonNull Key key) {
+        return Comparator.comparing(Key::boothId).compare(this, key);
+      }
     }
+  }
+
+  @Builder(toBuilder = true)
+  public record Purchase(
+      @EqualsAndHashCode.Include Key key,
+      BigDecimal value,
+      LocalDateTime purchasedOn,
+      List<PurchaseItem> items) {
 
     @Builder(toBuilder = true)
-    public record Purchase(
-            @EqualsAndHashCode.Include Key key,
-            BigDecimal value,
-            LocalDateTime purchasedOn,
-            List<PurchaseItem> items) {
-
-        @Builder(toBuilder = true)
-        public record Key(Booth.Key booth, String purchaseId) implements Comparable<Key> {
-            @Override
-            public int compareTo(@NonNull Key key) {
-                return Comparator.comparing(Key::booth)
-                        .thenComparing(Key::purchaseId)
-                        .compare(this, key);
-            }
-        }
+    public record Key(Booth.Key booth, String purchaseId) implements Comparable<Key> {
+      @Override
+      public int compareTo(@NonNull Key key) {
+        return Comparator.comparing(Key::booth).thenComparing(Key::purchaseId).compare(this, key);
+      }
     }
+  }
+
+  @Builder(toBuilder = true)
+  public record PurchaseItem(
+      @EqualsAndHashCode.Include Key key,
+      @EqualsAndHashCode.Include Vendor.Key vendor,
+      BigDecimal price,
+      LocalDateTime purchasedOn) {
 
     @Builder(toBuilder = true)
-    public record PurchaseItem(
-            @EqualsAndHashCode.Include Key key,
-            @EqualsAndHashCode.Include Vendor.Key vendor,
-            BigDecimal price,
-            LocalDateTime purchasedOn) {
-
-        @Builder(toBuilder = true)
-        public record Key(Purchase.Key purchase, String itemId) implements Comparable<Key> {
-            @Override
-            public int compareTo(@NonNull Key key) {
-                return Comparator.comparing(Key::purchase)
-                        .thenComparing(Key::itemId)
-                        .compare(this, key);
-            }
-        }
+    public record Key(Purchase.Key purchase, String itemId) implements Comparable<Key> {
+      @Override
+      public int compareTo(@NonNull Key key) {
+        return Comparator.comparing(Key::purchase).thenComparing(Key::itemId).compare(this, key);
+      }
     }
+  }
+
+  @Builder(toBuilder = true)
+  public record Vendor(@EqualsAndHashCode.Include Key key) {
 
     @Builder(toBuilder = true)
-    public record Vendor(@EqualsAndHashCode.Include Key key) {
-
-        @Builder(toBuilder = true)
-        public record Key(Booth.Key booth, String vendorId) {}
-    }
+    public record Key(Booth.Key booth, String vendorId) {}
+  }
 }

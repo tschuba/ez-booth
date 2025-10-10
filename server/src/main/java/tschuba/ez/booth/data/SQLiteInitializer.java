@@ -21,36 +21,33 @@ import org.springframework.core.env.ConfigurableEnvironment;
  */
 public class SQLiteInitializer implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SQLiteInitializer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SQLiteInitializer.class);
 
-    private static final String SPRING_DATASOURCE_URL = "spring.datasource.url";
-    private static final String JDBC_SQLITE_SCHEMA = "jdbc:sqlite:";
+  private static final String SPRING_DATASOURCE_URL = "spring.datasource.url";
+  private static final String JDBC_SQLITE_SCHEMA = "jdbc:sqlite:";
 
-    @Override
-    public void onApplicationEvent(@NonNull ApplicationEnvironmentPreparedEvent event) {
-        ConfigurableEnvironment environment = event.getEnvironment();
-        String dataSourceUrl = environment.getProperty(SPRING_DATASOURCE_URL);
-        if (dataSourceUrl == null) {
-            LOGGER.info("No datasource URL configured; skipping SQLite initialization.");
-        } else if (!dataSourceUrl.startsWith(JDBC_SQLITE_SCHEMA)) {
-            LOGGER.info("Datasource URL does not indicate SQLite; skipping SQLite initialization.");
-        } else {
-            String dbFilePath = dataSourceUrl.substring(JDBC_SQLITE_SCHEMA.length());
-            LOGGER.debug("SQLite database file path: {}", dbFilePath);
-            Path dbFileDir = Path.of(dbFilePath).getParent();
-            if (!Files.exists(dbFileDir)) {
-                try {
-                    LOGGER.info("Creating directory for SQLite database file: {}", dbFilePath);
-                    Files.createDirectories(dbFileDir);
-                } catch (IOException ex) {
-                    LOGGER.error(
-                            "Failed to create directory for SQLite database file: {}",
-                            dbFilePath,
-                            ex);
-                }
-            } else {
-                LOGGER.debug("Directory for SQLite database file already exists: {}", dbFilePath);
-            }
+  @Override
+  public void onApplicationEvent(@NonNull ApplicationEnvironmentPreparedEvent event) {
+    ConfigurableEnvironment environment = event.getEnvironment();
+    String dataSourceUrl = environment.getProperty(SPRING_DATASOURCE_URL);
+    if (dataSourceUrl == null) {
+      LOGGER.info("No datasource URL configured; skipping SQLite initialization.");
+    } else if (!dataSourceUrl.startsWith(JDBC_SQLITE_SCHEMA)) {
+      LOGGER.info("Datasource URL does not indicate SQLite; skipping SQLite initialization.");
+    } else {
+      String dbFilePath = dataSourceUrl.substring(JDBC_SQLITE_SCHEMA.length());
+      LOGGER.debug("SQLite database file path: {}", dbFilePath);
+      Path dbFileDir = Path.of(dbFilePath).getParent();
+      if (!Files.exists(dbFileDir)) {
+        try {
+          LOGGER.info("Creating directory for SQLite database file: {}", dbFilePath);
+          Files.createDirectories(dbFileDir);
+        } catch (IOException ex) {
+          LOGGER.error("Failed to create directory for SQLite database file: {}", dbFilePath, ex);
         }
+      } else {
+        LOGGER.debug("Directory for SQLite database file already exists: {}", dbFilePath);
+      }
     }
+  }
 }

@@ -13,88 +13,88 @@ import lombok.NoArgsConstructor;
 /** Helper class providing common Regex patterns. */
 @NoArgsConstructor(access = PRIVATE)
 public class Patterns {
-    private static final String IPV4_PATTERN_FRAGMENT = "(\\d{1,3}\\.){3}\\d{1,3}";
+  private static final String IPV4_PATTERN_FRAGMENT = "(\\d{1,3}\\.){3}\\d{1,3}";
 
-    public static Http http() {
-        return Http.INSTANCE;
+  public static Http http() {
+    return Http.INSTANCE;
+  }
+
+  public static IpAddress ipAddress() {
+    return IpAddress.INSTANCE;
+  }
+
+  public static DataExchange dataExchange() {
+    return DataExchange.INSTANCE;
+  }
+
+  @NoArgsConstructor(access = PRIVATE)
+  public static class Http {
+    private static final Http INSTANCE = new Http();
+
+    public Support url(String authorityFragment) {
+      return () -> "https?://" + authorityFragment + "(:\\d+)?";
     }
 
-    public static IpAddress ipAddress() {
-        return IpAddress.INSTANCE;
+    public Support url() {
+      return url("[\\S&&[^:]]+");
     }
 
-    public static DataExchange dataExchange() {
-        return DataExchange.INSTANCE;
+    /**
+     *
+     * @return a regex pattern that matches a URL with an IPv4 address as authority
+     */
+    public Support urlIPv4() {
+      return url(IPV4_PATTERN_FRAGMENT);
+    }
+  }
+
+  @NoArgsConstructor(access = PRIVATE)
+  public static class IpAddress {
+    private static final IpAddress INSTANCE = new IpAddress();
+
+    public Support v4() {
+      return () -> IPV4_PATTERN_FRAGMENT;
+    }
+  }
+
+  @NoArgsConstructor(access = PRIVATE)
+  public static class DataExchange {
+    private static final DataExchange INSTANCE = new DataExchange();
+
+    public Support address() {
+      return () -> "^[^\\s:\\/]+(:\\d+)?$";
     }
 
-    @NoArgsConstructor(access = PRIVATE)
-    public static class Http {
-        private static final Http INSTANCE = new Http();
+    public Support encodedAddress() {
+      return () -> "[:]?[A-Za-z0-9+/=]+";
+    }
+  }
 
-        public Support url(String authorityFragment) {
-            return () -> "https?://" + authorityFragment + "(:\\d+)?";
-        }
+  @FunctionalInterface
+  public interface Support {
+    String pattern();
 
-        public Support url() {
-            return url("[\\S&&[^:]]+");
-        }
-
-        /**
-         *
-         * @return a regex pattern that matches a URL with an IPv4 address as authority
-         */
-        public Support urlIPv4() {
-            return url(IPV4_PATTERN_FRAGMENT);
-        }
+    default Pattern compiled() {
+      return Pattern.compile(pattern());
     }
 
-    @NoArgsConstructor(access = PRIVATE)
-    public static class IpAddress {
-        private static final IpAddress INSTANCE = new IpAddress();
-
-        public Support v4() {
-            return () -> IPV4_PATTERN_FRAGMENT;
-        }
+    default Matcher matcher(CharSequence input) {
+      return compiled().matcher(input);
     }
 
-    @NoArgsConstructor(access = PRIVATE)
-    public static class DataExchange {
-        private static final DataExchange INSTANCE = new DataExchange();
-
-        public Support address() {
-            return () -> "^[^\\s:\\/]+(:\\d+)?$";
-        }
-
-        public Support encodedAddress() {
-            return () -> "[:]?[A-Za-z0-9+/=]+";
-        }
+    /**
+     * @return a regex pattern that matches the whole input string
+     */
+    default Support wholeInput() {
+      return () -> "^" + pattern() + "$";
     }
 
-    @FunctionalInterface
-    public interface Support {
-        String pattern();
-
-        default Pattern compiled() {
-            return Pattern.compile(pattern());
-        }
-
-        default Matcher matcher(CharSequence input) {
-            return compiled().matcher(input);
-        }
-
-        /**
-         * @return a regex pattern that matches the whole input string
-         */
-        default Support wholeInput() {
-            return () -> "^" + pattern() + "$";
-        }
-
-        default Support or(String otherPattern) {
-            return () -> pattern() + "|" + otherPattern;
-        }
-
-        default Support or(Support otherPattern) {
-            return or(otherPattern.pattern());
-        }
+    default Support or(String otherPattern) {
+      return () -> pattern() + "|" + otherPattern;
     }
+
+    default Support or(Support otherPattern) {
+      return or(otherPattern.pattern());
+    }
+  }
 }

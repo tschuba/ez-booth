@@ -22,55 +22,54 @@ import tschuba.ez.booth.proto.ProtoServices;
 @GrpcService
 public class DataExchangeGrpcService extends DataExchangeServiceGrpc.DataExchangeServiceImplBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeGrpcService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeGrpcService.class);
 
-    private final DataExchangeLocalService localService;
+  private final DataExchangeLocalService localService;
 
-    @Autowired
-    DataExchangeGrpcService(@NonNull DataExchangeLocalService localService) {
-        this.localService = localService;
+  @Autowired
+  DataExchangeGrpcService(@NonNull DataExchangeLocalService localService) {
+    this.localService = localService;
+  }
+
+  @Override
+  public void syncData(
+      ProtoServices.ExchangeData request,
+      StreamObserver<ProtoServices.ExchangeData> responseObserver) {
+    try {
+      ServiceModel.ExchangeData exportData =
+          localService.exchangeData(ProtoMapper.messageToObject(request));
+      responseObserver.onNext(ProtoMapper.objectToMessage(exportData));
+      responseObserver.onCompleted();
+    } catch (Exception ex) {
+      LOGGER.error("Error syncing data", ex);
+      responseObserver.onError(ex);
     }
+  }
 
-    @Override
-    public void syncData(
-            ProtoServices.ExchangeData request,
-            StreamObserver<ProtoServices.ExchangeData> responseObserver) {
-        try {
-            ServiceModel.ExchangeData exportData =
-                    localService.exchangeData(ProtoMapper.messageToObject(request));
-            responseObserver.onNext(ProtoMapper.objectToMessage(exportData));
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            LOGGER.error("Error syncing data", ex);
-            responseObserver.onError(ex);
-        }
+  @Override
+  public void exportData(
+      ProtoModel.BoothKey request, StreamObserver<ProtoServices.ExchangeData> responseObserver) {
+    try {
+      ServiceModel.ExchangeData exportData =
+          localService.export(ProtoMapper.messageToObject(request));
+      responseObserver.onNext(ProtoMapper.objectToMessage(exportData));
+      responseObserver.onCompleted();
+    } catch (Exception ex) {
+      LOGGER.error("Error exporting data", ex);
+      responseObserver.onError(ex);
     }
+  }
 
-    @Override
-    public void exportData(
-            ProtoModel.BoothKey request,
-            StreamObserver<ProtoServices.ExchangeData> responseObserver) {
-        try {
-            ServiceModel.ExchangeData exportData =
-                    localService.export(ProtoMapper.messageToObject(request));
-            responseObserver.onNext(ProtoMapper.objectToMessage(exportData));
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            LOGGER.error("Error exporting data", ex);
-            responseObserver.onError(ex);
-        }
+  @Override
+  public void mergeData(
+      ProtoServices.ExchangeData request, StreamObserver<Empty> responseObserver) {
+    try {
+      localService.merge(ProtoMapper.messageToObject(request));
+      responseObserver.onNext(Empty.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (Exception ex) {
+      LOGGER.error("Error merging data", ex);
+      responseObserver.onError(ex);
     }
-
-    @Override
-    public void mergeData(
-            ProtoServices.ExchangeData request, StreamObserver<Empty> responseObserver) {
-        try {
-            localService.merge(ProtoMapper.messageToObject(request));
-            responseObserver.onNext(Empty.getDefaultInstance());
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            LOGGER.error("Error merging data", ex);
-            responseObserver.onError(ex);
-        }
-    }
+  }
 }

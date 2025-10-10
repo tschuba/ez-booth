@@ -17,13 +17,13 @@ import tschuba.ez.booth.model.EntityModel;
  */
 @Repository
 public interface PurchaseRepository
-        extends JpaRepository<EntityModel.Purchase, EntityModel.Purchase.Key> {
+    extends JpaRepository<EntityModel.Purchase, EntityModel.Purchase.Key> {
 
-    @Query("SELECT p FROM Purchase p WHERE p.key.booth.boothId = :boothId")
-    @NonNull
-    List<EntityModel.Purchase> findAllByBooth(@NonNull String boothId);
+  @Query("SELECT p FROM Purchase p WHERE p.key.booth.boothId = :boothId")
+  @NonNull
+  List<EntityModel.Purchase> findAllByBooth(@NonNull String boothId);
 
-    @Query("SELECT p FROM Purchase p WHERE p.key.booth = :booth")
-    @NonNull
-    Stream<EntityModel.Purchase> findAllByBooth(@NonNull EntityModel.Booth.Key booth);
+  @Query("SELECT p FROM Purchase p WHERE p.key.booth = :booth")
+  @NonNull
+  Stream<EntityModel.Purchase> findAllByBooth(@NonNull EntityModel.Booth.Key booth);
 }

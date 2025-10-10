@@ -19,40 +19,40 @@ import lombok.NonNull;
  * Utility class for working with buttons.
  */
 public class Buttons {
-    public static <C extends Button> ComponentEventListener<ClickEvent<C>> enableAfterClick(
-            @NonNull Consumer<ClickEvent<C>> handler) {
-        return clickEvent -> {
-            try {
-                handler.accept(clickEvent);
-            } finally {
-                clickEvent.getSource().setEnabled(true);
-            }
-        };
-    }
+  public static <C extends Button> ComponentEventListener<ClickEvent<C>> enableAfterClick(
+      @NonNull Consumer<ClickEvent<C>> handler) {
+    return clickEvent -> {
+      try {
+        handler.accept(clickEvent);
+      } finally {
+        clickEvent.getSource().setEnabled(true);
+      }
+    };
+  }
 
-    public static Registration disableUntilAfterClick(
-            @NonNull Button button, @NonNull Consumer<ClickEvent<Button>> handler) {
-        button.setDisableOnClick(true);
-        return button.addClickListener(enableAfterClick(handler));
-    }
+  public static Registration disableUntilAfterClick(
+      @NonNull Button button, @NonNull Consumer<ClickEvent<Button>> handler) {
+    button.setDisableOnClick(true);
+    return button.addClickListener(enableAfterClick(handler));
+  }
 
-    /**
-     * Creates a click listener that copies the value provided by the given supplier to the browser's clipboard.
-     * @param valueSupplier the supplier providing the value to be copied
-     * @return the click listener
-     * @param <C> the type of button
-     */
-    public static <C extends Button> ComponentEventListener<ClickEvent<C>> copyToClipboard(
-            @NonNull Supplier<Serializable> valueSupplier) {
-        return clickEvent ->
-                clickEvent
-                        .getSource()
-                        .getUI()
-                        .ifPresent(
-                                ui -> {
-                                    ui.getPage()
-                                            .executeJs(
-                                                    """
+  /**
+   * Creates a click listener that copies the value provided by the given supplier to the browser's clipboard.
+   * @param valueSupplier the supplier providing the value to be copied
+   * @return the click listener
+   * @param <C> the type of button
+   */
+  public static <C extends Button> ComponentEventListener<ClickEvent<C>> copyToClipboard(
+      @NonNull Supplier<Serializable> valueSupplier) {
+    return clickEvent ->
+        clickEvent
+            .getSource()
+            .getUI()
+            .ifPresent(
+                ui -> {
+                  ui.getPage()
+                      .executeJs(
+                          """
                                                     window.copyToClipboard = (str) => {
                                                       const textarea = document.createElement("textarea");
                                                       textarea.value = str;
@@ -65,9 +65,8 @@ public class Buttons {
                                                     };
                                                     window.copyToClipboard($0)\
                                                     """,
-                                                    valueSupplier.get());
-                                    Notifications.message(
-                                            ui.getTranslation(COPIED_TO_CLIPBOARD__MESSAGE));
-                                });
-    }
+                          valueSupplier.get());
+                  Notifications.message(ui.getTranslation(COPIED_TO_CLIPBOARD__MESSAGE));
+                });
+  }
 }

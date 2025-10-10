@@ -10,10 +10,10 @@ import tschuba.ez.booth.model.DataModel;
 
 @Getter
 public class BoothListItemEventBase extends ComponentEvent<BoothListItem> {
-    private final DataModel.Booth booth;
+  private final DataModel.Booth booth;
 
-    public BoothListItemEventBase(BoothListItem source, boolean fromClient, DataModel.Booth booth) {
-        super(source, fromClient);
-        this.booth = booth;
-    }
+  public BoothListItemEventBase(BoothListItem source, boolean fromClient, DataModel.Booth booth) {
+    super(source, fromClient);
+    this.booth = booth;
+  }
 }

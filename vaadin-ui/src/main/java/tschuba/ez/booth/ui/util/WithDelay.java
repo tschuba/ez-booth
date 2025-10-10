@@ -13,22 +13,22 @@ import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("unused")
 public class WithDelay {
-    private static final Logger LOGGER = LoggerFactory.getLogger(WithDelay.class);
-    private static final ScheduledExecutorService DEFAULT_EXECUTOR =
-            Executors.newSingleThreadScheduledExecutor();
+  private static final Logger LOGGER = LoggerFactory.getLogger(WithDelay.class);
+  private static final ScheduledExecutorService DEFAULT_EXECUTOR =
+      Executors.newSingleThreadScheduledExecutor();
 
-    public static void execute(Duration delay, Runnable action) {
-        execute(delay, DEFAULT_EXECUTOR, action);
-    }
+  public static void execute(Duration delay, Runnable action) {
+    execute(delay, DEFAULT_EXECUTOR, action);
+  }
 
-    public static void execute(
-            Duration delay, ScheduledExecutorService executorService, Runnable action) {
-        if (delay.isZero() || delay.isNegative()) {
-            LOGGER.debug("Executing action WITHOUT delay");
-            action.run();
-        } else {
-            LOGGER.debug("Scheduled execution of action with a delay of {}", delay);
-            executorService.schedule(action, delay.toMillis(), TimeUnit.MILLISECONDS);
-        }
+  public static void execute(
+      Duration delay, ScheduledExecutorService executorService, Runnable action) {
+    if (delay.isZero() || delay.isNegative()) {
+      LOGGER.debug("Executing action WITHOUT delay");
+      action.run();
+    } else {
+      LOGGER.debug("Scheduled execution of action with a delay of {}", delay);
+      executorService.schedule(action, delay.toMillis(), TimeUnit.MILLISECONDS);
     }
+  }
 }

@@ -6,7 +6,6 @@ package tschuba.ez.booth.reporting;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import lombok.NonNull;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
@@ -15,28 +14,28 @@ import tschuba.ez.booth.services.ServiceModel;
  * HTML report template for vendor reports.
  */
 public class VendorReportTemplate
-        extends ClassLoaderHtmlTemplate<List<ServiceModel.VendorReportData>> {
+    extends ClassLoaderHtmlTemplate<List<ServiceModel.VendorReportData>> {
 
-    private static final String TEMPLATE = "VendorReport";
+  private static final String TEMPLATE = "VendorReport";
 
-    /**
-     * Creates a new HTML report template instance.
-     */
-    public VendorReportTemplate() {
-        super(TEMPLATE);
-    }
+  /**
+   * Creates a new HTML report template instance.
+   */
+  public VendorReportTemplate() {
+    super(TEMPLATE);
+  }
 
-    /**
-     * Generates a filename for the vendor report.
-     *
-     * @return the generated filename
-     */
-    public static String reportFileName(@NonNull DataModel.Booth.Key booth) {
-        return "%s/%s-%s".formatted(booth.boothId(), TEMPLATE, LocalDate.now());
-    }
+  /**
+   * Generates a filename for the vendor report.
+   *
+   * @return the generated filename
+   */
+  public static String reportFileName(@NonNull DataModel.Booth.Key booth) {
+    return "%s/%s-%s".formatted(booth.boothId(), TEMPLATE, LocalDate.now());
+  }
 
-    public static String reportFileName(@NonNull DataModel.Vendor.Key vendor) {
-        DataModel.Booth.Key booth = vendor.booth();
-        return "%s/%s-%s.%s".formatted(booth.boothId(), TEMPLATE, LocalDate.now(), vendor.vendorId());
-    }
+  public static String reportFileName(@NonNull DataModel.Vendor.Key vendor) {
+    DataModel.Booth.Key booth = vendor.booth();
+    return "%s/%s-%s.%s".formatted(booth.boothId(), TEMPLATE, LocalDate.now(), vendor.vendorId());
+  }
 }

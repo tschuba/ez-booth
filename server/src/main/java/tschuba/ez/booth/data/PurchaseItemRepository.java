@@ -16,22 +16,21 @@ import tschuba.ez.booth.model.EntityModel;
  */
 @Repository
 public interface PurchaseItemRepository
-        extends JpaRepository<EntityModel.PurchaseItem, EntityModel.PurchaseItem.Key> {
+    extends JpaRepository<EntityModel.PurchaseItem, EntityModel.PurchaseItem.Key> {
 
-    @Query(
-            "SELECT p FROM PurchaseItem p WHERE p.vendorId = :vendorId AND p.key.purchase.booth ="
-                    + " :booth")
-    @NonNull
-    Stream<EntityModel.PurchaseItem> findAllByVendor(
-            @NonNull String vendorId, @NonNull EntityModel.Booth.Key booth);
+  @Query(
+      "SELECT p FROM PurchaseItem p WHERE p.vendorId = :vendorId AND p.key.purchase.booth ="
+          + " :booth")
+  @NonNull
+  Stream<EntityModel.PurchaseItem> findAllByVendor(
+      @NonNull String vendorId, @NonNull EntityModel.Booth.Key booth);
 
-    @NonNull
-    default Stream<EntityModel.PurchaseItem> findAllByVendor(
-            @NonNull EntityModel.Vendor.Key vendor) {
-        return findAllByVendor(vendor.getVendorId(), vendor.getBooth());
-    }
+  @NonNull
+  default Stream<EntityModel.PurchaseItem> findAllByVendor(@NonNull EntityModel.Vendor.Key vendor) {
+    return findAllByVendor(vendor.getVendorId(), vendor.getBooth());
+  }
 
-    @Query("SELECT p FROM PurchaseItem p WHERE p.key.purchase.booth = :booth")
-    @NonNull
-    Stream<EntityModel.PurchaseItem> findAllByBooth(@NonNull EntityModel.Booth.Key booth);
+  @Query("SELECT p FROM PurchaseItem p WHERE p.key.purchase.booth = :booth")
+  @NonNull
+  Stream<EntityModel.PurchaseItem> findAllByBooth(@NonNull EntityModel.Booth.Key booth);
 }

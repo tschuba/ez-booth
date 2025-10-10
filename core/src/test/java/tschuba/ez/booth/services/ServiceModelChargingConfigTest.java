@@ -16,25 +16,25 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class ServiceModelChargingConfigTest {
 
-    private static Stream<Arguments> provideCalculateFeesInput() {
-        return Stream.of(
-                arguments(
-                        ServiceModel.ChargingConfig.builder()
-                                .salesFee(BigDecimal.valueOf(15))
-                                .participationFee(BigDecimal.ONE)
-                                .roundingStep(BigDecimal.valueOf(0.5))
-                                .build(),
-                        BigDecimal.valueOf(59),
-                        BigDecimal.valueOf(9.85)));
-    }
+  private static Stream<Arguments> provideCalculateFeesInput() {
+    return Stream.of(
+        arguments(
+            ServiceModel.ChargingConfig.builder()
+                .salesFee(BigDecimal.valueOf(15))
+                .participationFee(BigDecimal.ONE)
+                .roundingStep(BigDecimal.valueOf(0.5))
+                .build(),
+            BigDecimal.valueOf(59),
+            BigDecimal.valueOf(9.85)));
+  }
 
-    @ParameterizedTest
-    @MethodSource("provideCalculateFeesInput")
-    void testCalculateFees(
-            @NonNull ServiceModel.ChargingConfig config,
-            @NonNull BigDecimal revenue,
-            @NonNull BigDecimal expectedTotal) {
-        ServiceModel.ChargedFees calculatedFees = config.calculateFees(revenue);
-        assertThat(calculatedFees.total()).isEqualByComparingTo(expectedTotal);
-    }
+  @ParameterizedTest
+  @MethodSource("provideCalculateFeesInput")
+  void testCalculateFees(
+      @NonNull ServiceModel.ChargingConfig config,
+      @NonNull BigDecimal revenue,
+      @NonNull BigDecimal expectedTotal) {
+    ServiceModel.ChargedFees calculatedFees = config.calculateFees(revenue);
+    assertThat(calculatedFees.total()).isEqualByComparingTo(expectedTotal);
+  }
 }

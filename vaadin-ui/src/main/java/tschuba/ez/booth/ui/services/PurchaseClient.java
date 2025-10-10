@@ -23,33 +23,33 @@ import tschuba.ez.booth.services.ServiceModel;
 @Service
 public class PurchaseClient implements PurchaseService {
 
-    private final PurchaseServiceGrpc.PurchaseServiceBlockingStub client;
+  private final PurchaseServiceGrpc.PurchaseServiceBlockingStub client;
 
-    @Autowired
-    public PurchaseClient(@NonNull PurchaseServiceGrpc.PurchaseServiceBlockingStub client) {
-        this.client = client;
-    }
+  @Autowired
+  public PurchaseClient(@NonNull PurchaseServiceGrpc.PurchaseServiceBlockingStub client) {
+    this.client = client;
+  }
 
-    @NotNull
-    @Override
-    public @NonNull DataModel.Purchase checkout(ServiceModel.@NonNull Checkout checkout) {
-        ProtoModel.Purchase purchase = client.checkout(ProtoMapper.objectToMessage(checkout));
-        return ProtoMapper.messageToObject(purchase);
-    }
+  @NotNull
+  @Override
+  public @NonNull DataModel.Purchase checkout(ServiceModel.@NonNull Checkout checkout) {
+    ProtoModel.Purchase purchase = client.checkout(ProtoMapper.objectToMessage(checkout));
+    return ProtoMapper.messageToObject(purchase);
+  }
 
-    @Override
-    public @NonNull Optional<DataModel.Purchase> findById(DataModel.Purchase.@NonNull Key key) {
-        ProtoModel.Purchase purchase = client.getPurchaseByKey(ProtoMapper.objectToMessage(key));
-        return Optional.ofNullable(purchase).map(ProtoMapper::messageToObject);
-    }
+  @Override
+  public @NonNull Optional<DataModel.Purchase> findById(DataModel.Purchase.@NonNull Key key) {
+    ProtoModel.Purchase purchase = client.getPurchaseByKey(ProtoMapper.objectToMessage(key));
+    return Optional.ofNullable(purchase).map(ProtoMapper::messageToObject);
+  }
 
-    @Override
-    public @NonNull Stream<DataModel.Purchase> findByBooth(DataModel.Booth.@NonNull Key booth) {
-        return StreamSupport.stream(
-                        Spliterators.spliteratorUnknownSize(
-                                client.getPurchasesByBooth(ProtoMapper.objectToMessage(booth)),
-                                Spliterator.ORDERED),
-                        false)
-                .map(ProtoMapper::messageToObject);
-    }
+  @Override
+  public @NonNull Stream<DataModel.Purchase> findByBooth(DataModel.Booth.@NonNull Key booth) {
+    return StreamSupport.stream(
+            Spliterators.spliteratorUnknownSize(
+                client.getPurchasesByBooth(ProtoMapper.objectToMessage(booth)),
+                Spliterator.ORDERED),
+            false)
+        .map(ProtoMapper::messageToObject);
+  }
 }

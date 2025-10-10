@@ -20,68 +20,68 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.BoothService;
 
 public class UpsertEventDialog extends Dialog {
-    private final UpsertEventForm upsertEventForm;
-    private final BoothService boothService;
-    private final Button saveButton;
+  private final UpsertEventForm upsertEventForm;
+  private final BoothService boothService;
+  private final Button saveButton;
 
-    public UpsertEventDialog(BoothService boothService) {
-        super();
-        this.boothService = boothService;
+  public UpsertEventDialog(BoothService boothService) {
+    super();
+    this.boothService = boothService;
 
-        setHeaderTitle(getTranslation(TITLE));
-        setCloseOnEsc(true);
+    setHeaderTitle(getTranslation(TITLE));
+    setCloseOnEsc(true);
 
-        upsertEventForm = new UpsertEventForm();
-        upsertEventForm.addCreateEventFormSubmitListener(this::onCreateEventFormSubmitEvent);
+    upsertEventForm = new UpsertEventForm();
+    upsertEventForm.addCreateEventFormSubmitListener(this::onCreateEventFormSubmitEvent);
 
-        saveButton = new Button();
-        saveButton.setText(getTranslation(SAVE_BUTTON__TEXT));
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.addClickListener(this::onSaveEvent);
+    saveButton = new Button();
+    saveButton.setText(getTranslation(SAVE_BUTTON__TEXT));
+    saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    saveButton.addClickListener(this::onSaveEvent);
 
-        Button cancelButton = new Button();
-        cancelButton.setText(getTranslation(CANCEL_BUTTON__TEXT));
-        cancelButton.addClickListener(this::onClickCancel);
+    Button cancelButton = new Button();
+    cancelButton.setText(getTranslation(CANCEL_BUTTON__TEXT));
+    cancelButton.addClickListener(this::onClickCancel);
 
-        Footer footer = new Footer(cancelButton, saveButton);
-        footer.addClassNames(
-                Display.FLEX, AlignItems.CENTER, JustifyContent.END, Gap.MEDIUM, Margin.Top.MEDIUM);
+    Footer footer = new Footer(cancelButton, saveButton);
+    footer.addClassNames(
+        Display.FLEX, AlignItems.CENTER, JustifyContent.END, Gap.MEDIUM, Margin.Top.MEDIUM);
 
-        add(upsertEventForm, footer);
+    add(upsertEventForm, footer);
+  }
+
+  @Override
+  public void open() {
+    super.open();
+    upsertEventForm.clear();
+  }
+
+  public void open(DataModel.Booth booth) {
+    this.open();
+    upsertEventForm.setEvent(booth);
+  }
+
+  public void addEventSavedListener(ComponentEventListener<BoothSavedEvent> listener) {
+    addListener(BoothSavedEvent.class, listener);
+  }
+
+  private void onCreateEventFormSubmitEvent(CreateEventFormSubmitEvent event) {
+    onSaveEvent(event);
+  }
+
+  private void onClickCancel(ClickEvent<Button> buttonClickEvent) {
+    this.close();
+  }
+
+  private void onSaveEvent(ComponentEvent<? extends Component> event) {
+    saveButton.setEnabled(false);
+    Optional<DataModel.Booth> formData = upsertEventForm.validate(true);
+    if (formData.isPresent()) {
+      DataModel.Booth boothData = formData.get();
+      boothService.saveBooth(boothData);
+      close();
+      fireEvent(new BoothSavedEvent(this, event.isFromClient(), boothData));
     }
-
-    @Override
-    public void open() {
-        super.open();
-        upsertEventForm.clear();
-    }
-
-    public void open(DataModel.Booth booth) {
-        this.open();
-        upsertEventForm.setEvent(booth);
-    }
-
-    public void addEventSavedListener(ComponentEventListener<BoothSavedEvent> listener) {
-        addListener(BoothSavedEvent.class, listener);
-    }
-
-    private void onCreateEventFormSubmitEvent(CreateEventFormSubmitEvent event) {
-        onSaveEvent(event);
-    }
-
-    private void onClickCancel(ClickEvent<Button> buttonClickEvent) {
-        this.close();
-    }
-
-    private void onSaveEvent(ComponentEvent<? extends Component> event) {
-        saveButton.setEnabled(false);
-        Optional<DataModel.Booth> formData = upsertEventForm.validate(true);
-        if (formData.isPresent()) {
-            DataModel.Booth boothData = formData.get();
-            boothService.saveBooth(boothData);
-            close();
-            fireEvent(new BoothSavedEvent(this, event.isFromClient(), boothData));
-        }
-        saveButton.setEnabled(true);
-    }
+    saveButton.setEnabled(true);
+  }
 }

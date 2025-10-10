@@ -27,84 +27,84 @@ import tschuba.ez.booth.ui.util.Buttons;
 @SpringComponent
 @UIScope
 public class CheckoutConfirmationDialog extends Dialog {
-    private final Span textSpan;
-    private final Span valueSpan;
-    private final Checkbox checkboxPrintReceipt;
-    private final Button confirmButton;
-    private final Button cancelButton;
-    private ServiceModel.Checkout checkout;
+  private final Span textSpan;
+  private final Span valueSpan;
+  private final Checkbox checkboxPrintReceipt;
+  private final Button confirmButton;
+  private final Button cancelButton;
+  private ServiceModel.Checkout checkout;
 
-    public CheckoutConfirmationDialog(final CheckoutConfig config) {
-        textSpan = new Span();
-        textSpan.addClassNames(Margin.Right.SMALL);
+  public CheckoutConfirmationDialog(final CheckoutConfig config) {
+    textSpan = new Span();
+    textSpan.addClassNames(Margin.Right.SMALL);
 
-        valueSpan = new Span();
-        valueSpan.addClassNames(FontSize.XLARGE, FontWeight.EXTRABOLD);
+    valueSpan = new Span();
+    valueSpan.addClassNames(FontSize.XLARGE, FontWeight.EXTRABOLD);
 
-        cancelButton = new Button();
-        cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-        cancelButton.addClickListener(this::onClickCancel);
+    cancelButton = new Button();
+    cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+    cancelButton.addClickListener(this::onClickCancel);
 
-        checkboxPrintReceipt = new Checkbox();
-        checkboxPrintReceipt.setValue(config.printReceiptChecked());
+    checkboxPrintReceipt = new Checkbox();
+    checkboxPrintReceipt.setValue(config.printReceiptChecked());
 
-        confirmButton = new Button();
-        confirmButton.setDisableOnClick(true);
-        confirmButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        Buttons.disableUntilAfterClick(confirmButton, this::onClickConfirm);
+    confirmButton = new Button();
+    confirmButton.setDisableOnClick(true);
+    confirmButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    Buttons.disableUntilAfterClick(confirmButton, this::onClickConfirm);
 
-        Footer footer = new Footer(cancelButton, checkboxPrintReceipt, confirmButton);
-        footer.addClassNames(
-                Display.FLEX, AlignItems.CENTER, JustifyContent.BETWEEN, Margin.Top.MEDIUM);
+    Footer footer = new Footer(cancelButton, checkboxPrintReceipt, confirmButton);
+    footer.addClassNames(
+        Display.FLEX, AlignItems.CENTER, JustifyContent.BETWEEN, Margin.Top.MEDIUM);
 
-        add(textSpan, valueSpan, footer);
+    add(textSpan, valueSpan, footer);
+  }
+
+  @Override
+  protected void onAttach(AttachEvent attachEvent) {
+    super.onAttach(attachEvent);
+
+    setHeaderTitle(getTranslation(TITLE));
+    textSpan.setText(getTranslation(TEXT));
+    checkboxPrintReceipt.setLabel(getTranslation(PRINT_CHECKBOX__LABEL));
+    confirmButton.setText(getTranslation(CONFIRM_BUTTON__TEXT));
+    cancelButton.setText(getTranslation(CANCEL_BUTTON__TEXT));
+  }
+
+  private void setCheckout(ServiceModel.Checkout checkout) {
+    this.checkout = checkout;
+
+    BigDecimal checkoutSum =
+        checkout.items().stream()
+            .map(ServiceModel.CheckoutItem::price)
+            .reduce(BigDecimal::add)
+            .orElse(BigDecimal.ZERO);
+    I18N.LocaleFormat format = I18N.format(getLocale());
+    valueSpan.setText(format.currency(checkoutSum));
+  }
+
+  public void open(ServiceModel.Checkout checkout) {
+    setCheckout(checkout);
+    super.open();
+  }
+
+  public void addCheckoutConfirmedListener(
+      ComponentEventListener<CheckoutConfirmedEvent> listener) {
+    this.addListener(CheckoutConfirmedEvent.class, listener);
+  }
+
+  private void onClickConfirm(ClickEvent<Button> event) {
+    try {
+      ServiceModel.Checkout finalCheckout =
+          this.checkout.toBuilder().printReceipt(checkboxPrintReceipt.getValue()).build();
+      fireEvent(new CheckoutConfirmedEvent(this, event.isFromClient(), finalCheckout));
+      this.close();
+    } finally {
+      confirmButton.setEnabled(true);
     }
+  }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        super.onAttach(attachEvent);
-
-        setHeaderTitle(getTranslation(TITLE));
-        textSpan.setText(getTranslation(TEXT));
-        checkboxPrintReceipt.setLabel(getTranslation(PRINT_CHECKBOX__LABEL));
-        confirmButton.setText(getTranslation(CONFIRM_BUTTON__TEXT));
-        cancelButton.setText(getTranslation(CANCEL_BUTTON__TEXT));
-    }
-
-    private void setCheckout(ServiceModel.Checkout checkout) {
-        this.checkout = checkout;
-
-        BigDecimal checkoutSum =
-                checkout.items().stream()
-                        .map(ServiceModel.CheckoutItem::price)
-                        .reduce(BigDecimal::add)
-                        .orElse(BigDecimal.ZERO);
-        I18N.LocaleFormat format = I18N.format(getLocale());
-        valueSpan.setText(format.currency(checkoutSum));
-    }
-
-    public void open(ServiceModel.Checkout checkout) {
-        setCheckout(checkout);
-        super.open();
-    }
-
-    public void addCheckoutConfirmedListener(
-            ComponentEventListener<CheckoutConfirmedEvent> listener) {
-        this.addListener(CheckoutConfirmedEvent.class, listener);
-    }
-
-    private void onClickConfirm(ClickEvent<Button> event) {
-        try {
-            ServiceModel.Checkout finalCheckout =
-                    this.checkout.toBuilder().printReceipt(checkboxPrintReceipt.getValue()).build();
-            fireEvent(new CheckoutConfirmedEvent(this, event.isFromClient(), finalCheckout));
-            this.close();
-        } finally {
-            confirmButton.setEnabled(true);
-        }
-    }
-
-    private void onClickCancel(ClickEvent<Button> event) {
-        this.close();
-    }
+  private void onClickCancel(ClickEvent<Button> event) {
+    this.close();
+  }
 }
