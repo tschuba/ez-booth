@@ -61,7 +61,7 @@ public class DataLocalService implements DataService {
                         .limit(2)
                         .toList();
         if (matchingLocalBooths.size() > 1) {
-            throw new DataExchangeExcpetion(
+            throw new DataExchangeException(
                     "Multiple local booths matching the received booth's description and date! %s"
                             .formatted(dataBooth));
         }
@@ -194,7 +194,7 @@ public class DataLocalService implements DataService {
                 booths.findById(EntitiesMapper.objectToEntity(boothKey))
                         .orElseThrow(
                                 () ->
-                                        new DataExchangeExcpetion(
+                                        new DataExchangeException(
                                                 "Booth not found: %s".formatted(boothKey)));
         LOGGER.debug("Found booth: {}", booth);
 
