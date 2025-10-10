@@ -4,6 +4,7 @@
  */
 package tschuba.ez.booth.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.NonNull;
@@ -44,7 +45,7 @@ public class DataLocalService implements DataService {
 
     @Override
     @Transactional
-    public DataModel.Booth.Key merge(ServiceModel.@NonNull ExchangeData data) {
+    public DataModel.Booth.Key merge(@NonNull ServiceModel.ExchangeData data) {
         DataModel.Booth dataBooth = data.booth();
 
         // check for matching local booth by description and date
@@ -85,8 +86,15 @@ public class DataLocalService implements DataService {
             LOGGER.debug("Creating local copy of remote vendors: {}", vendorList);
             vendors.saveAll(vendorList);
 
-            List<EntityModel.@NonNull Purchase> purchaseList =
-                    data.purchases().stream().map(EntitiesMapper::objectToEntity).toList();
+            ArrayList<EntityModel.PurchaseItem> purchaseItemList = new ArrayList<>();
+            List<EntityModel.Purchase> purchaseList =
+                    data.purchases().stream().map(purchase -> {
+                        EntityModel.Purchase entity = EntitiesMapper.objectToEntity(purchase);
+                        purchaseItemList.addAll(entity.getItems());
+                        return entity;
+                    }).toList();
+            LOGGER.debug("Creating local copy of remote purchase items: {}", purchaseItemList);
+            purchaseItems.saveAll(purchaseItemList);
             LOGGER.debug("Creating local copy of remote purchases: {}", purchaseList);
             purchases.saveAll(purchaseList);
         }
@@ -99,7 +107,7 @@ public class DataLocalService implements DataService {
             @NonNull ServiceModel.ExchangeData data, @NonNull DataModel.Booth.Key booth) {
         LOGGER.debug("Merging remote data into existing local booth {}", booth);
 
-        List<EntityModel.@NonNull Vendor> missingVendorsList =
+        List<EntityModel.Vendor> missingVendorsList =
                 data.vendors().stream()
                         .map(EntitiesMapper::objectToEntity)
                         .filter(vendor -> !vendors.existsById(vendor.getKey()))
@@ -176,7 +184,7 @@ public class DataLocalService implements DataService {
 
     @Override
     @Transactional
-    public @NonNull ServiceModel.ExchangeData export(DataModel.Booth.@NonNull Key boothKey) {
+    public @NonNull ServiceModel.ExchangeData export(@NonNull DataModel.Booth.Key boothKey) {
         LOGGER.debug("Exporting data for booth: {}", boothKey);
         EntityModel.Booth booth =
                 booths.findById(EntitiesMapper.objectToEntity(boothKey))
@@ -186,13 +194,13 @@ public class DataLocalService implements DataService {
                                                 "Booth not found: %s".formatted(boothKey)));
         LOGGER.debug("Found booth: {}", booth);
 
-        List<DataModel.@NonNull Vendor> vendorList =
+        List<DataModel.Vendor> vendorList =
                 vendors.findAllByBoothId(boothKey.boothId()).stream()
                         .map(EntitiesMapper::entityToObject)
                         .toList();
         LOGGER.debug("Found vendors: {}", vendorList);
 
-        List<DataModel.@NonNull Purchase> purchaseList =
+        List<DataModel.Purchase> purchaseList =
                 purchases.findPurchasesByBooth(boothKey.boothId()).stream()
                         .map(EntitiesMapper::entityToObject)
                         .toList();
