@@ -48,9 +48,4 @@ public class VendorClient implements VendorService {
     public void save(DataModel.@NonNull Vendor vendor) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
-
-    @Override
-    public void delete(DataModel.Vendor.@NonNull Key key) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
 }

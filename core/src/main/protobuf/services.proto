@@ -39,7 +39,6 @@ service VendorService {
   rpc SaveVendor(Vendor) returns (google.protobuf.Empty);
   rpc GetVendorsByBooth(BoothKey) returns (stream Vendor);
   rpc GetVendorByKey(VendorKey) returns (Vendor);
-  rpc DeleteVendor(VendorKey) returns (google.protobuf.Empty);
 }
 
 message ChargedFees {

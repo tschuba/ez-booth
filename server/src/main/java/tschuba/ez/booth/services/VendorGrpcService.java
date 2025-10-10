@@ -66,16 +66,4 @@ public class VendorGrpcService extends VendorServiceGrpc.VendorServiceImplBase {
             responseObserver.onError(ex);
         }
     }
-
-    @Override
-    public void deleteVendor(ProtoModel.VendorKey request, StreamObserver<Empty> responseObserver) {
-        try {
-            service.delete(ProtoMapper.messageToObject(request));
-            responseObserver.onNext(Empty.getDefaultInstance());
-            responseObserver.onCompleted();
-        } catch (Exception ex) {
-            LOGGER.error("Error deleting vendor: {}", request, ex);
-            responseObserver.onError(ex);
-        }
-    }
 }

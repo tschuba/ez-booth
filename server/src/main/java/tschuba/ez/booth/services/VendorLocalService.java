@@ -40,9 +40,4 @@ public class VendorLocalService implements VendorService {
     public void save(DataModel.@NonNull Vendor vendor) {
         repository.save(EntitiesMapper.objectToEntity(vendor));
     }
-
-    @Override
-    public void delete(DataModel.Vendor.@NonNull Key key) {
-        repository.deleteById(EntitiesMapper.objectToEntity(key));
-    }
 }
