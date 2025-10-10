@@ -25,10 +25,9 @@ public class DataExchangeLocalService implements DataExchangeService {
     public @NonNull ServiceModel.ExchangeData exchangeData(ServiceModel.ExchangeData dataReceived) {
 
         LOGGER.debug("Importing remote data: {}", dataReceived);
-        dataService.merge(dataReceived);
+        DataModel.Booth.Key booth = dataService.merge(dataReceived);
         LOGGER.debug("Remote data imported successfully.");
 
-        DataModel.Booth.Key booth = dataReceived.booth().key();
         LOGGER.debug("Exporting updated data for booth: {}", booth);
         ServiceModel.ExchangeData exportData = dataService.export(booth);
         LOGGER.debug("Export data: {}", exportData);
@@ -41,7 +40,7 @@ public class DataExchangeLocalService implements DataExchangeService {
     }
 
     @Override
-    public void merge(ServiceModel.@NonNull ExchangeData data) {
-        dataService.merge(data);
+    public DataModel.Booth.Key merge(ServiceModel.@NonNull ExchangeData data) {
+        return dataService.merge(data);
     }
 }

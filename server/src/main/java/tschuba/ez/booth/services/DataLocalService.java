@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tschuba.ez.booth.data.BoothRepository;
+import tschuba.ez.booth.data.PurchaseItemRepository;
 import tschuba.ez.booth.data.PurchaseRepository;
 import tschuba.ez.booth.data.VendorRepository;
 import tschuba.ez.booth.model.DataModel;
@@ -27,20 +28,23 @@ public class DataLocalService implements DataService {
     private final BoothRepository booths;
     private final VendorRepository vendors;
     private final PurchaseRepository purchases;
+    private final PurchaseItemRepository purchaseItems;
 
     @Autowired
     public DataLocalService(
             @NonNull BoothRepository booths,
             @NonNull VendorRepository vendors,
-            @NonNull PurchaseRepository purchases) {
+            @NonNull PurchaseRepository purchases,
+            @NonNull PurchaseItemRepository purchaseItems) {
         this.booths = booths;
         this.vendors = vendors;
         this.purchases = purchases;
+        this.purchaseItems = purchaseItems;
     }
 
     @Override
     @Transactional
-    public void merge(ServiceModel.@NonNull ExchangeData data) {
+    public DataModel.Booth.Key merge(ServiceModel.@NonNull ExchangeData data) {
         DataModel.Booth dataBooth = data.booth();
 
         // check for matching local booth by description and date
@@ -61,84 +65,20 @@ public class DataLocalService implements DataService {
                             .formatted(dataBooth));
         }
 
+        DataModel.Booth.Key booth;
         if (matchingLocalBooths.size() == 1) {
             DataModel.Booth localBooth =
                     EntitiesMapper.entityToObject(matchingLocalBooths.getFirst());
-            LOGGER.debug("Found matching local booth for remote booth: {}", dataBooth);
-
-            List<EntityModel.@NonNull Vendor> missingVendorsList =
-                    data.vendors().stream()
-                            .map(EntitiesMapper::objectToEntity)
-                            .filter(vendor -> !vendors.existsById(vendor.getKey()))
-                            .map(
-                                    vendor -> {
-                                        // adopt local booth key for missing vendors
-                                        EntityModel.Vendor.Key localKey =
-                                                vendor.getKey().toBuilder()
-                                                        .booth(
-                                                                EntitiesMapper.objectToEntity(
-                                                                        localBooth.key()))
-                                                        .build();
-                                        return vendor.toBuilder().key(localKey).build();
-                                    })
-                            .toList();
-            if (!missingVendorsList.isEmpty()) {
-                LOGGER.debug("Creating local copies of remote vendors: {}", missingVendorsList);
-                vendors.saveAll(missingVendorsList);
-            } else {
-                LOGGER.debug("All remote vendors already exist locally.");
-            }
-
-            List<EntityModel.@NonNull Purchase> missingPurchaseList =
-                    data.purchases().stream()
-                            .map(EntitiesMapper::objectToEntity)
-                            .filter(purchase -> !purchases.existsById(purchase.getKey()))
-                            .map(
-                                    purchase -> {
-                                        EntityModel.Purchase.Key localPurchaseKey =
-                                                purchase.getKey().toBuilder()
-                                                        .booth(
-                                                                EntitiesMapper.objectToEntity(
-                                                                        localBooth.key()))
-                                                        .build();
-
-                                        // adopt local purchase key for all items
-                                        List<EntityModel.PurchaseItem> localItemList =
-                                                purchase.getItems().stream()
-                                                        .map(
-                                                                item -> {
-                                                                    EntityModel.PurchaseItem.Key
-                                                                            localItemKey =
-                                                                                    item
-                                                                                            .getKey()
-                                                                                            .toBuilder()
-                                                                                            .purchase(
-                                                                                                    localPurchaseKey)
-                                                                                            .build();
-                                                                    return item.toBuilder()
-                                                                            .key(localItemKey)
-                                                                            .build();
-                                                                })
-                                                        .toList();
-
-                                        // adopt local booth key for purchase
-                                        return purchase.toBuilder()
-                                                .key(localPurchaseKey)
-                                                .items(localItemList)
-                                                .build();
-                                    })
-                            .toList();
-            if (!missingPurchaseList.isEmpty()) {
-                LOGGER.debug("Creating local copies of remote purchases: {}", missingPurchaseList);
-                purchases.saveAll(missingPurchaseList);
-            } else {
-                LOGGER.debug("All remote purchases already exist locally.");
-            }
+            booth = localBooth.key();
+            mergeInto(data, booth);
 
         } else {
             // No matching booth found, create a new one
             LOGGER.debug("Creating local copy of remote booth: {}", dataBooth);
-            EntitiesMapper.entityToObject(booths.save(EntitiesMapper.objectToEntity(dataBooth)));
+            DataModel.Booth localBooth =
+                    EntitiesMapper.entityToObject(
+                            booths.save(EntitiesMapper.objectToEntity(dataBooth)));
+            booth = localBooth.key();
 
             List<EntityModel.Vendor> vendorList =
                     data.vendors().stream().map(EntitiesMapper::objectToEntity).toList();
@@ -151,10 +91,91 @@ public class DataLocalService implements DataService {
             purchases.saveAll(purchaseList);
         }
 
-        LOGGER.debug("Data import completed for booth: {}", dataBooth);
+        LOGGER.debug("Data import completed for booth: {}", booth);
+        return booth;
+    }
+
+    private void mergeInto(
+            @NonNull ServiceModel.ExchangeData data, @NonNull DataModel.Booth.Key booth) {
+        LOGGER.debug("Merging remote data into existing local booth {}", booth);
+
+        List<EntityModel.@NonNull Vendor> missingVendorsList =
+                data.vendors().stream()
+                        .map(EntitiesMapper::objectToEntity)
+                        .filter(vendor -> !vendors.existsById(vendor.getKey()))
+                        .map(
+                                vendor -> {
+                                    // adopt local booth key for missing vendors
+                                    EntityModel.Vendor.Key localKey =
+                                            vendor.getKey().toBuilder()
+                                                    .booth(EntitiesMapper.objectToEntity(booth))
+                                                    .build();
+                                    return vendor.toBuilder().key(localKey).build();
+                                })
+                        .toList();
+        if (!missingVendorsList.isEmpty()) {
+            LOGGER.debug("Creating local copies of remote vendors: {}", missingVendorsList);
+            vendors.saveAll(missingVendorsList);
+        } else {
+            LOGGER.debug("All remote vendors already exist locally.");
+        }
+
+        List<EntityModel.PurchaseItem> missingItemsList = new java.util.ArrayList<>();
+
+        List<EntityModel.Purchase> missingPurchaseList =
+                data.purchases().stream()
+                        .map(EntitiesMapper::objectToEntity)
+                        .filter(purchase -> !purchases.existsById(purchase.getKey()))
+                        .map(
+                                purchase -> {
+                                    EntityModel.Purchase.Key localPurchaseKey =
+                                            purchase.getKey().toBuilder()
+                                                    .booth(EntitiesMapper.objectToEntity(booth))
+                                                    .build();
+
+                                    // adopt local purchase key for all items
+                                    List<EntityModel.PurchaseItem> localItemList =
+                                            purchase.getItems().stream()
+                                                    .map(
+                                                            item -> {
+                                                                EntityModel.PurchaseItem.Key
+                                                                        localItemKey =
+                                                                                item
+                                                                                        .getKey()
+                                                                                        .toBuilder()
+                                                                                        .purchase(
+                                                                                                localPurchaseKey)
+                                                                                        .build();
+                                                                return item.toBuilder()
+                                                                        .key(localItemKey)
+                                                                        .build();
+                                                            })
+                                                    .toList();
+                                    missingItemsList.addAll(localItemList);
+
+                                    // adopt local booth key for purchase
+                                    return purchase.toBuilder()
+                                            .key(localPurchaseKey)
+                                            .items(localItemList)
+                                            .build();
+                                })
+                        .toList();
+
+        if (!missingItemsList.isEmpty()) {
+            LOGGER.debug("Creating local copies of remote purchase items: {}", missingItemsList);
+            purchaseItems.saveAll(missingItemsList);
+        }
+
+        if (!missingPurchaseList.isEmpty()) {
+            LOGGER.debug("Creating local copies of remote purchases: {}", missingPurchaseList);
+            purchases.saveAll(missingPurchaseList);
+        } else {
+            LOGGER.debug("All remote purchases already exist locally.");
+        }
     }
 
     @Override
+    @Transactional
     public @NonNull ServiceModel.ExchangeData export(DataModel.Booth.@NonNull Key boothKey) {
         LOGGER.debug("Exporting data for booth: {}", boothKey);
         EntityModel.Booth booth =

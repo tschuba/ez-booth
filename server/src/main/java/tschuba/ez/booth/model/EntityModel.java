@@ -58,6 +58,7 @@ public class EntityModel {
         @AllArgsConstructor
         @Getter
         @EqualsAndHashCode
+        @ToString
         public static class Key {
             @Column(nullable = false, name = "booth_id")
             private String boothId;
@@ -81,6 +82,7 @@ public class EntityModel {
         @AllArgsConstructor
         @Getter
         @EqualsAndHashCode
+        @ToString
         public static class Key {
             @Embedded private Booth.Key booth;
 
@@ -119,6 +121,7 @@ public class EntityModel {
         @AllArgsConstructor
         @Getter
         @EqualsAndHashCode
+        @ToString
         public static class Key {
             @Embedded private Booth.Key booth;
 
@@ -153,6 +156,7 @@ public class EntityModel {
         @AllArgsConstructor
         @Getter
         @EqualsAndHashCode
+        @ToString
         public static class Key {
             @Embedded private Purchase.Key purchase;
 

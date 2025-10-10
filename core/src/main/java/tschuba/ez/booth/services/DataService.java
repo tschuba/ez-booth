@@ -14,8 +14,9 @@ public interface DataService {
     /**
      * Merge the provided data into the existing dataset.
      * @param data the data to merge
+     * @return the key of the booth the data was merged into
      */
-    void merge(@NonNull ServiceModel.ExchangeData data);
+    DataModel.Booth.Key merge(@NonNull ServiceModel.ExchangeData data);
 
     /**
      * Export the data for the specified booth.
