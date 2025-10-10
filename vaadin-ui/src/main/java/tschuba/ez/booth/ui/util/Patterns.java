@@ -23,19 +23,19 @@ public class Patterns {
         return IpAddress.INSTANCE;
     }
 
-    public static DataSync dataSync() {
-        return DataSync.INSTANCE;
+    public static DataExchange dataExchange() {
+        return DataExchange.INSTANCE;
     }
 
     @NoArgsConstructor(access = PRIVATE)
     public static class Http {
         private static final Http INSTANCE = new Http();
 
-        public PatternSupport url(String authorityFragment) {
+        public Support url(String authorityFragment) {
             return () -> "https?://" + authorityFragment + "(:\\d+)?";
         }
 
-        public PatternSupport url() {
+        public Support url() {
             return url("[\\S&&[^:]]+");
         }
 
@@ -43,7 +43,7 @@ public class Patterns {
          *
          * @return a regex pattern that matches a URL with an IPv4 address as authority
          */
-        public PatternSupport urlIPv4() {
+        public Support urlIPv4() {
             return url(IPV4_PATTERN_FRAGMENT);
         }
     }
@@ -52,22 +52,26 @@ public class Patterns {
     public static class IpAddress {
         private static final IpAddress INSTANCE = new IpAddress();
 
-        public PatternSupport v4() {
+        public Support v4() {
             return () -> IPV4_PATTERN_FRAGMENT;
         }
     }
 
     @NoArgsConstructor(access = PRIVATE)
-    public static class DataSync {
-        private static final DataSync INSTANCE = new DataSync();
+    public static class DataExchange {
+        private static final DataExchange INSTANCE = new DataExchange();
 
-        public PatternSupport encodedHostAddress() {
-            return () -> "[#@][A-Za-z0-9+/=]+";
+        public Support address() {
+            return () -> "^[^\\s:]+(:\\d+)?$";
+        }
+
+        public Support encodedAddress() {
+            return () -> "[:]?[A-Za-z0-9+/=]+";
         }
     }
 
     @FunctionalInterface
-    public interface PatternSupport {
+    public interface Support {
         String pattern();
 
         default Pattern compiled() {
@@ -81,15 +85,15 @@ public class Patterns {
         /**
          * @return a regex pattern that matches the whole input string
          */
-        default PatternSupport wholeInput() {
+        default Support wholeInput() {
             return () -> "^" + pattern() + "$";
         }
 
-        default PatternSupport or(String otherPattern) {
+        default Support or(String otherPattern) {
             return () -> pattern() + "|" + otherPattern;
         }
 
-        default PatternSupport or(PatternSupport otherPattern) {
+        default Support or(Support otherPattern) {
             return or(otherPattern.pattern());
         }
     }

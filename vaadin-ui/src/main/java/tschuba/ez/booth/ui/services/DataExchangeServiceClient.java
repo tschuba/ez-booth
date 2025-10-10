@@ -26,7 +26,8 @@ public class DataExchangeServiceClient implements DataExchangeService {
 
     @Override
     public @NonNull ServiceModel.ExchangeData exchangeData(ServiceModel.ExchangeData dataReceived) {
-        ProtoServices.ExchangeData exportData = client.syncData(ProtoMapper.objectToMessage(dataReceived));
+        ProtoServices.ExchangeData exportData =
+                client.syncData(ProtoMapper.objectToMessage(dataReceived));
         return ProtoMapper.messageToObject(exportData);
     }
 }

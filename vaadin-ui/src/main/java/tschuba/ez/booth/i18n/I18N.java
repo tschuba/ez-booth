@@ -140,6 +140,10 @@ public class I18N implements Serializable {
         return Currency.getInstance(format.currencyCode());
     }
 
+    public static TextKey textKey(@NonNull String key) {
+        return new TextKey(key);
+    }
+
     public static class Config {
 
         private static final ObjectMapper OBJECT_MAPPER =

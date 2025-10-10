@@ -26,6 +26,6 @@ public class Buttons {
     public static Registration disableUntilAfterClick(
             Button button, Consumer<ClickEvent<Button>> handler) {
         button.setDisableOnClick(true);
-        return button.addClickListener(clickEvent -> enableAfterClick(handler));
+        return button.addClickListener(enableAfterClick(handler));
     }
 }

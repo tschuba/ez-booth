@@ -13,6 +13,7 @@ import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.services.BoothService;
 import tschuba.ez.booth.ui.views.BoothSelectionView;
 import tschuba.ez.booth.ui.views.CheckoutView;
+import tschuba.ez.booth.ui.views.DataExchangeView;
 import tschuba.ez.booth.ui.views.VendorReportView;
 
 public class AppLayoutWithMenu extends CustomAppLayout {
@@ -21,17 +22,20 @@ public class AppLayoutWithMenu extends CustomAppLayout {
                 booths,
                 List.of(
                         MainMenuItem.create(
-                                new I18N.TextKey(
-                                        TranslationKeys.EventSelectionView.MENU_ITEM__TEXT),
+                                I18N.textKey(TranslationKeys.EventSelectionView.MENU_ITEM__TEXT),
                                 STORE_SOLID.create(),
                                 BoothSelectionView.class),
                         MainMenuItem.create(
-                                new I18N.TextKey(TranslationKeys.CheckoutView.MENU_ITEM__TEXT),
+                                I18N.textKey(TranslationKeys.CheckoutView.MENU_ITEM__TEXT),
                                 CASH_REGISTER_SOLID.create(),
                                 CheckoutView.class),
                         MainMenuItem.create(
-                                new I18N.TextKey(TranslationKeys.VendorReportView.MENU_ITEM__TEXT),
+                                I18N.textKey(TranslationKeys.VendorReportView.MENU_ITEM__TEXT),
                                 COINS_SOLID.create(),
-                                VendorReportView.class)));
+                                VendorReportView.class),
+                        MainMenuItem.create(
+                                I18N.textKey(TranslationKeys.DataExchangeView.MENU_ITEM__TEXT),
+                                FILE_ARCHIVE.create(),
+                                DataExchangeView.class)));
     }
 }

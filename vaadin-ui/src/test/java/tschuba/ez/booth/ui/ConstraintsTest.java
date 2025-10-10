@@ -5,7 +5,7 @@
 package tschuba.ez.booth.ui;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tschuba.ez.booth.ui.Constraints.DataSync.Subscriber.SYNC_URL_PATTERN;
+import static tschuba.ez.booth.ui.Constraints.DataExchange.Transfer.ADDRESS_PATTERN;
 
 import java.util.regex.Pattern;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,7 +31,7 @@ class ConstraintsTest {
                 "http://example.com/path/to/resource#fragment"
             })
     void testDataSyncSubscriberSyncUrlPatternShouldMatchValidInput(String input) {
-        assertThat(Pattern.matches(SYNC_URL_PATTERN, input))
+        assertThat(Pattern.matches(ADDRESS_PATTERN, input))
                 .as("Input should match the sync URL pattern")
                 .isTrue();
     }
@@ -39,7 +39,7 @@ class ConstraintsTest {
     @ParameterizedTest
     @ValueSource(strings = {"invalid-url", "ftp://example.com", "https://example.com:invalid-port"})
     void testDataSyncSubscriberSyncUrlPatternShouldNotMatchValidInput(String input) {
-        assertThat(Pattern.matches(SYNC_URL_PATTERN, input))
+        assertThat(Pattern.matches(ADDRESS_PATTERN, input))
                 .as("Input should not match the sync URL pattern")
                 .isFalse();
     }
