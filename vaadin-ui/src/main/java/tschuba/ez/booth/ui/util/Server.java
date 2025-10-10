@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -32,6 +33,7 @@ public class Server {
     static final String SERVER_HOST = "server.host";
     static final String SERVER_PORT = "server.port";
     static final String SERVER_SSL_ENABLED = "server.ssl.enabled";
+    static final String GRPC_CLIENT_ADDRESS = "grpc.client.booth.address";
 
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8080;
@@ -53,6 +55,18 @@ public class Server {
         String host = Optional.ofNullable(hostSetting).orElse(DEFAULT_HOST);
         int port = Optional.ofNullable(portSetting).map(Integer::parseInt).orElse(DEFAULT_PORT);
         return new Server(host, port, Boolean.parseBoolean(sslEnabled));
+    }
+
+    public static String externalGrpcAddress(@NonNull Environment environment) {
+        String grpcAddress = environment.getProperty(GRPC_CLIENT_ADDRESS);
+        if (StringUtils.isBlank(grpcAddress)) {
+            return null;
+        }
+        int portDelimiterIdx = grpcAddress.indexOf(':');
+        String externalHost = Server.externalHostAddress();
+        return (portDelimiterIdx > 0)
+                ? externalHost + grpcAddress.substring(portDelimiterIdx)
+                : externalHost;
     }
 
     /**

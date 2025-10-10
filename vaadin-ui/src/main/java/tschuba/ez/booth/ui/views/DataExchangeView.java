@@ -30,7 +30,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
-import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
 import com.vaadin.flow.theme.lumo.LumoUtility.Width;
 import java.util.Optional;
 import lombok.NonNull;
@@ -45,14 +44,12 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.BoothService;
 import tschuba.ez.booth.ui.Constraints;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
-import tschuba.ez.booth.ui.components.event.EventRequired;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.services.DataExchangeClient;
 import tschuba.ez.booth.ui.util.*;
 
 @Route(value = "data-exchange", layout = AppLayoutWithMenu.class)
-@EventRequired
 @SpringComponent
 @UIScope
 public class DataExchangeView extends OneColumnLayout {
@@ -67,9 +64,7 @@ public class DataExchangeView extends OneColumnLayout {
     @UIScope
     public static class SelfInfoCard extends Composite<Card> {
 
-        private static final String GRPC_CLIENT_ADDRESS = "grpc.client.booth.address";
-
-        private final String grpcAddress;
+        private final Environment environment;
 
         private final Span address = new Span();
         private final NativeLabel addressLabel = new NativeLabel();
@@ -77,15 +72,10 @@ public class DataExchangeView extends OneColumnLayout {
         private final NativeLabel shortAddressLabel = new NativeLabel();
 
         public SelfInfoCard(@NonNull Environment environment) {
-            this.grpcAddress = environment.getProperty(GRPC_CLIENT_ADDRESS);
+            this.environment = environment;
 
-            Badges addressBadge = Badges.primary().contrast();
-
-            addressBadge.applyTo(address);
-            address.addClassNames(FontWeight.BLACK);
-
-            addressBadge.applyTo(shortAddress);
-            shortAddress.addClassNames(FontWeight.BLACK);
+            Badges.highlight(address);
+            Badges.highlight(shortAddress);
 
             HorizontalLayout addressLayout =
                     new HorizontalLayout(Alignment.CENTER, addressLabel, address);
@@ -104,12 +94,7 @@ public class DataExchangeView extends OneColumnLayout {
 
         @Override
         protected void onAttach(AttachEvent event) {
-            int portDelimiterIdx = this.grpcAddress.indexOf(':');
-            String externalHost = Server.externalHostAddress();
-            String externalGrpcAddress =
-                    (portDelimiterIdx > 0)
-                            ? externalHost + this.grpcAddress.substring(portDelimiterIdx)
-                            : externalHost;
+            String externalGrpcAddress = Server.externalGrpcAddress(environment);
             String shortExternalGrpcAddress = AddressCodec.Exchange.encode(externalGrpcAddress);
 
             getContent().setTitle(getTranslation(SelfInfo.TITLE));
@@ -179,6 +164,12 @@ public class DataExchangeView extends OneColumnLayout {
             getContent().setTitle(getTranslation(Transfer.TITLE));
             addressField.setLabel(getTranslation(Transfer.ADDRESS_FIELD__LABEL));
             transferButton.setText(getTranslation(Transfer.TRANSFER_BUTTON__LABEL));
+
+            if (currentBooth.isEmpty()) {
+                this.getContent().setVisible(false);
+            }
+
+            busyIndicatorText.setText(getTranslation(Transfer.TRANSFER_IN_PROGRESS__TEXT));
             description.setText(
                     currentBooth
                             .map(
@@ -187,7 +178,6 @@ public class DataExchangeView extends OneColumnLayout {
                                                     Transfer.TRANSFER_DESCRIPTION__TEXT,
                                                     booth.description()))
                             .orElse(""));
-            busyIndicatorText.setText(getTranslation(Transfer.TRANSFER_IN_PROGRESS__TEXT));
         }
 
         private void onAddressChange(ComponentValueChangeEvent<TextField, String> event) {

@@ -17,6 +17,8 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.popover.Popover;
+import com.vaadin.flow.component.popover.PopoverPosition;
 import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.dom.ThemeList;
@@ -26,14 +28,16 @@ import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.theme.lumo.Lumo;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import lombok.NonNull;
+import org.springframework.core.env.Environment;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.i18n.TranslationKeys;
+import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.BoothService;
 import tschuba.ez.booth.ui.components.ToggleButton;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
-import tschuba.ez.booth.ui.util.Icons;
-import tschuba.ez.booth.ui.util.NavigateTo;
-import tschuba.ez.booth.ui.util.Routing;
+import tschuba.ez.booth.ui.util.*;
 import tschuba.ez.booth.ui.views.BoothDetailsView;
 import tschuba.ez.booth.ui.views.BoothSelectionView;
 
@@ -43,7 +47,10 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
     private final Tabs tabs;
     private Component content;
 
-    protected CustomAppLayout(final BoothService booths, final List<MainMenuItem> menuItems) {
+    protected CustomAppLayout(
+            @NonNull final BoothService booths,
+            @NonNull final List<MainMenuItem> menuItems,
+            @NonNull Environment environment) {
         Div rootLayout = new Div();
         rootLayout.addClassNames(Display.FLEX, FlexDirection.ROW, Flex.AUTO);
         rootLayout.setHeightFull();
@@ -99,43 +106,62 @@ public class CustomAppLayout extends Component implements RouterLayout, HasStyle
         }
         topBar.add(appName);
 
-        BoothSelection.get()
-                .flatMap(booths::findById)
-                .ifPresent(
-                        booth -> {
-                            RouterLink eventLink = new RouterLink();
-                            eventLink.setRoute(BoothSelectionView.class);
-                            eventLink.addClassNames(Margin.Right.MEDIUM);
+        Optional<DataModel.Booth> selectedBooth = BoothSelection.get().flatMap(booths::findById);
+        selectedBooth.ifPresent(
+                booth -> {
+                    RouterLink eventLink = new RouterLink();
+                    eventLink.setRoute(BoothSelectionView.class);
+                    eventLink.addClassNames(Margin.Right.MEDIUM);
 
-                            Span descriptionText = new Span(booth.description());
-                            descriptionText.addClassNames(FontWeight.MEDIUM);
-                            eventLink.add(descriptionText);
+                    Span descriptionText = new Span(booth.description());
+                    descriptionText.addClassNames(FontWeight.MEDIUM);
+                    eventLink.add(descriptionText);
 
-                            Button detailsButton = new Button();
-                            detailsButton.setIcon(LineAwesomeIcon.INFO_CIRCLE_SOLID.create());
-                            detailsButton.addClassNames(Padding.NONE);
-                            detailsButton.addThemeVariants(ButtonVariant.LUMO_ICON);
-                            detailsButton.addClickListener(
-                                    _ -> {
-                                        RouteParameters routeParams =
-                                                Routing.Parameters.builder()
-                                                        .booth(booth.key())
-                                                        .build();
-                                        NavigateTo.view(BoothDetailsView.class, routeParams)
-                                                .currentWindow();
-                                    });
-                            Tooltip.forComponent(detailsButton)
-                                    .setText(
-                                            getTranslation(
-                                                    TranslationKeys.EventSelectionView
-                                                            .INFO_BUTTON__TEXT));
+                    Button boothDetailsButton = new Button();
+                    boothDetailsButton.setIcon(LineAwesomeIcon.INFO_CIRCLE_SOLID.create());
+                    boothDetailsButton.addClassNames(Padding.NONE);
+                    boothDetailsButton.addThemeVariants(ButtonVariant.LUMO_ICON);
+                    boothDetailsButton.addClickListener(
+                            _ -> {
+                                RouteParameters routeParams =
+                                        Routing.Parameters.builder().booth(booth.key()).build();
+                                NavigateTo.view(BoothDetailsView.class, routeParams)
+                                        .currentWindow();
+                            });
+                    Tooltip.forComponent(boothDetailsButton)
+                            .setText(
+                                    getTranslation(
+                                            TranslationKeys.EventSelectionView.INFO_BUTTON__TEXT));
 
-                            Tooltip.forComponent(eventLink)
-                                    .withText(getTranslation(EVENT_LINK__TOOLTIP_TEXT))
-                                    .withPosition(Tooltip.TooltipPosition.END_BOTTOM);
+                    Tooltip.forComponent(eventLink)
+                            .withText(getTranslation(EVENT_LINK__TOOLTIP_TEXT))
+                            .withPosition(Tooltip.TooltipPosition.END_BOTTOM);
 
-                            topBar.add(eventLink, detailsButton);
-                        });
+                    topBar.add(eventLink, boothDetailsButton);
+                });
+        if (selectedBooth.isEmpty()) {
+            Button addressInfoButton = new Button(LineAwesomeIcon.PASSPORT_SOLID.create());
+
+            String address = Server.externalGrpcAddress(environment);
+            String shortAddress = AddressCodec.Exchange.encode(address);
+
+            Span addressBadge = Badges.highlight(new Span(address));
+            Span shortAddressBadge = Badges.highlight(new Span(shortAddress));
+            HorizontalLayout addressLayout =
+                    new HorizontalLayout(addressBadge, new Span(" / "), shortAddressBadge);
+            Spacing.spacing(addressLayout).xsmall();
+
+            Popover popover = new Popover();
+            popover.setOpenOnHover(true);
+            popover.setOpenOnClick(true);
+            popover.setCloseOnOutsideClick(true);
+            popover.setCloseOnEsc(true);
+            popover.setPosition(PopoverPosition.BOTTOM_END);
+            popover.setTarget(addressInfoButton);
+            popover.add(addressLayout);
+
+            topBar.add(addressInfoButton, popover);
+        }
 
         Button themeVariantButton = new Button();
         themeVariantButton.setIcon(LineAwesomeIcon.ADJUST_SOLID.create());

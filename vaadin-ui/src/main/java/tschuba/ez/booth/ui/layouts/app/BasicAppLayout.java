@@ -4,12 +4,16 @@
  */
 package tschuba.ez.booth.ui.layouts.app;
 
-import java.util.List;
+import static java.util.Collections.emptyList;
+
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import tschuba.ez.booth.services.BoothService;
 
 public class BasicAppLayout extends CustomAppLayout {
-    public BasicAppLayout(@Autowired BoothService booths) {
-        super(booths, List.of());
+    @Autowired
+    public BasicAppLayout(@NonNull BoothService booths, @NonNull Environment environment) {
+        super(booths, emptyList(), environment);
     }
 }

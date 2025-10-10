@@ -7,7 +7,9 @@ package tschuba.ez.booth.ui.layouts.app;
 import static org.vaadin.lineawesome.LineAwesomeIcon.*;
 
 import java.util.List;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.services.BoothService;
@@ -17,7 +19,8 @@ import tschuba.ez.booth.ui.views.DataExchangeView;
 import tschuba.ez.booth.ui.views.VendorReportView;
 
 public class AppLayoutWithMenu extends CustomAppLayout {
-    public AppLayoutWithMenu(@Autowired BoothService booths) {
+    @Autowired
+    public AppLayoutWithMenu(@NonNull BoothService booths, @NonNull Environment environment) {
         super(
                 booths,
                 List.of(
@@ -36,6 +39,7 @@ public class AppLayoutWithMenu extends CustomAppLayout {
                         MainMenuItem.create(
                                 I18N.textKey(TranslationKeys.DataExchangeView.MENU_ITEM__TEXT),
                                 FILE_ARCHIVE.create(),
-                                DataExchangeView.class)));
+                                DataExchangeView.class)),
+                environment);
     }
 }
