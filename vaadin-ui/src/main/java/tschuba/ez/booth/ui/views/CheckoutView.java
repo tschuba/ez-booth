@@ -21,11 +21,10 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.*;
-import java.util.List;
-import java.util.Optional;
-
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.i18n.I18N;

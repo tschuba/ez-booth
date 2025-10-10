@@ -18,6 +18,8 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.*;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -35,6 +37,8 @@ import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.util.*;
 
 @Route(value = "booth", layout = AppLayoutWithMenu.class)
+@SpringComponent
+@UIScope
 public class BoothSelectionView extends Div
         implements BeforeEnterObserver, AfterNavigationObserver, HasDynamicTitle {
     private final BoothService boothService;

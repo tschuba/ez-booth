@@ -19,11 +19,10 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldBase;
-import java.math.BigDecimal;
-import java.util.stream.Stream;
-
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import java.math.BigDecimal;
+import java.util.stream.Stream;
 import lombok.Getter;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.i18n.I18N;

@@ -15,6 +15,8 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ import tschuba.ez.booth.ui.util.UIUtil;
                         + Routing.Parameters.ROUTE_PARAM__BOOTH_ID
                         + "/:"
                         + Routing.Parameters.ROUTE_PARAM__PURCHASE_ID)
+@SpringComponent
+@UIScope
 public class PurchaseReceiptPrintView extends OneColumnLayout implements BeforeEnterObserver {
     private final Span purchaseIdValue;
     private final Div itemsContainer;

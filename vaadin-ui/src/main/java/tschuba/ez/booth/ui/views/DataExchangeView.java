@@ -53,6 +53,8 @@ import tschuba.ez.booth.ui.util.*;
 
 @Route(value = "data-exchange", layout = AppLayoutWithMenu.class)
 @EventRequired
+@SpringComponent
+@UIScope
 public class DataExchangeView extends OneColumnLayout {
 
     public DataExchangeView(@NonNull SelfInfoCard selfInfo, @NonNull TransferCard transferCard) {

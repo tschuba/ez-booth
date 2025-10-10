@@ -16,6 +16,8 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import java.math.BigDecimal;
@@ -44,6 +46,8 @@ import tschuba.ez.booth.ui.util.*;
 @Route(
         value = "booth/:" + Routing.Parameters.ROUTE_PARAM__BOOTH_ID,
         layout = AppLayoutWithMenu.class)
+@SpringComponent
+@UIScope
 public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObserver {
     private final BoothService booths;
     private final VendorService vendors;

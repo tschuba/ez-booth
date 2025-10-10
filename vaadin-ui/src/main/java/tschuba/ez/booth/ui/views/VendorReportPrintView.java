@@ -10,6 +10,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import java.net.URI;
 import java.util.Optional;
 import lombok.NonNull;
@@ -25,6 +27,8 @@ import tschuba.ez.booth.ui.util.*;
                         + Routing.Parameters.ROUTE_PARAM__BOOTH_ID
                         + "/:"
                         + Routing.Parameters.ROUTE_PARAM__VENDOR_ID)
+@SpringComponent
+@UIScope
 public class VendorReportPrintView extends BaseLayout implements BeforeEnterObserver {
     private final ReportingService reportingService;
 

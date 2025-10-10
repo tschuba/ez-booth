@@ -88,11 +88,15 @@ public class DataLocalService implements DataService {
 
             ArrayList<EntityModel.PurchaseItem> purchaseItemList = new ArrayList<>();
             List<EntityModel.Purchase> purchaseList =
-                    data.purchases().stream().map(purchase -> {
-                        EntityModel.Purchase entity = EntitiesMapper.objectToEntity(purchase);
-                        purchaseItemList.addAll(entity.getItems());
-                        return entity;
-                    }).toList();
+                    data.purchases().stream()
+                            .map(
+                                    purchase -> {
+                                        EntityModel.Purchase entity =
+                                                EntitiesMapper.objectToEntity(purchase);
+                                        purchaseItemList.addAll(entity.getItems());
+                                        return entity;
+                                    })
+                            .toList();
             LOGGER.debug("Creating local copy of remote purchase items: {}", purchaseItemList);
             purchaseItems.saveAll(purchaseItemList);
             LOGGER.debug("Creating local copy of remote purchases: {}", purchaseList);

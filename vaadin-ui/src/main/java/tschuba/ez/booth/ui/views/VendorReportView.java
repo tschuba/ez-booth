@@ -28,6 +28,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import java.net.URI;
 import java.util.Objects;
@@ -57,6 +59,8 @@ import tschuba.ez.booth.ui.util.Notifications;
 
 @Route(value = "reports/vendor", layout = AppLayoutWithMenu.class)
 @EventRequired
+@SpringComponent
+@UIScope
 public class VendorReportView extends OneColumnLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(VendorReportView.class);
 
