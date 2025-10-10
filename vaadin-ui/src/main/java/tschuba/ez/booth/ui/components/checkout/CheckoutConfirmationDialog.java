@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.CheckoutConfig;
+import tschuba.ez.booth.ui.util.Buttons;
 
 @SpringComponent
 @UIScope
@@ -50,7 +51,7 @@ public class CheckoutConfirmationDialog extends Dialog {
         confirmButton = new Button();
         confirmButton.setDisableOnClick(true);
         confirmButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        confirmButton.addClickListener(this::onClickConfirm);
+        Buttons.disableUntilAfterClick(confirmButton, this::onClickConfirm);
 
         Footer footer = new Footer(cancelButton, checkboxPrintReceipt, confirmButton);
         footer.addClassNames(

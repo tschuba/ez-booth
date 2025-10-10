@@ -23,6 +23,9 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.*;
 import java.util.List;
 import java.util.Optional;
+
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import lombok.NonNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.i18n.I18N;
@@ -45,6 +48,8 @@ import tschuba.ez.booth.ui.util.*;
 @Route(value = "checkout", layout = AppLayoutWithMenu.class)
 @PreserveOnRefresh
 @EventRequired
+@SpringComponent
+@UIScope
 public class CheckoutView extends TwoColumnLayout implements BeforeLeaveObserver {
     private final PurchaseService purchaseService;
     private final BoothService booths;
