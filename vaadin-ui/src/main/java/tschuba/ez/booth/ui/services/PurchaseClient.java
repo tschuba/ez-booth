@@ -21,12 +21,12 @@ import tschuba.ez.booth.services.PurchaseService;
 import tschuba.ez.booth.services.ServiceModel;
 
 @Service
-public class PurchaseClientService implements PurchaseService {
+public class PurchaseClient implements PurchaseService {
 
     private final PurchaseServiceGrpc.PurchaseServiceBlockingStub client;
 
     @Autowired
-    public PurchaseClientService(@NonNull PurchaseServiceGrpc.PurchaseServiceBlockingStub client) {
+    public PurchaseClient(@NonNull PurchaseServiceGrpc.PurchaseServiceBlockingStub client) {
         this.client = client;
     }
 

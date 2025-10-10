@@ -19,6 +19,8 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldBase;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 import lombok.Getter;
@@ -29,6 +31,8 @@ import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.util.UIUtil;
 import tschuba.ez.booth.ui.views.CheckoutView;
 
+@SpringComponent
+@UIScope
 public class CheckoutItemForm extends Composite<HorizontalLayout> implements HasEnabled {
     @Getter private final TextField vendorField;
     @Getter private final BigDecimalField priceField;

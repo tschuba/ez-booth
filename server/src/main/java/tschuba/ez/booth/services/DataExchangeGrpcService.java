@@ -10,6 +10,7 @@ import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.grpc.server.service.GrpcService;
 import tschuba.ez.booth.model.ProtoMapper;
 import tschuba.ez.booth.proto.DataExchangeServiceGrpc;
 import tschuba.ez.booth.proto.ProtoModel;
@@ -18,6 +19,7 @@ import tschuba.ez.booth.proto.ProtoServices;
 /**
  * gRPC service for data exchange operations.
  */
+@GrpcService
 public class DataExchangeGrpcService extends DataExchangeServiceGrpc.DataExchangeServiceImplBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeGrpcService.class);
@@ -30,54 +32,44 @@ public class DataExchangeGrpcService extends DataExchangeServiceGrpc.DataExchang
     }
 
     @Override
-    public void exportLocalData(
-            ProtoModel.BoothKey booth,
+    public void syncData(
+            ProtoServices.ExchangeData request,
             StreamObserver<ProtoServices.ExchangeData> responseObserver) {
         try {
-            ServiceModel.ExchangeData data =
-                    localService.exportLocalData(ProtoMapper.messageToObject(booth));
-            responseObserver.onNext(ProtoMapper.objectToMessage(data));
+            ServiceModel.ExchangeData exportData =
+                    localService.exchangeData(ProtoMapper.messageToObject(request));
+            responseObserver.onNext(ProtoMapper.objectToMessage(exportData));
             responseObserver.onCompleted();
         } catch (Exception ex) {
-            LOGGER.error("Error exporting local data", ex);
+            LOGGER.error("Error syncing data", ex);
             responseObserver.onError(ex);
         }
     }
 
     @Override
-    public StreamObserver<ProtoServices.ExchangeData> importRemoteData(
-            StreamObserver<Empty> responseObserver) {
-        return new StreamObserver<>() {
-            @Override
-            public void onNext(ProtoServices.ExchangeData input) {
-                ServiceModel.ExchangeData data = ProtoMapper.messageToObject(input);
-                localService.importRemoteData(data);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                LOGGER.error("Error importing remote data", throwable);
-            }
-
-            @Override
-            public void onCompleted() {
-                LOGGER.info("Completed importing remote data");
-            }
-        };
+    public void exportData(
+            ProtoModel.BoothKey request,
+            StreamObserver<ProtoServices.ExchangeData> responseObserver) {
+        try {
+            ServiceModel.ExchangeData exportData =
+                    localService.export(ProtoMapper.messageToObject(request));
+            responseObserver.onNext(ProtoMapper.objectToMessage(exportData));
+            responseObserver.onCompleted();
+        } catch (Exception ex) {
+            LOGGER.error("Error exporting data", ex);
+            responseObserver.onError(ex);
+        }
     }
 
     @Override
-    public void subscribeForExchange(
-            ProtoServices.ExchangeReceiver request,
-            StreamObserver<ProtoServices.ExchangeSubscription> responseObserver) {
+    public void mergeData(
+            ProtoServices.ExchangeData request, StreamObserver<Empty> responseObserver) {
         try {
-            ServiceModel.ExchangeReceiver receiver = ProtoMapper.messageToObject(request);
-            ServiceModel.ExchangeSubscription subscription =
-                    localService.subscribeForExchange(receiver);
-            responseObserver.onNext(ProtoMapper.objectToMessage(subscription));
+            localService.merge(ProtoMapper.messageToObject(request));
+            responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (Exception ex) {
-            LOGGER.error("Error subscribing for data exchange", ex);
+            LOGGER.error("Error merging data", ex);
             responseObserver.onError(ex);
         }
     }

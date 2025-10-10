@@ -5,8 +5,8 @@
 package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
-import static tschuba.ez.booth.i18n.TranslationKeys.EventSelection.NOTIFICATION__NO_EVENT_SELECTED;
-import static tschuba.ez.booth.i18n.TranslationKeys.EventSelectionView.*;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothSelection.NOTIFICATION__NO_BOOTH_SELECTED;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothSelectionView.*;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
@@ -18,6 +18,8 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.*;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -35,6 +37,8 @@ import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.util.*;
 
 @Route(value = "booth", layout = AppLayoutWithMenu.class)
+@SpringComponent
+@UIScope
 public class BoothSelectionView extends Div
         implements BeforeEnterObserver, AfterNavigationObserver, HasDynamicTitle {
     private final BoothService boothService;
@@ -128,7 +132,7 @@ public class BoothSelectionView extends Div
         try {
             boothService.close(booth.key());
         } catch (Exception ex) {
-            Notifications.error(getTranslation(CLOSE_EVENT_FAILED__MESSAGE), ex);
+            Notifications.error(getTranslation(CLOSE_BOOTH_FAILED__MESSAGE), ex);
         } finally {
             updateBoothListItems();
         }
@@ -138,7 +142,7 @@ public class BoothSelectionView extends Div
         try {
             boothService.open(booth.key());
         } catch (Exception ex) {
-            Notifications.error(getTranslation(OPEN_EVENT_FAILED__MESSAGE), ex);
+            Notifications.error(getTranslation(OPEN_BOOTH_FAILED__MESSAGE), ex);
         } finally {
             updateBoothListItems();
         }
@@ -150,7 +154,7 @@ public class BoothSelectionView extends Div
             boothService.delete(boothToDelete);
             BoothSelection.deleted(boothToDelete);
         } catch (Exception ex) {
-            Notifications.error(DELETE_EVENT_FAILED__MESSAGE, ex);
+            Notifications.error(DELETE_BOOTH_FAILED__MESSAGE, ex);
         } finally {
             updateBoothListItems();
         }
@@ -180,7 +184,7 @@ public class BoothSelectionView extends Div
                 .ifPresent(
                         view ->
                                 Notifications.warning(
-                                        getTranslation(NOTIFICATION__NO_EVENT_SELECTED)));
+                                        getTranslation(NOTIFICATION__NO_BOOTH_SELECTED)));
     }
 
     @Override

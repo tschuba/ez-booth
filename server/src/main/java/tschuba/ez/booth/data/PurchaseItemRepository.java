@@ -21,11 +21,17 @@ public interface PurchaseItemRepository
     @Query(
             "SELECT p FROM PurchaseItem p WHERE p.vendorId = :vendorId AND p.key.purchase.booth ="
                     + " :booth")
-    Stream<EntityModel.PurchaseItem> findPurchaseItemsByVendor(
+    @NonNull
+    Stream<EntityModel.PurchaseItem> findAllByVendor(
             @NonNull String vendorId, @NonNull EntityModel.Booth.Key booth);
 
-    default Stream<EntityModel.PurchaseItem> findPurchaseItemsByVendor(
+    @NonNull
+    default Stream<EntityModel.PurchaseItem> findAllByVendor(
             @NonNull EntityModel.Vendor.Key vendor) {
-        return findPurchaseItemsByVendor(vendor.getVendorId(), vendor.getBooth());
+        return findAllByVendor(vendor.getVendorId(), vendor.getBooth());
     }
+
+    @Query("SELECT p FROM PurchaseItem p WHERE p.key.purchase.booth = :booth")
+    @NonNull
+    Stream<EntityModel.PurchaseItem> findAllByBooth(@NonNull EntityModel.Booth.Key booth);
 }

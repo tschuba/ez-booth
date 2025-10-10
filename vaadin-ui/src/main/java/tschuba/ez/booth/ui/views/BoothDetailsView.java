@@ -6,7 +6,7 @@ package tschuba.ez.booth.ui.views;
 
 import static com.vaadin.flow.component.button.ButtonVariant.*;
 import static java.util.Optional.empty;
-import static tschuba.ez.booth.i18n.TranslationKeys.EventDetailsView.*;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.*;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
@@ -16,6 +16,8 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import java.math.BigDecimal;
@@ -44,6 +46,8 @@ import tschuba.ez.booth.ui.util.*;
 @Route(
         value = "booth/:" + Routing.Parameters.ROUTE_PARAM__BOOTH_ID,
         layout = AppLayoutWithMenu.class)
+@SpringComponent
+@UIScope
 public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObserver {
     private final BoothService booths;
     private final VendorService vendors;
@@ -63,6 +67,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
     private final Block totalParticipationFee;
     private final Block totalSalesFee;
     private final Block totalRevenue;
+    private final Block totalPayout;
 
     private final UpsertEventDialog editDialog;
 
@@ -103,7 +108,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                                 DataModel.Booth closedBooth = boothService.close(boothToClose);
                                 updateView(closedBooth);
                             } catch (Exception ex) {
-                                Notifications.error(CLOSE_EVENT_FAILED__MESSAGE, ex);
+                                Notifications.error(CLOSE_BOOTH_FAILED__MESSAGE, ex);
                             }
                         }));
         Tooltip.forComponent(closeButton).setText(getTranslation(CLOSE_BUTTON__TEXT));
@@ -120,7 +125,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                                 DataModel.Booth openedBooth = boothService.open(boothToOpen);
                                 updateView(openedBooth);
                             } catch (Exception ex) {
-                                Notifications.error(OPEN_EVENT_FAILED__MESSAGE, ex);
+                                Notifications.error(OPEN_BOOTH_FAILED__MESSAGE, ex);
                             }
                         }));
         Tooltip.forComponent(openButton).setText(getTranslation(OPEN_BUTTON__TEXT));
@@ -129,7 +134,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
         deleteButton.addThemeVariants(LUMO_PRIMARY, LUMO_ERROR);
         deleteButton.addClassNames(Margin.Left.MEDIUM);
         deleteButton.addConfirmationListener(
-                clickEvent -> {
+                _ -> {
                     try {
                         DataModel.Booth.Key boothToDelete =
                                 boothRef.get().map(DataModel.Booth::key).orElseThrow();
@@ -137,7 +142,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                         BoothSelection.deleted(boothToDelete);
                         NavigateTo.view(BoothSelectionView.class).currentWindow();
                     } catch (Exception ex) {
-                        Notifications.error(DELETE_EVENT_FAILED__MESSAGE, ex);
+                        Notifications.error(DELETE_BOOTH_FAILED__MESSAGE, ex);
                     }
                 });
 
@@ -169,12 +174,15 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
         totalParticipationFee = createBlock(TOTAL_PARTICIPATION_FEE__LABEL);
         totalSalesFee = createBlock(TOTAL_SALES_FEE__LABEL);
         totalRevenue = createBlock(TOTAL_REVENUE__LABEL);
+        totalPayout = createBlock(TOTAL_PAYOUT__LABEL);
 
         rightColumn.add(
                 totalVendorCount,
                 totalItemCount,
                 totalItemSum,
+                totalPayout,
                 totalParticipationFee,
+                totalSalesFee,
                 totalRevenue);
     }
 
@@ -185,7 +193,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
         if (eventId.isEmpty()) {
             String message =
                     getTranslation(
-                            TranslationKeys.EventDetailsView.NOTIFICATION__ILLEGAL_ARGUMENTS);
+                            TranslationKeys.BoothDetailsView.NOTIFICATION__ILLEGAL_ARGUMENTS);
             Notifications.error(message);
             return;
         }
@@ -214,10 +222,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                 new AtomicReference<>(BigDecimal.ZERO);
         final AtomicReference<BigDecimal> aggregatedParticipationFee =
                 new AtomicReference<>(BigDecimal.ZERO);
-        final AtomicReference<BigDecimal> aggregatedSalesFee =
-                new AtomicReference<>(BigDecimal.ZERO);
-        final AtomicReference<BigDecimal> aggregatedRevenue =
-                new AtomicReference<>(BigDecimal.ZERO);
+        final AtomicReference<BigDecimal> aggregatedPayout = new AtomicReference<>(BigDecimal.ZERO);
         allVendors.parallelStream()
                 .map(
                         vendor -> {
@@ -236,10 +241,13 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                             aggregatedItemSum.accumulateAndGet(report.salesSum(), BigDecimal::add);
                             aggregatedParticipationFee.accumulateAndGet(
                                     report.participationFee(), BigDecimal::add);
-                            aggregatedSalesFee.accumulateAndGet(report.salesFee(), BigDecimal::add);
-                            aggregatedRevenue.accumulateAndGet(
+                            aggregatedPayout.accumulateAndGet(
                                     report.totalRevenue(), BigDecimal::add);
                         });
+        final BigDecimal aggregatedRevenue =
+                aggregatedItemSum.get().subtract(aggregatedPayout.get());
+        final BigDecimal aggregatedSalesFee =
+                aggregatedRevenue.subtract(aggregatedParticipationFee.get()).max(BigDecimal.ZERO);
 
         I18N.LocaleFormat format = I18N.format(getLocale());
 
@@ -252,9 +260,10 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
         totalVendorCount.setContent(Integer.toString(allVendors.size()));
         totalItemCount.setContent(Long.toString(itemCount.get()));
         totalItemSum.setContent(format.currency(aggregatedItemSum.get()));
+        totalPayout.setContent(format.currency(aggregatedPayout.get()));
         totalParticipationFee.setContent(format.currency(aggregatedParticipationFee.get()));
-        totalSalesFee.setContent(format.currency(aggregatedSalesFee.get()));
-        totalRevenue.setContent(format.currency(aggregatedRevenue.get()));
+        totalSalesFee.setContent(format.currency(aggregatedSalesFee));
+        totalRevenue.setContent(format.currency(aggregatedRevenue));
 
         editButton.setEnabled(!booth.closed());
         String editButtonText =

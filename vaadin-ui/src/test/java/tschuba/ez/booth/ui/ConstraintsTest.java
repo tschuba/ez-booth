@@ -5,7 +5,7 @@
 package tschuba.ez.booth.ui;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tschuba.ez.booth.ui.Constraints.DataSync.Subscriber.SYNC_URL_PATTERN;
+import static tschuba.ez.booth.ui.Constraints.DataExchange.Transfer.ADDRESS_PATTERN;
 
 import java.util.regex.Pattern;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,28 +19,30 @@ class ConstraintsTest {
     @ParameterizedTest
     @ValueSource(
             strings = {
-                "https://example.com",
-                "http://example.com",
-                "https://example.com/path/to/resource",
-                "http://example.com/path/to/resource",
-                "https://example.com:8080",
-                "http://example.com:8080",
-                "https://example.com/path/to/resource?query=param",
-                "http://example.com/path/to/resource?query=param",
-                "https://example.com/path/to/resource#fragment",
-                "http://example.com/path/to/resource#fragment"
+                "example.com",
+                "example.com",
+                "example.com:8080",
+                "example.com:8080",
+                "192.168.0.1:8080",
             })
-    void testDataSyncSubscriberSyncUrlPatternShouldMatchValidInput(String input) {
-        assertThat(Pattern.matches(SYNC_URL_PATTERN, input))
-                .as("Input should match the sync URL pattern")
+    void testDataExchangeAddressPatternShouldMatchValidInput(String input) {
+        assertThat(Pattern.matches(ADDRESS_PATTERN, input))
+                .as("Input should match the data exchange address pattern")
                 .isTrue();
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"invalid-url", "ftp://example.com", "https://example.com:invalid-port"})
-    void testDataSyncSubscriberSyncUrlPatternShouldNotMatchValidInput(String input) {
-        assertThat(Pattern.matches(SYNC_URL_PATTERN, input))
-                .as("Input should not match the sync URL pattern")
+    @ValueSource(
+            strings = {
+                "http://invalid-url",
+                "https://invalid-url",
+                "ftp://example.com",
+                "https://example.com:invalid-port",
+                "example.com/path/to/resource"
+            })
+    void testDataExchangeAddressPatternShouldNotMatchInvalidInput(String input) {
+        assertThat(Pattern.matches(ADDRESS_PATTERN, input))
+                .as("Input should not match the data exchange address pattern")
                 .isFalse();
     }
 }

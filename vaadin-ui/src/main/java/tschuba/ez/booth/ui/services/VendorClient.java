@@ -20,12 +20,12 @@ import tschuba.ez.booth.proto.VendorServiceGrpc;
 import tschuba.ez.booth.services.VendorService;
 
 @Service
-public class VendorClientService implements VendorService {
+public class VendorClient implements VendorService {
 
     private final VendorServiceGrpc.VendorServiceBlockingStub client;
 
     @Autowired
-    public VendorClientService(@NonNull VendorServiceGrpc.VendorServiceBlockingStub client) {
+    public VendorClient(@NonNull VendorServiceGrpc.VendorServiceBlockingStub client) {
         this.client = client;
     }
 
@@ -46,11 +46,6 @@ public class VendorClientService implements VendorService {
 
     @Override
     public void save(DataModel.@NonNull Vendor vendor) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Override
-    public void delete(DataModel.Vendor.@NonNull Key key) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 }

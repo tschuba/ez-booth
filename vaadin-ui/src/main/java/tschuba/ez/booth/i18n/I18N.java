@@ -41,7 +41,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 public class I18N implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(I18N.class);
@@ -140,6 +139,10 @@ public class I18N implements Serializable {
         return Currency.getInstance(format.currencyCode());
     }
 
+    public static TextKey textKey(@NonNull String key) {
+        return new TextKey(key);
+    }
+
     public static class Config {
 
         private static final ObjectMapper OBJECT_MAPPER =
@@ -168,6 +171,7 @@ public class I18N implements Serializable {
 
         public static Config parse(@NonNull URL mappingFile) {
             try {
+                LOGGER.debug("Parsing mapping file: {}", mappingFile);
                 URI rootPath = parentPath(mappingFile);
                 LOGGER.debug("Root path for i18n files: {}", rootPath);
                 Mapping mapping = OBJECT_MAPPER.readValue(mappingFile, Mapping.class);
@@ -187,10 +191,9 @@ public class I18N implements Serializable {
         }
 
         private static URI parentPath(URL file) {
-            String filePath = file.getPath();
-            String parentPath = filePath.substring(0, filePath.lastIndexOf('/'));
-            return URI.create(
-                    "%s://%s%s".formatted(file.getProtocol(), file.getHost(), parentPath));
+            String url = file.toString();
+            String parentPathUrl = url.substring(0, url.lastIndexOf('/'));
+            return URI.create(parentPathUrl);
         }
 
         private static Locale parseLocaleString(String localeString) {
@@ -208,30 +211,23 @@ public class I18N implements Serializable {
             return builder.build();
         }
 
-        private static Optional<URI> localeFilePath(Locale locale, Mapping mapping, URI rootPath) {
-            final String localeString = (locale != null) ? locale.toString() : "";
-            LOGGER.debug("Searching mapping for locale '{}'", localeString);
-            return mapping.supportedLocales().entrySet().stream()
-                    .filter(entry -> equalsIgnoreCase(entry.getKey(), localeString))
-                    .map(Map.Entry::getValue)
-                    .map(
-                            fileName -> {
-                                String urlPath =
-                                        String.format("%s/%s", rootPath.getPath(), fileName);
-                                return UriComponentsBuilder.fromUri(rootPath)
-                                        .replacePath(urlPath)
-                                        .build()
-                                        .toUri();
-                            })
-                    .findFirst();
-        }
-
         private static Optional<Set> loadSet(Locale locale, Mapping mapping, URI rootPath)
                 throws IOException {
             Optional<URI> resourcePath = localeFilePath(locale, mapping, rootPath);
             LOGGER.debug("Loading mapping for locale '{}' from '{}'", locale, resourcePath);
             if (resourcePath.isPresent()) {
                 URL resource = resourcePath.get().toURL();
+                Set set = OBJECT_MAPPER.readValue(resource, Set.class);
+                return Optional.of(set);
+            }
+            return Optional.empty();
+        }
+
+        private Optional<Set> loadSet(Locale locale) throws IOException {
+            Optional<URI> resourcePath = localeFilePath(locale);
+            if (resourcePath.isPresent()) {
+                URL resource = resourcePath.get().toURL();
+                LOGGER.debug("Loading mapping for locale '{}' from '{}'", locale, resource);
                 Set set = OBJECT_MAPPER.readValue(resource, Set.class);
                 return Optional.of(set);
             }
@@ -276,37 +272,29 @@ public class I18N implements Serializable {
             }
         }
 
-        private Optional<Set> loadSet(Locale locale) throws IOException {
-            Optional<URI> resourcePath = localeFilePath(locale);
-            if (resourcePath.isPresent()) {
-                URL resource = resourcePath.get().toURL();
-                Set set = OBJECT_MAPPER.readValue(resource, Set.class);
-                return Optional.of(set);
-            }
-            return Optional.empty();
+        private static Optional<URI> localeFilePath(
+                Locale locale, @NonNull Mapping mapping, @NonNull URI rootPath) {
+            final String localeString = (locale != null) ? locale.toString() : "";
+            LOGGER.debug("Searching mapping for locale '{}'", localeString);
+            return mapping.supportedLocales().entrySet().stream()
+                    .filter(entry -> equalsIgnoreCase(entry.getKey(), localeString))
+                    .map(Map.Entry::getValue)
+                    .map(
+                            fileName -> {
+                                String url = String.format("%s/%s", rootPath.toString(), fileName);
+                                return URI.create(url);
+                            })
+                    .findFirst();
+        }
+
+        private Optional<URI> localeFilePath(Locale locale) {
+            return localeFilePath(locale, mapping, rootPath);
         }
 
         public List<Locale> providedLocales() {
             return mapping.supportedLocales().keySet().stream()
                     .map(Locale::forLanguageTag)
                     .toList();
-        }
-
-        private Optional<URI> localeFilePath(Locale locale) {
-            final String localeString = (locale != null) ? locale.toString() : "";
-            return mapping.supportedLocales().entrySet().stream()
-                    .filter(entry -> equalsIgnoreCase(entry.getKey(), localeString))
-                    .map(Map.Entry::getValue)
-                    .map(
-                            fileName -> {
-                                String urlPath =
-                                        String.format("%s/%s", rootPath.getPath(), fileName);
-                                return UriComponentsBuilder.fromUri(rootPath)
-                                        .replacePath(urlPath)
-                                        .build()
-                                        .toUri();
-                            })
-                    .findFirst();
         }
     }
 

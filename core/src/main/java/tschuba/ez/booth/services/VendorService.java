@@ -20,6 +20,4 @@ public interface VendorService {
     Optional<DataModel.Vendor> findById(@NonNull DataModel.Vendor.Key key);
 
     void save(@NonNull DataModel.Vendor vendor);
-
-    void delete(@NonNull DataModel.Vendor.Key key);
 }

@@ -54,7 +54,7 @@ public class ChargingLocalService implements ChargingService {
 
         BigDecimal vendorItemsSum =
                 purchaseItems
-                        .findPurchaseItemsByVendor(EntitiesMapper.objectToEntity(vendor))
+                        .findAllByVendor(EntitiesMapper.objectToEntity(vendor))
                         .map(EntityModel.PurchaseItem::getPrice)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO);
@@ -66,12 +66,15 @@ public class ChargingLocalService implements ChargingService {
 
         ServiceModel.ChargingConfig chargingConfig =
                 ServiceModel.ChargingConfig.of(EntitiesMapper.entityToObject(booth));
-        return chargingConfig.calculateFees(vendorItemsSum);
+        ServiceModel.ChargedFees chargedFees = chargingConfig.calculateFees(vendorItemsSum);
+        LOGGER.debug("Calculated fees for vendor {}: {}", vendor, chargedFees);
+        return chargedFees;
     }
 
     @Override
     @NonNull
     public ServiceModel.Balance.Output calculateBalance(@NonNull ServiceModel.Balance.Input input) {
+        LOGGER.debug("Calculating balance for input: {}", input);
         BigDecimal totalSalesAmount = input.totalSalesAmount();
         ServiceModel.ChargingConfig chargingConfig = input.chargingConfig();
         ServiceModel.ChargedFees chargedFees = chargingConfig.calculateFees(totalSalesAmount);

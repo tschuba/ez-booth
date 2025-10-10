@@ -9,6 +9,8 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tschuba.ez.booth.model.DataModel;
 
 /**
@@ -60,6 +62,8 @@ public final class ServiceModel {
             @NonNull BigDecimal salesFee,
             @NonNull BigDecimal roundingStep) {
 
+        private static final Logger LOGGER = LoggerFactory.getLogger(ChargingConfig.class);
+
         /**
          * Create a {@link ChargingConfig} from the given booth.
          *
@@ -83,9 +87,10 @@ public final class ServiceModel {
         public ChargedFees calculateFees(@NonNull BigDecimal value) {
             BigDecimal salesFee =
                     this.salesFee()
-                            .max(value)
+                            .multiply(value)
                             .scaleByPowerOfTen(-2)
                             .setScale(2, RoundingMode.HALF_UP);
+            LOGGER.debug("Calculated sales fee {} for value {}", salesFee, value);
             return ChargedFees.builder()
                     .participationFee(this.participationFee())
                     .salesFee(salesFee)

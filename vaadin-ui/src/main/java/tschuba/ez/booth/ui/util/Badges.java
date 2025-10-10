@@ -6,6 +6,7 @@ package tschuba.ez.booth.ui.util;
 
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.dom.ThemeList;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -24,6 +25,8 @@ public class Badges implements Consumer<Span> {
     static final String PRIMARY = "primary";
     static final String PILL = "pill";
     static final String SMALL = "small";
+
+    private static final Badges PRIMARY_CONTRAST = Badges.primary().contrast();
 
     private final boolean primary;
     private boolean contrast;
@@ -101,6 +104,13 @@ public class Badges implements Consumer<Span> {
 
     public Span applyTo(@NonNull Span span) {
         accept(span);
+        return span;
+    }
+
+    @NonNull
+    public static Span highlight(@NonNull Span span) {
+        PRIMARY_CONTRAST.applyTo(span);
+        span.addClassNames(LumoUtility.FontWeight.BLACK);
         return span;
     }
 

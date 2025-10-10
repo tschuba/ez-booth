@@ -5,10 +5,10 @@
 package tschuba.ez.booth.ui;
 
 import static lombok.AccessLevel.PRIVATE;
-import static tschuba.ez.booth.ui.util.Patterns.dataSync;
-import static tschuba.ez.booth.ui.util.Patterns.http;
+import static tschuba.ez.booth.ui.util.Patterns.dataExchange;
 
 import lombok.NoArgsConstructor;
+import tschuba.ez.booth.ui.util.Patterns;
 
 @NoArgsConstructor(access = PRIVATE)
 public class Constraints {
@@ -28,12 +28,16 @@ public class Constraints {
     }
 
     @NoArgsConstructor(access = PRIVATE)
-    public static class DataSync {
+    public static class DataExchange {
 
         @NoArgsConstructor(access = PRIVATE)
-        public static class Subscriber {
-            public static final String SYNC_URL_PATTERN =
-                    http().url().or(dataSync().encodedHostAddress()).wholeInput().pattern();
+        public static class Transfer {
+            public static final String ADDRESS_PATTERN =
+                    Patterns.dataExchange()
+                            .address()
+                            .or(dataExchange().encodedAddress())
+                            .wholeInput()
+                            .pattern();
         }
     }
 }

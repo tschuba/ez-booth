@@ -32,6 +32,7 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.ServiceModel;
 import tschuba.ez.booth.ui.CheckoutConfig;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
+import tschuba.ez.booth.ui.util.Buttons;
 
 @SpringComponent
 @UIScope
@@ -84,7 +85,7 @@ public class PurchaseSummary extends Div {
         checkoutButton.setDisableOnClick(true);
         checkoutButton.setEnabled(false);
         checkoutButton.setVisible(false);
-        checkoutButton.addClickListener(this::onClickCheckout);
+        Buttons.disableUntilAfterClick(checkoutButton, this::onClickCheckout);
 
         headerSection.add(header, itemCountSpan, checkoutButton);
 

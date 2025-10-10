@@ -5,7 +5,7 @@
 package tschuba.ez.booth.ui.components.event;
 
 import static tschuba.ez.booth.i18n.I18N.current;
-import static tschuba.ez.booth.i18n.TranslationKeys.EventSelection.NOTIFICATION__NO_EVENT_SELECTED;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothSelection.NOTIFICATION__NO_BOOTH_SELECTED;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -40,7 +40,7 @@ public class BoothSelection {
             Notifications.warning(
                     current()
                             .getTranslation(
-                                    NOTIFICATION__NO_EVENT_SELECTED, UI.getCurrent().getLocale()));
+                                    NOTIFICATION__NO_BOOTH_SELECTED, UI.getCurrent().getLocale()));
             RouteParameters rerouteParameters =
                     Routing.Parameters.builder().returnToView(originClass).build();
             enterEvent.rerouteTo(EntryView.class, rerouteParameters);

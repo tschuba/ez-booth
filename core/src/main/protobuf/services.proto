@@ -39,7 +39,6 @@ service VendorService {
   rpc SaveVendor(Vendor) returns (google.protobuf.Empty);
   rpc GetVendorsByBooth(BoothKey) returns (stream Vendor);
   rpc GetVendorByKey(VendorKey) returns (Vendor);
-  rpc DeleteVendor(VendorKey) returns (google.protobuf.Empty);
 }
 
 message ChargedFees {
@@ -104,7 +103,7 @@ message ExchangeSubscription {
 }
 
 service DataExchangeService {
-  rpc ExportLocalData(BoothKey) returns (ExchangeData);
-  rpc ImportRemoteData(stream ExchangeData) returns (google.protobuf.Empty);
-  rpc SubscribeForExchange(ExchangeReceiver) returns (ExchangeSubscription);
+  rpc SyncData(ExchangeData) returns (ExchangeData);
+  rpc ExportData(BoothKey) returns (ExchangeData);
+  rpc MergeData(ExchangeData) returns (google.protobuf.Empty);
 }
