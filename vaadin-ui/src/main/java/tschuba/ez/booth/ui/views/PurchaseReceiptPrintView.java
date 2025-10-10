@@ -165,7 +165,7 @@ public class PurchaseReceiptPrintView extends OneColumnLayout implements BeforeE
 
     /**
      * @param labelText text of the field label
-     * @return the byteValue field
+     * @return a component wrapping the label and value field
      */
     private Component wrapFieldWithLabel(String labelText, Component valueField) {
         Span label = createField(labelText);
