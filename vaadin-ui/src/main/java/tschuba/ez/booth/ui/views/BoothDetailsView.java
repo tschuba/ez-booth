@@ -67,6 +67,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
     private final Block totalParticipationFee;
     private final Block totalSalesFee;
     private final Block totalRevenue;
+    private final Block totalPayout;
 
     private final UpsertEventDialog editDialog;
 
@@ -133,7 +134,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
         deleteButton.addThemeVariants(LUMO_PRIMARY, LUMO_ERROR);
         deleteButton.addClassNames(Margin.Left.MEDIUM);
         deleteButton.addConfirmationListener(
-                clickEvent -> {
+                _ -> {
                     try {
                         DataModel.Booth.Key boothToDelete =
                                 boothRef.get().map(DataModel.Booth::key).orElseThrow();
@@ -173,12 +174,15 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
         totalParticipationFee = createBlock(TOTAL_PARTICIPATION_FEE__LABEL);
         totalSalesFee = createBlock(TOTAL_SALES_FEE__LABEL);
         totalRevenue = createBlock(TOTAL_REVENUE__LABEL);
+        totalPayout = createBlock(TOTAL_PAYOUT__LABEL);
 
         rightColumn.add(
                 totalVendorCount,
                 totalItemCount,
                 totalItemSum,
+                totalPayout,
                 totalParticipationFee,
+                totalSalesFee,
                 totalRevenue);
     }
 
@@ -218,10 +222,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                 new AtomicReference<>(BigDecimal.ZERO);
         final AtomicReference<BigDecimal> aggregatedParticipationFee =
                 new AtomicReference<>(BigDecimal.ZERO);
-        final AtomicReference<BigDecimal> aggregatedSalesFee =
-                new AtomicReference<>(BigDecimal.ZERO);
-        final AtomicReference<BigDecimal> aggregatedRevenue =
-                new AtomicReference<>(BigDecimal.ZERO);
+        final AtomicReference<BigDecimal> aggregatedPayout = new AtomicReference<>(BigDecimal.ZERO);
         allVendors.parallelStream()
                 .map(
                         vendor -> {
@@ -240,10 +241,13 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
                             aggregatedItemSum.accumulateAndGet(report.salesSum(), BigDecimal::add);
                             aggregatedParticipationFee.accumulateAndGet(
                                     report.participationFee(), BigDecimal::add);
-                            aggregatedSalesFee.accumulateAndGet(report.salesFee(), BigDecimal::add);
-                            aggregatedRevenue.accumulateAndGet(
+                            aggregatedPayout.accumulateAndGet(
                                     report.totalRevenue(), BigDecimal::add);
                         });
+        final BigDecimal aggregatedRevenue =
+                aggregatedItemSum.get().subtract(aggregatedPayout.get());
+        final BigDecimal aggregatedSalesFee =
+                aggregatedRevenue.subtract(aggregatedParticipationFee.get()).max(BigDecimal.ZERO);
 
         I18N.LocaleFormat format = I18N.format(getLocale());
 
@@ -256,9 +260,10 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
         totalVendorCount.setContent(Integer.toString(allVendors.size()));
         totalItemCount.setContent(Long.toString(itemCount.get()));
         totalItemSum.setContent(format.currency(aggregatedItemSum.get()));
+        totalPayout.setContent(format.currency(aggregatedPayout.get()));
         totalParticipationFee.setContent(format.currency(aggregatedParticipationFee.get()));
-        totalSalesFee.setContent(format.currency(aggregatedSalesFee.get()));
-        totalRevenue.setContent(format.currency(aggregatedRevenue.get()));
+        totalSalesFee.setContent(format.currency(aggregatedSalesFee));
+        totalRevenue.setContent(format.currency(aggregatedRevenue));
 
         editButton.setEnabled(!booth.closed());
         String editButtonText =

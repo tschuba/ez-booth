@@ -90,6 +90,7 @@ public interface TranslationKeys {
         String TOTAL_PARTICIPATION_FEE__LABEL = "BoothDetailsView.totalParticipationFee.label";
         String TOTAL_SALES_FEE__LABEL = "BoothDetailsView.totalSalesFee.label";
         String TOTAL_REVENUE__LABEL = "BoothDetailsView.totalRevenue.label";
+        String TOTAL_PAYOUT__LABEL = "BoothDetailsView.totalPayout.label";
         String NOTIFICATION__ILLEGAL_ARGUMENTS = "BoothDetailsView.notification.illegalArguments";
         String EDIT_BUTTON__TEXT = "BoothDetailsView.editButton.text";
         String EDIT_BUTTON_DISABLED__TEXT = "BoothDetailsView.editButton.disabled.text";
