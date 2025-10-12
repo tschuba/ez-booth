@@ -145,7 +145,7 @@ public class ReportingLocalService implements ReportingService {
     }
 
     List<ServiceModel.VendorReportData> vendorReportData =
-        Arrays.stream(vendors).map(this::createVendorReportData).toList();
+        Arrays.stream(vendors).map(this::createVendorReportData).sorted().toList();
 
     VendorReportTemplate template = new VendorReportTemplate();
     try (FileWriter fileWriter = new FileWriter(reportFilePath.toFile())) {

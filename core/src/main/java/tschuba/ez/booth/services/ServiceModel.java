@@ -7,10 +7,12 @@ package tschuba.ez.booth.services;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import lombok.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tschuba.ez.booth.Try;
 import tschuba.ez.booth.model.DataModel;
 
 /**
@@ -132,7 +134,24 @@ public final class ServiceModel {
       @NonNull BigDecimal salesSum,
       @NonNull BigDecimal participationFee,
       @NonNull BigDecimal salesFee,
-      @NonNull BigDecimal totalRevenue) {}
+      @NonNull BigDecimal totalRevenue)
+      implements Comparable<VendorReportData> {
+
+    @Override
+    public int compareTo(VendorReportData other) {
+      DataModel.Vendor.Key key = this.vendor().key(), otherKey = other.vendor().key();
+
+      Long vendorId = Try.tryTo(() -> Long.parseLong(key.vendorId())).orElse(null),
+          otherVendorId = Try.tryTo(() -> Long.parseLong(otherKey.vendorId())).orElse(null);
+      if (vendorId != null && otherVendorId != null) {
+        return vendorId.compareTo(otherVendorId);
+      }
+
+      return Comparator.comparing(DataModel.Vendor.Key::booth)
+          .thenComparing(DataModel.Vendor.Key::vendorId)
+          .compare(key, otherKey);
+    }
+  }
 
   /**
    * Data for data exchange operations.
