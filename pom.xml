@@ -130,6 +130,7 @@
                         </format>
                     </formats>
                     <java>
+                        <forbidWildcardImports/>
                         <googleJavaFormat>
                             <version>1.29.0</version>
                             <style>GOOGLE</style>

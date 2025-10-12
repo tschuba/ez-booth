@@ -4,9 +4,33 @@
  */
 package tschuba.ez.booth.ui.views;
 
-import static com.vaadin.flow.component.button.ButtonVariant.*;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_ERROR;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_PRIMARY;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static java.util.Optional.empty;
-import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.*;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.CLOSE_BOOTH_FAILED__MESSAGE;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.CLOSE_BUTTON__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.DATE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.DELETE_BOOTH_FAILED__MESSAGE;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.DELETE_BUTTON_DISABLED__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.DELETE_BUTTON__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.DESCRIPTION__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.EDIT_BUTTON_DISABLED__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.EDIT_BUTTON__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.FEES_ROUNDING_STEP__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.OPEN_BOOTH_FAILED__MESSAGE;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.OPEN_BUTTON__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.PARTICIPATION_FEE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.SALES_FEE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TITLE;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_ITEM_COUNT__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_ITEM_SUM__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_PARTICIPATION_FEE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_PAYOUT__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_PURCHASE_COUNT__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_REVENUE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_SALES_FEE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_VENDOR_COUNT__LABEL;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -36,14 +60,22 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.services.*;
+import tschuba.ez.booth.services.BoothService;
+import tschuba.ez.booth.services.PurchaseService;
+import tschuba.ez.booth.services.ReportingException;
+import tschuba.ez.booth.services.ReportingService;
+import tschuba.ez.booth.services.VendorService;
 import tschuba.ez.booth.ui.components.ConfirmativeButton;
 import tschuba.ez.booth.ui.components.event.BoothSavedEvent;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.components.event.UpsertEventDialog;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
-import tschuba.ez.booth.ui.util.*;
+import tschuba.ez.booth.ui.util.Buttons;
+import tschuba.ez.booth.ui.util.NavigateTo;
+import tschuba.ez.booth.ui.util.Notifications;
+import tschuba.ez.booth.ui.util.Routing;
+import tschuba.ez.booth.ui.util.Spacing;
 
 @Route(
     value = "booth/:" + Routing.Parameters.ROUTE_PARAM__BOOTH_ID,
