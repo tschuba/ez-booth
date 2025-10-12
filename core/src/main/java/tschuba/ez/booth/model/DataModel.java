@@ -4,6 +4,7 @@
  */
 package tschuba.ez.booth.model;
 
+import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,17 +20,17 @@ public final class DataModel {
 
   @Builder(toBuilder = true)
   public record Booth(
-      Key key,
-      String description,
-      LocalDate date,
-      BigDecimal participationFee,
-      BigDecimal salesFee,
-      BigDecimal feesRoundingStep,
+      @NonNull Key key,
+      @NonNull String description,
+      @NonNull LocalDate date,
+      @NonNull BigDecimal participationFee,
+      @NonNull BigDecimal salesFee,
+      @NonNull BigDecimal feesRoundingStep,
       boolean closed,
-      LocalDateTime closedOn) {
+      @Nullable LocalDateTime closedOn) {
 
     @Builder(toBuilder = true)
-    public record Key(String boothId) implements Comparable<Key> {
+    public record Key(@NonNull String boothId) implements Comparable<Key> {
       @Override
       public int compareTo(@NonNull Key key) {
         return Comparator.comparing(Key::boothId).compare(this, key);
@@ -39,10 +40,10 @@ public final class DataModel {
 
   @Builder(toBuilder = true)
   public record Purchase(
-      @EqualsAndHashCode.Include Key key,
-      BigDecimal value,
-      LocalDateTime purchasedOn,
-      List<PurchaseItem> items) {
+      @EqualsAndHashCode.Include @NonNull Key key,
+      @NonNull BigDecimal value,
+      @NonNull LocalDateTime purchasedOn,
+      @NonNull List<PurchaseItem> items) {
 
     @Builder(toBuilder = true)
     public record Key(Booth.Key booth, String purchaseId) implements Comparable<Key> {
@@ -55,8 +56,8 @@ public final class DataModel {
 
   @Builder(toBuilder = true)
   public record PurchaseItem(
-      @EqualsAndHashCode.Include Key key,
-      @EqualsAndHashCode.Include Vendor.Key vendor,
+      @EqualsAndHashCode.Include @NonNull Key key,
+      @EqualsAndHashCode.Include @NonNull Vendor.Key vendor,
       BigDecimal price,
       LocalDateTime purchasedOn) {
 
@@ -70,9 +71,9 @@ public final class DataModel {
   }
 
   @Builder(toBuilder = true)
-  public record Vendor(@EqualsAndHashCode.Include Key key) {
+  public record Vendor(@EqualsAndHashCode.Include @NonNull Key key) {
 
     @Builder(toBuilder = true)
-    public record Key(Booth.Key booth, String vendorId) {}
+    public record Key(@NonNull Booth.Key booth, @NonNull String vendorId) {}
   }
 }

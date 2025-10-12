@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
  * Entity model test data.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ModelTestData {
+public class EntityModelTestData {
 
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   public static class Entities {
@@ -53,6 +53,7 @@ public class ModelTestData {
     public static final EntityModel.Booth BOOTH =
         EntityModel.Booth.builder()
             .key(BOOTH_KEY)
+            .date(ModelTestValues.BOOTH_DATE)
             .description(ModelTestValues.BOOTH_DESCRIPTION)
             .closed(true)
             .closedOn(ModelTestValues.BOOTH_CLOSED_ON)
@@ -73,6 +74,7 @@ public class ModelTestData {
     public static final DataModel.Booth BOOTH =
         DataModel.Booth.builder()
             .key(BOOTH_KEY)
+            .date(ModelTestValues.BOOTH_DATE)
             .description(ModelTestValues.BOOTH_DESCRIPTION)
             .closed(true)
             .closedOn(ModelTestValues.BOOTH_CLOSED_ON)

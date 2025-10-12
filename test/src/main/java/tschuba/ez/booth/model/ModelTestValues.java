@@ -5,6 +5,7 @@
 package tschuba.ez.booth.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ModelTestValues {
   public static final String BOOTH_ID = "test-booth";
+  public static final LocalDate BOOTH_DATE = LocalDate.of(2025, 10, 12);
   public static final String BOOTH_DESCRIPTION = "Test Booth";
   public static final LocalDateTime BOOTH_CLOSED_ON = LocalDateTime.of(2025, 10, 2, 17, 30, 44);
   public static final float FEES_ROUNDING_STEP = .5f;

@@ -8,8 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import tschuba.ez.booth.model.ModelTestData.Entities;
-import tschuba.ez.booth.model.ModelTestData.Objects;
+import tschuba.ez.booth.model.EntityModelTestData.Entities;
+import tschuba.ez.booth.model.EntityModelTestData.Objects;
 
 /**
  * Unit tests for {@link EntitiesMapper}.
