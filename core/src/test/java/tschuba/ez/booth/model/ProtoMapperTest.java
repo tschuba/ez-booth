@@ -5,8 +5,8 @@
 package tschuba.ez.booth.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tschuba.ez.booth.model.ModelTestData.Messages;
-import static tschuba.ez.booth.model.ModelTestData.Objects;
+import static tschuba.ez.booth.model.CoreModelTestData.Messages;
+import static tschuba.ez.booth.model.CoreModelTestData.Objects;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
