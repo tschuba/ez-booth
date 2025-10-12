@@ -8,6 +8,6 @@ Successor to [tschuba/ez-basar](https://github.com/tschuba/ez-basar).
 
 ```shell
 ./mvnw clean compile &&
-  ./mvnw install -pl .,core && 
+  ./mvnw install -pl .,core,test && 
   ./mvnw -Pproduction package -pl server,vaadin-ui
 ```

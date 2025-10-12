@@ -17,8 +17,8 @@ import org.mockito.Mockito;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 
-/** Test class for {@link HostUtils} */
-class HostUtilsTest {
+/** Test class for {@link Server} */
+class ServerTest {
 
   @Test
   void testExternalHostAddress() {

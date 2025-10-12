@@ -10,13 +10,14 @@ import java.time.ZoneOffset;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import tschuba.ez.booth.proto.ProtoCore;
 import tschuba.ez.booth.proto.ProtoModel;
 
 /**
  * Test data for model and proto classes.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ModelTestData {
+public class CoreModelTestData {
 
   /**
    * Data model test data.
@@ -29,6 +30,7 @@ public class ModelTestData {
     public static final DataModel.Booth BOOTH =
         DataModel.Booth.builder()
             .key(BOOTH_KEY)
+            .date(ModelTestValues.BOOTH_DATE)
             .description(ModelTestValues.BOOTH_DESCRIPTION)
             .closed(true)
             .closedOn(ModelTestValues.BOOTH_CLOSED_ON)
@@ -83,6 +85,12 @@ public class ModelTestData {
     public static final ProtoModel.Booth BOOTH =
         ProtoModel.Booth.newBuilder()
             .setKey(BOOTH_KEY)
+            .setDate(
+                ProtoCore.Date.newBuilder()
+                    .setYear(ModelTestValues.BOOTH_DATE.getYear())
+                    .setMonth(ModelTestValues.BOOTH_DATE.getMonthValue())
+                    .setDay(ModelTestValues.BOOTH_DATE.getDayOfMonth())
+                    .build())
             .setDescription(ModelTestValues.BOOTH_DESCRIPTION)
             .setClosed(true)
             .setClosedOn(

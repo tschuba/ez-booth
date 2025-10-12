@@ -29,7 +29,8 @@ class ExchangeAddressCodecTest {
         arguments("192.168.178.255", ":/w=="),
         arguments("0.0.0.0", ":AAAAAA=="),
         arguments("255.255.255.255", "://///w=="),
-        arguments("192.168.178.76:9090", "TKOC"));
+        arguments("192.168.178.76:9090", "TKOC"),
+        arguments("192.168.179.28:9090", "sxyjgg=="));
   }
 
   private static Stream<String> provideValidUrls() {
