@@ -4,20 +4,50 @@
  */
 package tschuba.ez.booth.ui.views;
 
-import static com.vaadin.flow.component.button.ButtonVariant.*;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_ERROR;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_PRIMARY;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static java.util.Optional.empty;
-import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.*;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.CLOSE_BOOTH_FAILED__MESSAGE;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.CLOSE_BUTTON__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.DATE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.DELETE_BOOTH_FAILED__MESSAGE;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.DELETE_BUTTON_DISABLED__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.DELETE_BUTTON__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.DESCRIPTION__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.EDIT_BUTTON_DISABLED__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.EDIT_BUTTON__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.FEES_ROUNDING_STEP__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.OPEN_BOOTH_FAILED__MESSAGE;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.OPEN_BUTTON__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.PARTICIPATION_FEE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.SALES_FEE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TITLE;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_ITEM_COUNT__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_ITEM_SUM__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_PARTICIPATION_FEE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_PAYOUT__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_PURCHASE_COUNT__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_REVENUE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_SALES_FEE__LABEL;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_VENDOR_COUNT__LABEL;
 
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.card.Card;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import java.math.BigDecimal;
@@ -31,43 +61,49 @@ import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.BoothService;
+import tschuba.ez.booth.services.PurchaseService;
 import tschuba.ez.booth.services.ReportingException;
 import tschuba.ez.booth.services.ReportingService;
 import tschuba.ez.booth.services.VendorService;
-import tschuba.ez.booth.ui.components.Block;
 import tschuba.ez.booth.ui.components.ConfirmativeButton;
 import tschuba.ez.booth.ui.components.event.BoothSavedEvent;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.components.event.UpsertEventDialog;
-import tschuba.ez.booth.ui.layouts.TwoColumnLayout;
+import tschuba.ez.booth.ui.layouts.OneColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
-import tschuba.ez.booth.ui.util.*;
+import tschuba.ez.booth.ui.util.Buttons;
+import tschuba.ez.booth.ui.util.NavigateTo;
+import tschuba.ez.booth.ui.util.Notifications;
+import tschuba.ez.booth.ui.util.Routing;
+import tschuba.ez.booth.ui.util.Spacing;
 
 @Route(
     value = "booth/:" + Routing.Parameters.ROUTE_PARAM__BOOTH_ID,
     layout = AppLayoutWithMenu.class)
 @SpringComponent
 @UIScope
-public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObserver {
-  private final BoothService booths;
-  private final VendorService vendors;
+public class BoothDetailsView extends OneColumnLayout implements BeforeEnterObserver {
+  private final BoothService boothRepo;
+  private final VendorService vendorRepo;
+  private final PurchaseService purchaseRepo;
   private final ReportingService reportingService;
 
   private final AtomicReference<Optional<DataModel.Booth>> boothRef =
       new AtomicReference<>(empty());
 
-  private final Block description;
-  private final Block date;
-  private final Block participationFee;
-  private final Block salesFee;
-  private final Block feesRoundingStep;
-  private final Block totalVendorCount;
-  private final Block totalItemCount;
-  private final Block totalItemSum;
-  private final Block totalParticipationFee;
-  private final Block totalSalesFee;
-  private final Block totalRevenue;
-  private final Block totalPayout;
+  private final Card description = new Card();
+  private final Card date = new Card();
+  private final Card participationFee = new Card();
+  private final Card salesFee = new Card();
+  private final Card feesRoundingStep = new Card();
+  private final Card totalVendorCount = new Card();
+  private final Card totalPurchaseCount = new Card();
+  private final Card totalItemCount = new Card();
+  private final Card totalItemSum = new Card();
+  private final Card totalParticipationFee = new Card();
+  private final Card totalSalesFee = new Card();
+  private final Card totalRevenue = new Card();
+  private final Card totalPayout = new Card();
 
   private final UpsertEventDialog editDialog;
 
@@ -80,9 +116,11 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
       @NonNull final BoothService booths,
       @NonNull final BoothService boothService,
       @NonNull final VendorService vendors,
+      @NonNull PurchaseService purchase,
       @NonNull final ReportingService reportingService) {
-    this.booths = booths;
-    this.vendors = vendors;
+    this.boothRepo = booths;
+    this.vendorRepo = vendors;
+    this.purchaseRepo = purchase;
     this.reportingService = reportingService;
 
     editDialog = new UpsertEventDialog(booths);
@@ -152,37 +190,68 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
     actionBar.addClassNames(Padding.Top.SMALL, Padding.Bottom.LARGE);
     setTitle(getTranslation(TITLE), actionBar);
 
-    Div leftColumn = new Div();
-    setLeftColumn(leftColumn);
+    VerticalLayout eventConfig = new VerticalLayout(Alignment.STRETCH);
+    eventConfig.setJustifyContentMode(JustifyContentMode.BETWEEN);
+    eventConfig.setPadding(false);
+    eventConfig.setMargin(false);
+    Spacing.spacing(eventConfig).xsmall();
 
-    Div rightColumn = new Div();
-    setRightColumn(rightColumn);
+    HorizontalLayout dateAndFees =
+        new HorizontalLayout(Alignment.STRETCH, date, participationFee, salesFee, feesRoundingStep);
+    dateAndFees.setJustifyContentMode(JustifyContentMode.BETWEEN);
+    Spacing.spacing(dateAndFees).xsmall();
 
-    description = createBlock(DESCRIPTION__LABEL);
-    date = createBlock(DATE__LABEL);
-    participationFee = createBlock(PARTICIPATION_FEE__LABEL);
-    salesFee = createBlock(SALES_FEE__LABEL);
-    feesRoundingStep = createBlock(FEES_ROUNDING_STEP__LABEL);
+    eventConfig.add(description, dateAndFees);
+    eventConfig.add(editDialog);
 
-    leftColumn.add(description, date, participationFee, salesFee, feesRoundingStep);
-    leftColumn.add(editDialog);
+    VerticalLayout totalFees =
+        new VerticalLayout(Alignment.STRETCH, totalParticipationFee, totalSalesFee);
+    totalFees.setJustifyContentMode(JustifyContentMode.BETWEEN);
+    totalFees.setPadding(false);
+    totalFees.setMargin(false);
+    Spacing.spacing(totalFees).xsmall();
 
-    totalVendorCount = createBlock(TOTAL_VENDOR_COUNT__LABEL);
-    totalItemCount = createBlock(TOTAL_ITEM_COUNT__LABEL);
-    totalItemSum = createBlock(TOTAL_ITEM_SUM__LABEL);
-    totalParticipationFee = createBlock(TOTAL_PARTICIPATION_FEE__LABEL);
-    totalSalesFee = createBlock(TOTAL_SALES_FEE__LABEL);
-    totalRevenue = createBlock(TOTAL_REVENUE__LABEL);
-    totalPayout = createBlock(TOTAL_PAYOUT__LABEL);
+    totalRevenue.add(totalFees);
 
-    rightColumn.add(
-        totalVendorCount,
-        totalItemCount,
-        totalItemSum,
-        totalPayout,
-        totalParticipationFee,
-        totalSalesFee,
-        totalRevenue);
+    HorizontalLayout totalValues =
+        new HorizontalLayout(Alignment.STRETCH, totalItemSum, totalRevenue, totalPayout);
+    totalValues.setJustifyContentMode(JustifyContentMode.BETWEEN);
+    Spacing.spacing(totalValues).xsmall();
+
+    totalPurchaseCount.setMedia(LineAwesomeIcon.SHOPPING_BAG_SOLID.create());
+    totalVendorCount.setMedia(LineAwesomeIcon.USERS_SOLID.create());
+    totalItemCount.setMedia(LineAwesomeIcon.GIFTS_SOLID.create());
+    HorizontalLayout totalCounts =
+        new HorizontalLayout(
+            Alignment.STRETCH, totalPurchaseCount, totalVendorCount, totalItemCount);
+    totalCounts.setJustifyContentMode(JustifyContentMode.BETWEEN);
+    totalCounts.setWidthFull();
+    Spacing.spacing(totalCounts).xsmall();
+
+    VerticalLayout content = new VerticalLayout(eventConfig, totalValues, totalCounts);
+    content.setPadding(false);
+    content.setMargin(false);
+    Spacing.spacing(content).xlarge();
+    setContent(content);
+  }
+
+  @Override
+  protected void onAttach(AttachEvent attachEvent) {
+    description.setTitle(getTranslation(DESCRIPTION__LABEL));
+    date.setTitle(getTranslation(DATE__LABEL));
+
+    participationFee.setTitle(getTranslation(PARTICIPATION_FEE__LABEL));
+    salesFee.setTitle(getTranslation(SALES_FEE__LABEL));
+    feesRoundingStep.setTitle(getTranslation(FEES_ROUNDING_STEP__LABEL));
+
+    totalVendorCount.setTitle(new Span(getTranslation(TOTAL_VENDOR_COUNT__LABEL)));
+    totalItemCount.setTitle(new Span(getTranslation(TOTAL_ITEM_COUNT__LABEL)));
+    totalPurchaseCount.setTitle(new Span(getTranslation(TOTAL_PURCHASE_COUNT__LABEL)));
+    totalItemSum.setTitle(getTranslation(TOTAL_ITEM_SUM__LABEL));
+    totalParticipationFee.setSubtitle(new Span(getTranslation(TOTAL_PARTICIPATION_FEE__LABEL)));
+    totalSalesFee.setSubtitle(new Span(getTranslation(TOTAL_SALES_FEE__LABEL)));
+    totalRevenue.setTitle(getTranslation(TOTAL_REVENUE__LABEL));
+    totalPayout.setTitle(getTranslation(TOTAL_PAYOUT__LABEL));
   }
 
   @Override
@@ -196,7 +265,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
     }
 
     Optional<DataModel.Booth> boothData =
-        booths.findById(DataModel.Booth.Key.builder().boothId(eventId.get()).build());
+        boothRepo.findById(DataModel.Booth.Key.builder().boothId(eventId.get()).build());
     updateView(boothData.orElseThrow());
   }
 
@@ -212,7 +281,7 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
   private void updateView() {
     final DataModel.Booth booth = boothRef.get().orElseThrow();
     List<DataModel.Vendor.Key> allVendors =
-        vendors.findByBooth(booth.key()).map(DataModel.Vendor::key).toList();
+        vendorRepo.findByBooth(booth.key()).map(DataModel.Vendor::key).toList();
 
     final AtomicInteger itemCount = new AtomicInteger(0);
     final AtomicReference<BigDecimal> aggregatedItemSum = new AtomicReference<>(BigDecimal.ZERO);
@@ -241,21 +310,30 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
     final BigDecimal aggregatedSalesFee =
         aggregatedRevenue.subtract(aggregatedParticipationFee.get()).max(BigDecimal.ZERO);
 
+    long countOfPurchases = purchaseRepo.findByBooth(booth.key()).count();
+
     I18N.LocaleFormat format = I18N.format(getLocale());
 
-    description.setContent(booth.description());
-    date.setContent(format.date(booth.date()));
-    participationFee.setContent(format.currency(booth.participationFee()));
-    salesFee.setContent(String.format("%s %%", format.decimalNumber(booth.salesFee())));
-    feesRoundingStep.setContent(format.currency(booth.feesRoundingStep()));
+    description.add(booth.description());
+    date.setSubtitle(valueComponent(format.date(booth.date()), FontSize.LARGE));
+    participationFee.setSubtitle(
+        valueComponent(format.currency(booth.participationFee()), FontSize.LARGE));
+    salesFee.setSubtitle(
+        valueComponent("%s %%".formatted(format.decimalNumber(booth.salesFee())), FontSize.LARGE));
+    feesRoundingStep.setSubtitle(
+        valueComponent(format.currency(booth.feesRoundingStep()), FontSize.LARGE));
 
-    totalVendorCount.setContent(Integer.toString(allVendors.size()));
-    totalItemCount.setContent(Long.toString(itemCount.get()));
-    totalItemSum.setContent(format.currency(aggregatedItemSum.get()));
-    totalPayout.setContent(format.currency(aggregatedPayout.get()));
-    totalParticipationFee.setContent(format.currency(aggregatedParticipationFee.get()));
-    totalSalesFee.setContent(format.currency(aggregatedSalesFee));
-    totalRevenue.setContent(format.currency(aggregatedRevenue));
+    totalVendorCount.setSubtitle(valueComponent(Integer.toString(allVendors.size())));
+    totalPurchaseCount.setSubtitle(valueComponent(Long.toString(countOfPurchases)));
+    totalItemCount.setSubtitle(valueComponent(Long.toString(itemCount.get())));
+
+    totalItemSum.setSubtitle(valueComponent(format.currency(aggregatedItemSum.get())));
+    totalParticipationFee.setHeaderSuffix(
+        new Span(format.currency(aggregatedParticipationFee.get())));
+    totalSalesFee.setHeaderSuffix(new Span(format.currency(aggregatedSalesFee)));
+    totalRevenue.setSubtitle(valueComponent(format.currency(aggregatedRevenue)));
+
+    totalPayout.setSubtitle(valueComponent(format.currency(aggregatedPayout.get())));
 
     editButton.setEnabled(!booth.closed());
     String editButtonText =
@@ -272,9 +350,13 @@ public class BoothDetailsView extends TwoColumnLayout implements BeforeEnterObse
     Tooltip.forComponent(deleteButton).setText(deleteButtonText);
   }
 
-  private Block createBlock(String titleKey) {
-    Block block = new Block();
-    block.setTitle(getTranslation(titleKey));
-    return block;
+  private static Component valueComponent(@NonNull final String value) {
+    return valueComponent(value, FontSize.XXLARGE);
+  }
+
+  private static Component valueComponent(@NonNull final String value, @NonNull String fontSize) {
+    Span span = new Span(value);
+    span.addClassNames(fontSize, Padding.Top.MEDIUM);
+    return span;
   }
 }
