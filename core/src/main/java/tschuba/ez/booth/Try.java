@@ -60,9 +60,10 @@ public interface Try<T> {
 
   /**
    * Executes the given supplier and returns a Try representing the outcome.
+   * @param <V> The type of the result value.
    * @param supplier The supplier to execute.
    * @return A successful Try with the supplied value if the supplier completes without throwing an exception,
-   * @param <V> The type of the result value.
+   *         or a failed Try containing the thrown exception if an exception is thrown during execution.
    */
   static <V> Try<V> tryTo(@NonNull Supplier<V> supplier) {
     try {
