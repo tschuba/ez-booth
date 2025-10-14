@@ -7,7 +7,7 @@ Successor to [tschuba/ez-basar](https://github.com/tschuba/ez-basar).
 ### Build the application
 
 ```shell
-./mvnw install -pl .,core,test && 
+./mvnw install -pl .,test,core && 
   ./mvnw package -Pproduction -pl server,vaadin-ui
 ```
 
