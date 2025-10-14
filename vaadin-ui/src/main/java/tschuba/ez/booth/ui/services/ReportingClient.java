@@ -6,6 +6,7 @@ package tschuba.ez.booth.ui.services;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +21,30 @@ import tschuba.ez.booth.services.ServiceModel;
 
 @Service
 public class ReportingClient implements ReportingService {
-  private final ReportingServiceGrpc.ReportingServiceBlockingStub client;
+  private final ReportingServiceGrpc.ReportingServiceBlockingStub blockingClient;
 
   @Autowired
-  public ReportingClient(@NonNull ReportingServiceGrpc.ReportingServiceBlockingStub client) {
-    this.client = client;
+  public ReportingClient(
+      @NonNull ReportingServiceGrpc.ReportingServiceBlockingStub blockingClient) {
+    this.blockingClient = blockingClient;
   }
 
   @Override
   public @NonNull ServiceModel.VendorReportData createVendorReportData(
-      DataModel.Vendor.@NonNull Key vendor) {
+      @NonNull DataModel.Vendor.Key vendor) {
     ProtoServices.VendorReportData vendorReportData =
-        client.createVendorReportData(ProtoMapper.objectToMessage(vendor));
+        blockingClient.createVendorReportData(ProtoMapper.objectToMessage(vendor));
     return ProtoMapper.messageToObject(vendorReportData);
+  }
+
+  /**
+   * Asynchronously creates a vendor report data for the specified vendor.
+   * @param vendor the vendor to create the report data for
+   * @return a Future containing the vendor report data
+   */
+  public @NonNull CompletableFuture<ServiceModel.VendorReportData> createVendorReportDataAsync(
+      @NonNull DataModel.Vendor.Key vendor) {
+    return CompletableFuture.supplyAsync(() -> createVendorReportData(vendor));
   }
 
   @Override
@@ -41,7 +53,18 @@ public class ReportingClient implements ReportingService {
         ProtoServices.VendorReportInput.newBuilder();
     Arrays.stream(vendors).map(ProtoMapper::objectToMessage).forEach(inputBuilder::addVendor);
 
-    ProtoCore.URI reportUri = client.generateVendorReport(inputBuilder.build());
+    ProtoCore.URI reportUri = blockingClient.generateVendorReport(inputBuilder.build());
     return ProtoMapper.messageToObject(reportUri);
+  }
+
+  /**
+   * Asynchronously generates a vendor report for the specified vendors.
+   *
+   * @param vendors the vendors to include in the report
+   * @return a Future containing the URI of the generated report
+   */
+  public @NonNull CompletableFuture<URI> generateVendorReportAsync(
+      @NotNull DataModel.Vendor.@NonNull Key... vendors) {
+    return CompletableFuture.supplyAsync(() -> generateVendorReport(vendors));
   }
 }

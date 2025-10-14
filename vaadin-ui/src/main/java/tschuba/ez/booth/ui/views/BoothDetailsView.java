@@ -34,6 +34,7 @@ import static tschuba.ez.booth.i18n.TranslationKeys.BoothDetailsView.TOTAL_VENDO
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.card.Card;
 import com.vaadin.flow.component.html.Span;
@@ -51,19 +52,20 @@ import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 import lombok.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.services.BoothService;
 import tschuba.ez.booth.services.PurchaseService;
-import tschuba.ez.booth.services.ReportingException;
-import tschuba.ez.booth.services.ReportingService;
 import tschuba.ez.booth.services.VendorService;
 import tschuba.ez.booth.ui.components.ConfirmativeButton;
 import tschuba.ez.booth.ui.components.event.BoothSavedEvent;
@@ -71,6 +73,7 @@ import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.components.event.UpsertEventDialog;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
+import tschuba.ez.booth.ui.services.ReportingClient;
 import tschuba.ez.booth.ui.util.Buttons;
 import tschuba.ez.booth.ui.util.NavigateTo;
 import tschuba.ez.booth.ui.util.Notifications;
@@ -83,10 +86,12 @@ import tschuba.ez.booth.ui.util.Spacing;
 @SpringComponent
 @UIScope
 public class BoothDetailsView extends OneColumnLayout implements BeforeEnterObserver {
+  private static final Logger LOGGER = LoggerFactory.getLogger(BoothDetailsView.class);
+
   private final BoothService boothRepo;
   private final VendorService vendorRepo;
   private final PurchaseService purchaseRepo;
-  private final ReportingService reportingService;
+  private final ReportingClient reportingClient;
 
   private final AtomicReference<Optional<DataModel.Booth>> boothRef =
       new AtomicReference<>(empty());
@@ -117,11 +122,11 @@ public class BoothDetailsView extends OneColumnLayout implements BeforeEnterObse
       @NonNull final BoothService boothService,
       @NonNull final VendorService vendors,
       @NonNull PurchaseService purchase,
-      @NonNull final ReportingService reportingService) {
+      @NonNull final ReportingClient reportingClient) {
     this.boothRepo = booths;
     this.vendorRepo = vendors;
     this.purchaseRepo = purchase;
-    this.reportingService = reportingService;
+    this.reportingClient = reportingClient;
 
     editDialog = new UpsertEventDialog(booths);
     editDialog.addEventSavedListener(this::onEventSaved);
@@ -273,46 +278,14 @@ public class BoothDetailsView extends OneColumnLayout implements BeforeEnterObse
     updateView(boothSavedEvent.getBooth());
   }
 
-  private void updateView(final DataModel.Booth booth) {
+  private void updateView(@NonNull final DataModel.Booth booth) {
     this.boothRef.set(Optional.of(booth));
-    updateView();
-  }
+    final UI currentUI =
+        this.getUI()
+            .or(() -> UI.getCurrent().getUI())
+            .orElseThrow(() -> new IllegalStateException("No UI!"));
 
-  private void updateView() {
-    final DataModel.Booth booth = boothRef.get().orElseThrow();
-    List<DataModel.Vendor.Key> allVendors =
-        vendorRepo.findByBooth(booth.key()).map(DataModel.Vendor::key).toList();
-
-    final AtomicInteger itemCount = new AtomicInteger(0);
-    final AtomicReference<BigDecimal> aggregatedItemSum = new AtomicReference<>(BigDecimal.ZERO);
-    final AtomicReference<BigDecimal> aggregatedParticipationFee =
-        new AtomicReference<>(BigDecimal.ZERO);
-    final AtomicReference<BigDecimal> aggregatedPayout = new AtomicReference<>(BigDecimal.ZERO);
-    allVendors.parallelStream()
-        .map(
-            vendor -> {
-              try {
-                return reportingService.createVendorReportData(vendor);
-              } catch (ReportingException ex) {
-                throw new RuntimeException(
-                    "Failed to generate report data for vendor %s".formatted(vendor), ex);
-              }
-            })
-        .forEach(
-            report -> {
-              itemCount.addAndGet(report.items().size());
-              aggregatedItemSum.accumulateAndGet(report.salesSum(), BigDecimal::add);
-              aggregatedParticipationFee.accumulateAndGet(
-                  report.participationFee(), BigDecimal::add);
-              aggregatedPayout.accumulateAndGet(report.totalRevenue(), BigDecimal::add);
-            });
-    final BigDecimal aggregatedRevenue = aggregatedItemSum.get().subtract(aggregatedPayout.get());
-    final BigDecimal aggregatedSalesFee =
-        aggregatedRevenue.subtract(aggregatedParticipationFee.get()).max(BigDecimal.ZERO);
-
-    long countOfPurchases = purchaseRepo.findByBooth(booth.key()).count();
-
-    I18N.LocaleFormat format = I18N.format(getLocale());
+    final I18N.LocaleFormat format = I18N.format(getLocale());
 
     description.add(booth.description());
     date.setSubtitle(valueComponent(format.date(booth.date()), FontSize.LARGE));
@@ -323,31 +296,100 @@ public class BoothDetailsView extends OneColumnLayout implements BeforeEnterObse
     feesRoundingStep.setSubtitle(
         valueComponent(format.currency(booth.feesRoundingStep()), FontSize.LARGE));
 
-    totalVendorCount.setSubtitle(valueComponent(Integer.toString(allVendors.size())));
-    totalPurchaseCount.setSubtitle(valueComponent(Long.toString(countOfPurchases)));
-    totalItemCount.setSubtitle(valueComponent(Long.toString(itemCount.get())));
+    final AtomicInteger itemCount = new AtomicInteger(0);
+    final AtomicReference<BigDecimal> aggregatedItemSum = new AtomicReference<>(BigDecimal.ZERO);
+    final AtomicReference<BigDecimal> aggregatedParticipationFee =
+        new AtomicReference<>(BigDecimal.ZERO);
+    final AtomicReference<BigDecimal> aggregatedPayout = new AtomicReference<>(BigDecimal.ZERO);
+    final AtomicInteger vendorCount = new AtomicInteger(0);
 
-    totalItemSum.setSubtitle(valueComponent(format.currency(aggregatedItemSum.get())));
-    totalParticipationFee.setHeaderSuffix(
-        new Span(format.currency(aggregatedParticipationFee.get())));
-    totalSalesFee.setHeaderSuffix(new Span(format.currency(aggregatedSalesFee)));
-    totalRevenue.setSubtitle(valueComponent(format.currency(aggregatedRevenue)));
+    // generate report data for all vendors in parallel
+    Stream<CompletableFuture<Void>> reportFutures =
+        vendorRepo
+            .findByBooth(booth.key())
+            .map(DataModel.Vendor::key)
+            .parallel()
+            .map(
+                vendor ->
+                    reportingClient
+                        .createVendorReportDataAsync(vendor)
+                        .thenAcceptAsync(
+                            report -> {
+                              itemCount.addAndGet(report.items().size());
+                              aggregatedItemSum.accumulateAndGet(
+                                  report.salesSum(), BigDecimal::add);
+                              aggregatedParticipationFee.accumulateAndGet(
+                                  report.participationFee(), BigDecimal::add);
+                              aggregatedPayout.accumulateAndGet(
+                                  report.totalRevenue(), BigDecimal::add);
+                              vendorCount.incrementAndGet();
+                            })
+                        .exceptionally(
+                            ex -> {
+                              LOGGER.error(
+                                  "Failed to generate report data for vendor {}", vendor, ex);
+                              throw new RuntimeException(
+                                  "Failed to generate report data for vendor %s".formatted(vendor),
+                                  ex);
+                            }));
 
-    totalPayout.setSubtitle(valueComponent(format.currency(aggregatedPayout.get())));
+    // when all reports are done, update the UI
+    CompletableFuture.allOf(reportFutures.toArray(CompletableFuture[]::new))
+        .whenComplete(
+            (_, ex) ->
+                currentUI.access(
+                    () -> {
+                      if (ex != null) {
+                        Notifications.error(
+                            TranslationKeys.BoothDetailsView
+                                .NOTIFICATION__STATISTICS_GENERATION_FAILED,
+                            ex);
+                        return;
+                      }
 
-    editButton.setEnabled(!booth.closed());
-    String editButtonText =
-        getTranslation(booth.closed() ? EDIT_BUTTON_DISABLED__TEXT : EDIT_BUTTON__TEXT);
-    Tooltip.forComponent(editButton).setText(getTranslation(editButtonText));
+                      final BigDecimal aggregatedRevenue =
+                          aggregatedItemSum.get().subtract(aggregatedPayout.get());
+                      final BigDecimal aggregatedSalesFee =
+                          aggregatedRevenue
+                              .subtract(aggregatedParticipationFee.get())
+                              .max(BigDecimal.ZERO);
 
-    closeButton.setVisible(!booth.closed());
+                      long countOfPurchases = purchaseRepo.findByBooth(booth.key()).count();
 
-    openButton.setVisible(booth.closed());
+                      totalVendorCount.setSubtitle(
+                          valueComponent(Integer.toString(vendorCount.get())));
+                      totalPurchaseCount.setSubtitle(
+                          valueComponent(Long.toString(countOfPurchases)));
+                      totalItemCount.setSubtitle(valueComponent(Long.toString(itemCount.get())));
 
-    deleteButton.setEnabled(booth.closed());
-    String deleteButtonText =
-        getTranslation((booth.closed()) ? DELETE_BUTTON__TEXT : DELETE_BUTTON_DISABLED__TEXT);
-    Tooltip.forComponent(deleteButton).setText(deleteButtonText);
+                      totalItemSum.setSubtitle(
+                          valueComponent(format.currency(aggregatedItemSum.get())));
+                      totalParticipationFee.setHeaderSuffix(
+                          new Span(format.currency(aggregatedParticipationFee.get())));
+                      totalSalesFee.setHeaderSuffix(new Span(format.currency(aggregatedSalesFee)));
+                      totalRevenue.setSubtitle(valueComponent(format.currency(aggregatedRevenue)));
+
+                      totalPayout.setSubtitle(
+                          valueComponent(format.currency(aggregatedPayout.get())));
+
+                      editButton.setEnabled(!booth.closed());
+                      String editButtonText =
+                          getTranslation(
+                              booth.closed() ? EDIT_BUTTON_DISABLED__TEXT : EDIT_BUTTON__TEXT);
+                      Tooltip.forComponent(editButton).setText(getTranslation(editButtonText));
+
+                      closeButton.setVisible(!booth.closed());
+
+                      openButton.setVisible(booth.closed());
+
+                      deleteButton.setEnabled(booth.closed());
+                      String deleteButtonText =
+                          getTranslation(
+                              (booth.closed())
+                                  ? DELETE_BUTTON__TEXT
+                                  : DELETE_BUTTON_DISABLED__TEXT);
+                      Tooltip.forComponent(deleteButton).setText(deleteButtonText);
+                    }));
   }
 
   private static Component valueComponent(@NonNull final String value) {

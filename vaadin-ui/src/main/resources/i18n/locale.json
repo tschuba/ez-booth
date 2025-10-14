@@ -50,6 +50,7 @@
     "BoothSelectionView.deleteBoothFailed.message": "Es gab einen Fehler beim Löschen!",
     "BoothDetailsView.title": "Ereignis",
     "BoothDetailsView.notification.illegalArguments": "Die übergebenen Parameter sind ungültig!",
+    "BoothDetailsView.notification.statisticsGenerationFailed": "Ermittlung der Statistiken fehlgeschlagen!",
     "BoothDetailsView.description.label": "Beschreibung",
     "BoothDetailsView.date.label": "Datum",
     "BoothDetailsView.participationFee.label": "Gebühr",

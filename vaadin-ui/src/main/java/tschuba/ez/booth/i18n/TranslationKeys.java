@@ -91,6 +91,8 @@ public interface TranslationKeys {
     String TOTAL_REVENUE__LABEL = "BoothDetailsView.totalRevenue.label";
     String TOTAL_PAYOUT__LABEL = "BoothDetailsView.totalPayout.label";
     String NOTIFICATION__ILLEGAL_ARGUMENTS = "BoothDetailsView.notification.illegalArguments";
+    String NOTIFICATION__STATISTICS_GENERATION_FAILED =
+        "BoothDetailsView.notification.statisticsGenerationFailed";
     String EDIT_BUTTON__TEXT = "BoothDetailsView.editButton.text";
     String EDIT_BUTTON_DISABLED__TEXT = "BoothDetailsView.editButton.disabled.text";
     String OPEN_BUTTON__TEXT = "BoothDetailsView.openButton.text";

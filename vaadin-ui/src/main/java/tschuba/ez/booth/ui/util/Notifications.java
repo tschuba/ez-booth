@@ -122,8 +122,8 @@ public class Notifications {
     createError(text).open();
   }
 
-  public static void error(@NonNull String text, @NonNull Exception ex) {
-    createError(text, ex).open();
+  public static void error(@NonNull String text, @NonNull Throwable error) {
+    createError(text, error).open();
   }
 
   @NonNull
@@ -132,7 +132,7 @@ public class Notifications {
   }
 
   @NonNull
-  public static Notification createError(@NonNull String text, @Nullable Exception ex) {
+  public static Notification createError(@NonNull String text, @Nullable Throwable ex) {
     Notification notification = createNotification();
     notification.setDuration((int) ERROR_DURATION.toMillis());
     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
