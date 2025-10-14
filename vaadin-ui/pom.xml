@@ -67,6 +67,7 @@
             <groupId>tschuba.ez-booth</groupId>
             <artifactId>ez-booth-test</artifactId>
             <version>${parent.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     
