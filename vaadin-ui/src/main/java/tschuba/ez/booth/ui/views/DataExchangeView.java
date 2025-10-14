@@ -11,7 +11,6 @@ import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Composite;
-import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.card.Card;
@@ -73,6 +72,7 @@ public class DataExchangeView extends OneColumnLayout {
 
     private final Environment environment;
 
+    private final VerticalLayout contentLayout = new VerticalLayout();
     private final Span address = new Span();
     private final NativeLabel addressLabel = new NativeLabel();
     private final Span shortAddress = new Span();
@@ -95,8 +95,8 @@ public class DataExchangeView extends OneColumnLayout {
       shortAddressLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
       shortAddressLayout.addClassNames(Width.FULL);
 
-      VerticalLayout contentLayout =
-          new VerticalLayout(Alignment.CENTER, addressLayout, shortAddressLayout);
+      contentLayout.setAlignItems(Alignment.CENTER);
+      contentLayout.add(addressLayout, shortAddressLayout);
       Spacing.spacing(contentLayout).small();
       getContent().add(contentLayout);
     }
@@ -113,18 +113,11 @@ public class DataExchangeView extends OneColumnLayout {
       shortAddress.setText(shortExternalGrpcAddress);
       shortAddressLabel.setText(getTranslation(Common.OR));
 
-      getContent()
-          .getChildren()
-          .findFirst()
-          .map(HasComponents.class::cast)
-          .ifPresent(
-              contentLayout -> {
-                if (qrCode != null) {
-                  contentLayout.remove(qrCode);
-                }
-                qrCode = new Barcode(externalGrpcAddress, Barcode.Type.qrcode);
-                contentLayout.add(qrCode);
-              });
+      if (qrCode != null) {
+        contentLayout.remove(qrCode);
+      }
+      qrCode = new Barcode(externalGrpcAddress, Barcode.Type.qrcode);
+      contentLayout.add(qrCode);
     }
   }
 
