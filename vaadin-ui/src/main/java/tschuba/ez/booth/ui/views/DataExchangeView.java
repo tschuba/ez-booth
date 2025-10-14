@@ -11,6 +11,7 @@ import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.card.Card;
@@ -36,6 +37,7 @@ import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import org.vaadin.barcodes.Barcode;
 import tschuba.ez.booth.Try;
 import tschuba.ez.booth.i18n.TranslationKeys.Common;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo;
@@ -47,7 +49,12 @@ import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.services.DataExchangeClient;
-import tschuba.ez.booth.ui.util.*;
+import tschuba.ez.booth.ui.util.AddressCodec;
+import tschuba.ez.booth.ui.util.Badges;
+import tschuba.ez.booth.ui.util.Buttons;
+import tschuba.ez.booth.ui.util.Notifications;
+import tschuba.ez.booth.ui.util.Server;
+import tschuba.ez.booth.ui.util.Spacing;
 
 @Route(value = "data-exchange", layout = AppLayoutWithMenu.class)
 @SpringComponent
@@ -70,6 +77,7 @@ public class DataExchangeView extends OneColumnLayout {
     private final NativeLabel addressLabel = new NativeLabel();
     private final Span shortAddress = new Span();
     private final NativeLabel shortAddressLabel = new NativeLabel();
+    private Barcode qrCode;
 
     public SelfInfoCard(@NonNull Environment environment) {
       this.environment = environment;
@@ -87,7 +95,8 @@ public class DataExchangeView extends OneColumnLayout {
       shortAddressLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
       shortAddressLayout.addClassNames(Width.FULL);
 
-      VerticalLayout contentLayout = new VerticalLayout(addressLayout, shortAddressLayout);
+      VerticalLayout contentLayout =
+          new VerticalLayout(Alignment.CENTER, addressLayout, shortAddressLayout);
       Spacing.spacing(contentLayout).small();
       getContent().add(contentLayout);
     }
@@ -103,6 +112,19 @@ public class DataExchangeView extends OneColumnLayout {
       addressLabel.setText(getTranslation(ADDRESS_LABEL__TEXT));
       shortAddress.setText(shortExternalGrpcAddress);
       shortAddressLabel.setText(getTranslation(Common.OR));
+
+      getContent()
+          .getChildren()
+          .findFirst()
+          .map(HasComponents.class::cast)
+          .ifPresent(
+              contentLayout -> {
+                if (qrCode != null) {
+                  contentLayout.remove(qrCode);
+                }
+                qrCode = new Barcode(externalGrpcAddress, Barcode.Type.qrcode);
+                contentLayout.add(qrCode);
+              });
     }
   }
 
