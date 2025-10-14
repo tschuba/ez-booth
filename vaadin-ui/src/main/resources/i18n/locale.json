@@ -131,6 +131,8 @@
     "DataExchangeView.TransferCard.notification.transferCompleted": "Datenübertragung erfolgreich abgeschlossen",
     "Notifications.genericError.text": "Es ist ein Fehler aufgetreten!",
     "Notifications.copiedToClipboard.message": "Wert wurde in die Zwischenablage kopiert",
+    "Notifications.showErrorButton.text": "Fehler anzeigen",
+    "Notifications.hideErrorButton.text": "Fehler ausblenden",
     "Common.or": "oder"
   }
 }

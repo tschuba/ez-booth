@@ -115,6 +115,8 @@ public interface TranslationKeys {
   interface Notifications {
     String GENERIC_ERROR_MESSAGE = "Notifications.genericError.text";
     String COPIED_TO_CLIPBOARD__MESSAGE = "Notifications.copiedToClipboard.message";
+    String SHOW_ERROR_BUTTON__TEXT = "Notifications.showErrorButton.text";
+    String HIDE_ERROR_BUTTON__TEXT = "Notifications.hideErrorButton.text";
   }
 
   interface PurchaseSummary {
