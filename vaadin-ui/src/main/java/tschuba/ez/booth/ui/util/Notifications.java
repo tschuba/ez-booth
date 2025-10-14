@@ -14,6 +14,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Code;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -147,7 +148,7 @@ public class Notifications {
       final VerticalLayout errorDetails = new VerticalLayout();
       errorDetails.addClassNames(Background.ERROR_50);
       errorDetails.add(new Span(errorMessage));
-      errorDetails.add(stackTrace);
+      errorDetails.add(new Code(stackTrace));
       errorDetails.setVisible(false);
 
       Button showError = new Button(I18N.translate(SHOW_ERROR_BUTTON__TEXT));
