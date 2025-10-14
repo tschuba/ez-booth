@@ -7,9 +7,8 @@ Successor to [tschuba/ez-basar](https://github.com/tschuba/ez-basar).
 ### Build the application
 
 ```shell
-./mvnw install -DskipTests=true -pl .,core,test && 
-  ./mvnw package -DskipTests=true -Pproduction -pl server,vaadin-ui
-  ./mvnw verify -DskipTests=true -pl .
+./mvnw install -pl .,core,test && 
+  ./mvnw package -Pproduction -pl server,vaadin-ui
 ```
 
 This command will create the following JAR files:
@@ -29,7 +28,7 @@ This command will create the following JAR files:
 Execute the command from [Build the application](#build-the-application) and then execute:
 
 ```shell
-./mvnw package -pl .
+  ./mvnw verify -DskipTests=true -pl .
 ```
 
 This command will create the following distribution files:
