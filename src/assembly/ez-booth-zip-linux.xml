@@ -23,7 +23,7 @@
         <fileSet>
             <directory>scripts</directory>
             <includes>
-                <include>ez-booth.start.bat</include>
+                <include>ez-booth.start.sh</include>
             </includes>
             <outputDirectory>/</outputDirectory>
         </fileSet>
