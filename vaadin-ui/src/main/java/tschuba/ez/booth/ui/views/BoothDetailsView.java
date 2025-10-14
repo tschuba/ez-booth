@@ -48,6 +48,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import com.vaadin.flow.theme.lumo.LumoUtility.Background;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
@@ -209,6 +210,9 @@ public class BoothDetailsView extends OneColumnLayout implements BeforeEnterObse
     eventConfig.add(description, dateAndFees);
     eventConfig.add(editDialog);
 
+    Stream.of(totalParticipationFee, totalSalesFee)
+        .forEach(fee -> fee.addClassNames(Padding.XSMALL));
+
     VerticalLayout totalFees =
         new VerticalLayout(Alignment.STRETCH, totalParticipationFee, totalSalesFee);
     totalFees.setJustifyContentMode(JustifyContentMode.BETWEEN);
@@ -218,6 +222,9 @@ public class BoothDetailsView extends OneColumnLayout implements BeforeEnterObse
 
     totalRevenue.add(totalFees);
 
+    Stream.of(totalRevenue, totalItemSum, totalPayout)
+        .forEach(component -> component.addClassNames(Background.SUCCESS_10));
+
     HorizontalLayout totalValues =
         new HorizontalLayout(Alignment.STRETCH, totalItemSum, totalRevenue, totalPayout);
     totalValues.setJustifyContentMode(JustifyContentMode.BETWEEN);
@@ -226,6 +233,10 @@ public class BoothDetailsView extends OneColumnLayout implements BeforeEnterObse
     totalPurchaseCount.setMedia(LineAwesomeIcon.SHOPPING_BAG_SOLID.create());
     totalVendorCount.setMedia(LineAwesomeIcon.USERS_SOLID.create());
     totalItemCount.setMedia(LineAwesomeIcon.GIFTS_SOLID.create());
+
+    Stream.of(totalPurchaseCount, totalVendorCount, totalItemCount)
+        .forEach(component -> component.addClassNames(Background.PRIMARY_10));
+
     HorizontalLayout totalCounts =
         new HorizontalLayout(
             Alignment.STRETCH, totalPurchaseCount, totalVendorCount, totalItemCount);
