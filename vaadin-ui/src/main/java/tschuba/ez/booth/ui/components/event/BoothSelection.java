@@ -4,8 +4,6 @@
  */
 package tschuba.ez.booth.ui.components.event;
 
-import static tschuba.ez.booth.i18n.TranslationKeys.BoothSelection.NOTIFICATION__NO_BOOTH_SELECTED;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -14,9 +12,7 @@ import com.vaadin.flow.server.VaadinSession;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.NonNull;
-import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.model.DataModel;
-import tschuba.ez.booth.ui.util.Notifications;
 import tschuba.ez.booth.ui.util.Routing;
 import tschuba.ez.booth.ui.views.EntryView;
 
@@ -37,9 +33,6 @@ public class BoothSelection {
     Class<? extends Component> originClass = origin.getClass();
     EventRequired eventRequired = originClass.getAnnotation(EventRequired.class);
     if (eventRequired != null && get().isEmpty()) {
-      Notifications.warning(
-          I18N.current()
-              .getTranslation(NOTIFICATION__NO_BOOTH_SELECTED, UI.getCurrent().getLocale()));
       RouteParameters rerouteParameters =
           Routing.Parameters.builder().returnToView(originClass).build();
       enterEvent.rerouteTo(EntryView.class, rerouteParameters);
