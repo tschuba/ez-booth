@@ -28,7 +28,8 @@ This command will create the following JAR files:
 Execute the command from [Build the application](#build-the-application) and then execute:
 
 ```shell
-  ./mvnw verify -DskipTests=true -pl .
+# Tests are skipped here for efficiency, as they have already been run in the build step above.
+./mvnw verify -DskipTests=true -pl .
 ```
 
 This command will create the following distribution files:
