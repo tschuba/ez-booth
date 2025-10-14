@@ -197,6 +197,8 @@ public interface TranslationKeys {
       String TRANSFER_BUTTON__LABEL = "DataExchangeView.TransferCard.transferButton.text";
       String TRANSFER_DESCRIPTION__TEXT = "DataExchangeView.TransferCard.description.text";
       String TRANSFER_IN_PROGRESS__TEXT = "DataExchangeView.TransferCard.transferInProgress.text";
+      String SELECT_BOOTH_BUTTON__TEXT = "DataExchangeView.TransferCard.selectBoothButton.text";
+      String NOTIFICATION__NO_BOOTH_SELECTED = BoothSelection.NOTIFICATION__NO_BOOTH_SELECTED;
       String NOTIFICATION__INVALID_ADDRESS =
           "DataExchangeView.TransferCard.notification.invalidValue";
       String NOTIFICATION__TRANSFER_FAILED =

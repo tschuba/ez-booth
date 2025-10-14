@@ -126,6 +126,7 @@
     "DataExchangeView.TransferCard.transferButton.text": "Datenübertragung starten",
     "DataExchangeView.TransferCard.description.text": "Sendet fehlende Einträge zum aktuellen Ereignis%nan die Zieladresse nund kopiert%nfehlende Einträge aus dem Zielsystem.",
     "DataExchangeView.TransferCard.transferInProgress.text": "Daten werden übertragen...",
+    "DataExchangeView.TransferCard.selectBoothButton.text": "Zur Auswahl",
     "DataExchangeView.TransferCard.notification.invalidValue": "Zieladresse '%s' ist ungültig!",
     "DataExchangeView.TransferCard.notification.transferFailed": "Datenübertragung fehlgeschlagen!",
     "DataExchangeView.TransferCard.notification.transferCompleted": "Datenübertragung erfolgreich abgeschlossen",

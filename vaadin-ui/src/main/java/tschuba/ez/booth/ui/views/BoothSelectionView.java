@@ -49,6 +49,8 @@ import com.vaadin.flow.spring.annotation.UIScope;
 import java.util.Comparator;
 import java.util.stream.Stream;
 import lombok.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.model.DataModel;
@@ -64,11 +66,16 @@ import tschuba.ez.booth.ui.util.Notifications;
 import tschuba.ez.booth.ui.util.Routing;
 import tschuba.ez.booth.ui.util.UIUtil;
 
-@Route(value = "booth", layout = AppLayoutWithMenu.class)
+@Route(
+    value = "booths/:" + Routing.Parameters.ROUTE_PARAM__RETURN_TO_VIEW + "?",
+    layout = AppLayoutWithMenu.class)
 @SpringComponent
 @UIScope
 public class BoothSelectionView extends Div
     implements BeforeEnterObserver, AfterNavigationObserver, HasDynamicTitle {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(BoothSelectionView.class);
+
   private final BoothService boothService;
   private final VirtualList<DataModel.Booth> boothList;
   private final UpsertEventDialog editDialog;
@@ -211,8 +218,10 @@ public class BoothSelectionView extends Div
 
   @Override
   public void beforeEnter(BeforeEnterEvent event) {
+    LOGGER.debug("Route parameters: {}", event.getRouteParameters());
     this.returnToView =
         Routing.Parameters.parser(event.getRouteParameters()).returnToView().orElse(null);
+    LOGGER.debug("Return to view: {}", this.returnToView);
   }
 
   @Override
