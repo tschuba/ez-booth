@@ -28,6 +28,7 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.LumoUtility.Width;
@@ -36,6 +37,8 @@ import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import org.vaadin.barcodes.Barcode;
+import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.Try;
 import tschuba.ez.booth.i18n.TranslationKeys.Common;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo;
@@ -47,7 +50,14 @@ import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
 import tschuba.ez.booth.ui.services.DataExchangeClient;
-import tschuba.ez.booth.ui.util.*;
+import tschuba.ez.booth.ui.util.AddressCodec;
+import tschuba.ez.booth.ui.util.Badges;
+import tschuba.ez.booth.ui.util.Buttons;
+import tschuba.ez.booth.ui.util.NavigateTo;
+import tschuba.ez.booth.ui.util.Notifications;
+import tschuba.ez.booth.ui.util.Routing;
+import tschuba.ez.booth.ui.util.Server;
+import tschuba.ez.booth.ui.util.Spacing;
 
 @Route(value = "data-exchange", layout = AppLayoutWithMenu.class)
 @SpringComponent
@@ -66,10 +76,12 @@ public class DataExchangeView extends OneColumnLayout {
 
     private final Environment environment;
 
+    private final VerticalLayout contentLayout = new VerticalLayout();
     private final Span address = new Span();
     private final NativeLabel addressLabel = new NativeLabel();
     private final Span shortAddress = new Span();
     private final NativeLabel shortAddressLabel = new NativeLabel();
+    private Barcode qrCode;
 
     public SelfInfoCard(@NonNull Environment environment) {
       this.environment = environment;
@@ -87,7 +99,8 @@ public class DataExchangeView extends OneColumnLayout {
       shortAddressLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
       shortAddressLayout.addClassNames(Width.FULL);
 
-      VerticalLayout contentLayout = new VerticalLayout(addressLayout, shortAddressLayout);
+      contentLayout.setAlignItems(Alignment.CENTER);
+      contentLayout.add(addressLayout, shortAddressLayout);
       Spacing.spacing(contentLayout).small();
       getContent().add(contentLayout);
     }
@@ -103,6 +116,12 @@ public class DataExchangeView extends OneColumnLayout {
       addressLabel.setText(getTranslation(ADDRESS_LABEL__TEXT));
       shortAddress.setText(shortExternalGrpcAddress);
       shortAddressLabel.setText(getTranslation(Common.OR));
+
+      if (qrCode != null) {
+        contentLayout.remove(qrCode);
+      }
+      qrCode = new Barcode(externalGrpcAddress, Barcode.Type.qrcode);
+      contentLayout.add(qrCode);
     }
   }
 
@@ -118,6 +137,11 @@ public class DataExchangeView extends OneColumnLayout {
     private final TextField addressField = new TextField();
     private final Button transferButton = new Button(PLAY_SOLID.create());
     private final Paragraph description = new Paragraph();
+    private final Paragraph noBoothSelectedText = new Paragraph();
+    private final Button selectBoothButton =
+        new Button(LineAwesomeIcon.PERSON_BOOTH_SOLID.create());
+    private final VerticalLayout noBoothSelectedLayout =
+        new VerticalLayout(Alignment.CENTER, noBoothSelectedText, selectBoothButton);
     private final Popover busyIndicator = new Popover();
     private final Span busyIndicatorText = new Span();
 
@@ -154,27 +178,46 @@ public class DataExchangeView extends OneColumnLayout {
 
       description.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
 
+      Buttons.disableUntilAfterClick(
+          selectBoothButton,
+          _ -> {
+            try {
+              RouteParameters routeParameters =
+                  Routing.Parameters.builder().returnToView(DataExchangeView.class).build();
+              NavigateTo.view(BoothSelectionView.class, routeParameters).currentWindow();
+            } catch (Exception ex) {
+              LOGGER.error("Failed to navigate to booth selection view", ex);
+            }
+          });
+
       getContent().setSubtitle(description);
-      getContent().add(new VerticalLayout(addressField, transferButton), busyIndicator);
     }
 
     @Override
-    protected void onAttach(AttachEvent attachEvent) {
+    protected void onAttach(AttachEvent event) {
       Optional<DataModel.Booth> currentBooth = BoothSelection.get().flatMap(booths::findById);
       getContent().setTitle(getTranslation(Transfer.TITLE));
-      addressField.setLabel(getTranslation(Transfer.ADDRESS_FIELD__LABEL));
-      transferButton.setText(getTranslation(Transfer.TRANSFER_BUTTON__LABEL));
 
+      getContent().removeAll();
       if (currentBooth.isEmpty()) {
-        this.getContent().setVisible(false);
-      }
+        noBoothSelectedText.setText(getTranslation(Transfer.NOTIFICATION__NO_BOOTH_SELECTED));
+        selectBoothButton.setText(getTranslation(Transfer.SELECT_BOOTH_BUTTON__TEXT));
 
-      busyIndicatorText.setText(getTranslation(Transfer.TRANSFER_IN_PROGRESS__TEXT));
-      description.setText(
-          currentBooth
-              .map(
-                  booth -> getTranslation(Transfer.TRANSFER_DESCRIPTION__TEXT, booth.description()))
-              .orElse(""));
+        getContent().add(noBoothSelectedLayout);
+      } else {
+        description.setText(
+            currentBooth
+                .map(
+                    booth ->
+                        getTranslation(Transfer.TRANSFER_DESCRIPTION__TEXT, booth.description()))
+                .orElse(""));
+        addressField.setLabel(getTranslation(Transfer.ADDRESS_FIELD__LABEL));
+        transferButton.setText(getTranslation(Transfer.TRANSFER_BUTTON__LABEL));
+
+        busyIndicatorText.setText(getTranslation(Transfer.TRANSFER_IN_PROGRESS__TEXT));
+
+        getContent().add(new VerticalLayout(addressField, transferButton), busyIndicator);
+      }
     }
 
     private void onAddressChange(ComponentValueChangeEvent<TextField, String> event) {

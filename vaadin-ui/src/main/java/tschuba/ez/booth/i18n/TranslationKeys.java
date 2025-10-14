@@ -115,6 +115,8 @@ public interface TranslationKeys {
   interface Notifications {
     String GENERIC_ERROR_MESSAGE = "Notifications.genericError.text";
     String COPIED_TO_CLIPBOARD__MESSAGE = "Notifications.copiedToClipboard.message";
+    String SHOW_ERROR_BUTTON__TEXT = "Notifications.showErrorButton.text";
+    String HIDE_ERROR_BUTTON__TEXT = "Notifications.hideErrorButton.text";
   }
 
   interface PurchaseSummary {
@@ -195,6 +197,8 @@ public interface TranslationKeys {
       String TRANSFER_BUTTON__LABEL = "DataExchangeView.TransferCard.transferButton.text";
       String TRANSFER_DESCRIPTION__TEXT = "DataExchangeView.TransferCard.description.text";
       String TRANSFER_IN_PROGRESS__TEXT = "DataExchangeView.TransferCard.transferInProgress.text";
+      String SELECT_BOOTH_BUTTON__TEXT = "DataExchangeView.TransferCard.selectBoothButton.text";
+      String NOTIFICATION__NO_BOOTH_SELECTED = BoothSelection.NOTIFICATION__NO_BOOTH_SELECTED;
       String NOTIFICATION__INVALID_ADDRESS =
           "DataExchangeView.TransferCard.notification.invalidValue";
       String NOTIFICATION__TRANSFER_FAILED =

@@ -4,10 +4,29 @@
  */
 package tschuba.ez.booth.ui.views;
 
-import static com.vaadin.flow.theme.lumo.LumoUtility.*;
+import static com.vaadin.flow.theme.lumo.LumoUtility.AlignItems;
+import static com.vaadin.flow.theme.lumo.LumoUtility.Background;
+import static com.vaadin.flow.theme.lumo.LumoUtility.Border;
+import static com.vaadin.flow.theme.lumo.LumoUtility.BorderColor;
+import static com.vaadin.flow.theme.lumo.LumoUtility.BorderRadius;
+import static com.vaadin.flow.theme.lumo.LumoUtility.BoxShadow;
+import static com.vaadin.flow.theme.lumo.LumoUtility.Display;
+import static com.vaadin.flow.theme.lumo.LumoUtility.Flex;
+import static com.vaadin.flow.theme.lumo.LumoUtility.FlexDirection;
+import static com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import static com.vaadin.flow.theme.lumo.LumoUtility.Height;
+import static com.vaadin.flow.theme.lumo.LumoUtility.JustifyContent;
+import static com.vaadin.flow.theme.lumo.LumoUtility.Margin;
+import static com.vaadin.flow.theme.lumo.LumoUtility.Padding;
+import static com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import static tschuba.ez.booth.i18n.TranslationKeys.BoothSelection.NOTIFICATION__NO_BOOTH_SELECTED;
-import static tschuba.ez.booth.i18n.TranslationKeys.BoothSelectionView.*;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothSelectionView.CLOSE_BOOTH_FAILED__MESSAGE;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothSelectionView.CREATE_BUTTON__TEXT;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothSelectionView.DELETE_BOOTH_FAILED__MESSAGE;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothSelectionView.OPEN_BOOTH_FAILED__MESSAGE;
+import static tschuba.ez.booth.i18n.TranslationKeys.BoothSelectionView.TITLE;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
@@ -15,15 +34,23 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Main;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.HasDynamicTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.model.DataModel;
@@ -34,16 +61,25 @@ import tschuba.ez.booth.ui.components.event.BoothSavedEvent;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.components.event.UpsertEventDialog;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
-import tschuba.ez.booth.ui.util.*;
+import tschuba.ez.booth.ui.util.NavigateTo;
+import tschuba.ez.booth.ui.util.Notifications;
+import tschuba.ez.booth.ui.util.Routing;
+import tschuba.ez.booth.ui.util.UIUtil;
 
-@Route(value = "booth", layout = AppLayoutWithMenu.class)
+@Route(
+    value = "booths/:" + Routing.Parameters.ROUTE_PARAM__RETURN_TO_VIEW + "?",
+    layout = AppLayoutWithMenu.class)
 @SpringComponent
 @UIScope
 public class BoothSelectionView extends Div
     implements BeforeEnterObserver, AfterNavigationObserver, HasDynamicTitle {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(BoothSelectionView.class);
+
   private final BoothService boothService;
   private final VirtualList<DataModel.Booth> boothList;
   private final UpsertEventDialog editDialog;
+  private final Span eventSelectionRequiredBox = new Span();
   private Class<? extends Component> returnToView;
 
   public BoothSelectionView(@NonNull @Autowired BoothService boothService) {
@@ -98,9 +134,22 @@ public class BoothSelectionView extends Div
               return listItem;
             }));
 
-    container.add(headerRow, actionBar, boothList);
+    eventSelectionRequiredBox.setVisible(false);
+    eventSelectionRequiredBox.addClassNames(
+        Background.WARNING,
+        TextColor.WARNING_CONTRAST,
+        Padding.MEDIUM,
+        BorderRadius.MEDIUM,
+        BoxShadow.SMALL);
+
+    container.add(headerRow, eventSelectionRequiredBox, actionBar, boothList);
 
     updateBoothListItems();
+  }
+
+  @Override
+  protected void onAttach(AttachEvent event) {
+    eventSelectionRequiredBox.setText(getTranslation(NOTIFICATION__NO_BOOTH_SELECTED));
   }
 
   private void onClickCreate(ClickEvent<Button> clickEvent) {
@@ -169,14 +218,15 @@ public class BoothSelectionView extends Div
 
   @Override
   public void beforeEnter(BeforeEnterEvent event) {
+    LOGGER.debug("Route parameters: {}", event.getRouteParameters());
     this.returnToView =
         Routing.Parameters.parser(event.getRouteParameters()).returnToView().orElse(null);
+    LOGGER.debug("Return to view: {}", this.returnToView);
   }
 
   @Override
   public void afterNavigation(AfterNavigationEvent event) {
-    Optional.ofNullable(this.returnToView)
-        .ifPresent(view -> Notifications.warning(getTranslation(NOTIFICATION__NO_BOOTH_SELECTED)));
+    eventSelectionRequiredBox.setVisible(this.returnToView != null);
   }
 
   @Override
