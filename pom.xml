@@ -153,6 +153,34 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.7.1</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>distribution-zip-linux</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>src/assembly/ez-booth-zip-linux.xml</descriptors>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>distribution-zip-windows</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>src/assembly/ez-booth-zip-windows.xml</descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

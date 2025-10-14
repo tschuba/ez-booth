@@ -4,10 +4,39 @@ Successor to [tschuba/ez-basar](https://github.com/tschuba/ez-basar).
 
 ## How-Tos
 
-### Package the application
+### Build the application
 
 ```shell
-./mvnw clean compile &&
-  ./mvnw install -pl .,core,test && 
-  ./mvnw -Pproduction package -pl server,vaadin-ui
+./mvnw install -DskipTests=true -pl .,core,test && 
+  ./mvnw package -DskipTests=true -Pproduction -pl server,vaadin-ui
+  ./mvnw verify -DskipTests=true -pl .
+```
+
+This command will create the following JAR files:
+
+```text
+.
+├── server/
+│   └── target/
+│       └── ez-booth-1.0.0-server-{version}.jar
+├── vaadin-ui/
+│   └── target/
+│       └── ez-booth-1.0.0-vaadin-ui-{version}.jar
+```
+
+### Create application distribution archives
+
+Execute the command from [Build the application](#build-the-application) and then execute:
+
+```shell
+./mvnw package -pl .
+```
+
+This command will create the following distribution files:
+
+```text
+.
+└── target/
+│   └── ez-booth-{version}-linux.tar.gz
+│   └── ez-booth-{version}-windows.zip
 ```
