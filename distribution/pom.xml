@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>tschuba.ez-booth</groupId>
+        <artifactId>ez-booth</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ez-booth-distribution</artifactId>
+    <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>tschuba.ez-booth</groupId>
+            <artifactId>ez-booth-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>tschuba.ez-booth</groupId>
+            <artifactId>ez-booth-vaadin-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>dist</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>bundle-suite</id>
+                                <phase>install</phase>
+                                <goals><goal>run</goal></goals>
+                                <configuration>
+                                    <target>
+                                        <echo message="Creating Unified Suite and Start-Scripts..." />
+                                        <mkdir dir="${project.build.directory}/ez-booth-suite" />
+
+                                        <copy todir="${project.build.directory}/ez-booth-suite/runtime">
+                                            <fileset dir="${project.basedir}/../shared-runtime" />
+                                        </copy>
+                                        <copy todir="${project.build.directory}/ez-booth-suite/apps">
+                                            <fileset dir="${project.basedir}/../server/target/dist" includes="**/*" />
+                                            <fileset dir="${project.basedir}/../vaadin-ui/target/dist" includes="**/*" />
+                                        </copy>
+
+                                        <copy file="${project.basedir}/src/main/resources/run-suite.sh"
+                                              tofile="${project.build.directory}/ez-booth-suite/start.sh" />
+                                        <copy file="${project.basedir}/src/main/resources/run-suite.bat"
+                                              tofile="${project.build.directory}/ez-booth-suite/start.bat" />
+                                        <copy file="${project.basedir}/src/main/resources/README.txt"
+                                              tofile="${project.build.directory}/ez-booth-suite/README.txt" />
+
+                                        <chmod file="${project.build.directory}/ez-booth-suite/start.sh" perm="755" />
+
+                                        <chmod perm="755">
+                                            <fileset dir="${project.build.directory}/ez-booth-suite/apps">
+                                                <include name="**/Contents/MacOS/*" />
+                                            </fileset>
+                                        </chmod>
+
+                                        <chmod file="${project.build.directory}/ez-booth-suite/start.sh" perm="755" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.7.1</version>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/assembly/bin.xml</descriptor>
+                                    </descriptors>
+                                    <finalName>ez-booth-${project.version}</finalName>
+                                    <appendAssemblyId>false</appendAssemblyId>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

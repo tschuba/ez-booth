@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * Copyright (c) 2025-2026 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
 package tschuba.ez.booth.ui.util;
@@ -7,16 +7,17 @@ package tschuba.ez.booth.ui.util;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletContext;
-import com.vaadin.open.Open;
-import java.net.*;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,10 +26,9 @@ import org.springframework.web.util.UriComponentsBuilder;
  * Simple server configuration holder.
  */
 @Getter
+@Slf4j
 @SuppressWarnings("unused")
 public class Server {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
 
   static final String SERVER_HOST = "server.host";
   static final String SERVER_PORT = "server.port";
@@ -155,10 +155,10 @@ public class Server {
         String targetUrl =
             String.format(
                 "%s://localhost:%s%s/%s", protocol, Server.this.getPort(), contextPath, targetPath);
-        LOGGER.debug("Launching browser at {}", targetUrl);
-        Open.open(targetUrl);
+        log.debug("Launching browser at {}", targetUrl);
+        launchView(URI.create(targetUrl));
       } catch (Exception ex) {
-        LOGGER.error("Failed to launch browser on startup!", ex);
+        log.error("Failed to launch browser on startup!", ex);
         throw new RuntimeException(ex);
       }
     }
@@ -167,7 +167,27 @@ public class Server {
       String protocol = Server.this.isSslEnabled() ? "https" : "http";
       String targetUrl =
           String.format("%s://localhost:%s/%s", protocol, Server.this.getPort(), path);
-      Open.open(targetUrl);
+      launchView(URI.create(targetUrl));
+    }
+
+    void launchView(@NonNull URI target) {
+      String os = System.getProperty("os.name").toLowerCase();
+      Runtime runtime = Runtime.getRuntime();
+      String targetUrl = target.toString();
+
+      try {
+        if (os.contains("mac")) {
+          runtime.exec(new String[] {"open", targetUrl});
+        } else if (os.contains("win")) {
+          runtime.exec(new String[] {"rundll32", "url.dll,FileProtocolHandler", targetUrl});
+        } else if (os.contains("nix") || os.contains("nux")) {
+          runtime.exec(new String[] {"xdg-open", targetUrl});
+        } else {
+          log.warn("Unsupported operating system for automatic browser launch: {}", os);
+        }
+      } catch (Exception ex) {
+        log.warn("Failed to launch browser on startup!", ex);
+      }
     }
   }
 }
