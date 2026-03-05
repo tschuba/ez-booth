@@ -247,13 +247,13 @@
                                         <executable>jpackage</executable>
                                         <arguments>
                                             <argument>--name</argument>
-                                            <argument>ez-booth-server</argument>
+                                            <argument>${artifactId}</argument>
                                             <argument>--input</argument>
                                             <argument>${project.build.directory}/dist-input</argument>
                                             <argument>--main-jar</argument>
                                             <argument>${project.build.finalName}.jar</argument>
                                             <argument>--main-class</argument>
-                                            <argument>${start-class}</argument>
+                                            <argument>org.springframework.boot.loader.launch.JarLauncher</argument>
                                             <argument>--type</argument>
                                             <argument>app-image</argument>
                                             <argument>--dest</argument>
