@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Absoluter Pfad zum Suite-Verzeichnis
+# Absolute path to the suite directory
 BASEDIR=$(cd "$(dirname "$0")" && pwd)
 UI_PORT=8090
 SERVER_PORT=8091
 
-# Automatisch alte Prozesse auf den Ports finden und beenden
+# Automatically find and stop old processes on the configured ports
 for PORT in $SERVER_PORT $UI_PORT; do
     PID=$(lsof -ti :$PORT)
     if [ ! -z "$PID" ]; then
@@ -16,20 +16,20 @@ done
 
 echo "🚀 Starting ez-booth Suite..."
 
-# Log-Verzeichnis sicherstellen
+# Ensure log directory exists
 mkdir -p "$BASEDIR/logs"
 
-# Vorherige Logs aufräumen (optional)
+# Rotate previous logs (optional)
 echo "--- New Session $(date) ---" >> "$BASEDIR/logs/server.log"
 
 echo "  -> Starting Server..."
 "$BASEDIR/apps/ez-booth-server.app/Contents/MacOS/ez-booth-server" > "$BASEDIR/logs/server.log" 2>&1 &
 SERVER_PID=$!
 
-# Kurze Pause zur Initialisierung
+# Short pause for initialization
 sleep 2
 
-# Prüfen, ob der Server noch läuft
+# Check whether the server is still running
 if ! kill -0 $SERVER_PID 2>/dev/null; then
     echo "❌ Server failed to start! Opening logs..."
     open "$BASEDIR/logs"
@@ -45,6 +45,6 @@ echo "--------------------------------------------------"
   -Djdk.lang.Process.launchMechanism=FORK \
   > "$BASEDIR/logs/ui.log" 2>&1
 
-# Wenn das UI-Fenster/Prozess geschlossen wird:
+# If the UI window/process is closed:
 echo "👋 UI closed. Shutting down server..."
 kill $SERVER_PID 2>/dev/null
