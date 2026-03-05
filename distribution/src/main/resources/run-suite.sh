@@ -1,6 +1,18 @@
 #!/bin/bash
+
 # Absoluter Pfad zum Suite-Verzeichnis
 BASEDIR=$(cd "$(dirname "$0")" && pwd)
+UI_PORT=8090
+SERVER_PORT=8091
+
+# Automatisch alte Prozesse auf den Ports finden und beenden
+for PORT in $SERVER_PORT $UI_PORT; do
+    PID=$(lsof -ti :$PORT)
+    if [ ! -z "$PID" ]; then
+        echo "  -> Closing old process on port $PORT (PID: $PID)..."
+        kill -9 $PID 2>/dev/null
+    fi
+done
 
 echo "🚀 Starting ez-booth Suite..."
 
@@ -25,8 +37,14 @@ if ! kill -0 $SERVER_PID 2>/dev/null; then
 fi
 
 echo "  -> Starting UI..."
-"$BASEDIR/apps/ez-booth-vaadin-ui.app/Contents/MacOS/ez-booth-vaadin-ui" > "$BASEDIR/logs/ui.log" 2>&1
+echo "--------------------------------------------------"
+echo "🌐 UI URL: http://localhost:$UI_PORT"
+echo "--------------------------------------------------"
 
-# Aufräumen beim Beenden
-echo "👋 Shutting down..."
+"$BASEDIR/apps/ez-booth-vaadin-ui.app/Contents/MacOS/ez-booth-vaadin-ui" \
+  -Djdk.lang.Process.launchMechanism=FORK \
+  > "$BASEDIR/logs/ui.log" 2>&1
+
+# Wenn das UI-Fenster/Prozess geschlossen wird:
+echo "👋 UI closed. Shutting down server..."
 kill $SERVER_PID 2>/dev/null
