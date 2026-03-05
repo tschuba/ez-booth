@@ -17,6 +17,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Fetch main branch for Spotless
+        run: git fetch origin main:main
 
       - name: Set up JDK 25
         uses: actions/setup-java@v5
@@ -48,6 +54,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Fetch main branch for Spotless
+        run: git fetch origin main:main
 
       - name: Set up JDK 25
         uses: actions/setup-java@v5
@@ -110,6 +122,8 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
 
 
 
