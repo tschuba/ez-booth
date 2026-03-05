@@ -99,6 +99,16 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.6.3</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -197,6 +207,67 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dist</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-antrun-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <target>
+                                            <mkdir dir="${project.build.directory}/dist-input"/>
+                                            <copy file="${project.build.directory}/${project.build.finalName}.jar"
+                                                  todir="${project.build.directory}/dist-input"
+                                                  failonerror="false" />
+                                        </target>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>exec-maven-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>jpackage</id>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>exec</goal>
+                                    </goals>
+                                    <configuration>
+                                        <executable>jpackage</executable>
+                                        <arguments>
+                                            <argument>--name</argument>
+                                            <argument>ez-booth-server</argument>
+                                            <argument>--input</argument>
+                                            <argument>${project.build.directory}/dist-input</argument>
+                                            <argument>--main-jar</argument>
+                                            <argument>${project.build.finalName}.jar</argument>
+                                            <argument>--main-class</argument>
+                                            <argument>${start-class}</argument>
+                                            <argument>--type</argument>
+                                            <argument>app-image</argument>
+                                            <argument>--dest</argument>
+                                            <argument>${project.build.directory}/dist</argument>
+                                        </arguments>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 
     <developers>
         <developer>

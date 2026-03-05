@@ -14,6 +14,10 @@
     <artifactId>ez-booth-server</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <start-class>tschuba.ez.booth.ServerApplication</start-class>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>tschuba.ez-booth</groupId>
@@ -111,5 +115,22 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dist</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

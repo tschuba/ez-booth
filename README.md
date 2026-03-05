@@ -4,7 +4,7 @@ Successor to [tschuba/ez-basar](https://github.com/tschuba/ez-basar).
 
 ## How-Tos
 
-### Build the application
+### Build the application JAR
 
 ```shell
 ./mvnw install -pl .,test,core && 
@@ -21,6 +21,12 @@ This command will create the following JAR files:
 ├── vaadin-ui/
 │   └── target/
 │       └── ez-booth-1.0.0-vaadin-ui-{version}.jar
+```
+
+### JPackage application image
+
+```shell
+mvn clean package -Pdist -DskipTests -pl server,vaadin-ui -am
 ```
 
 ### Create application distribution archives
