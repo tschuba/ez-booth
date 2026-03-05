@@ -1,19 +1,32 @@
 #!/bin/bash
-# Ermittle das Verzeichnis, in dem dieses Skript liegt
-BASEDIR=$(dirname "$0")
+# Absoluter Pfad zum Suite-Verzeichnis
+BASEDIR=$(cd "$(dirname "$0")" && pwd)
 
 echo "🚀 Starting ez-booth Suite..."
 
-# Server im Hintergrund starten (nutzt die Shared Runtime)
-# Wir gehen davon aus, dass das Skript in /apps oder im Root liegt
-"$BASEDIR/apps/ez-booth-server.app/Contents/MacOS/ez-booth-server" &
+# Log-Verzeichnis sicherstellen
+mkdir -p "$BASEDIR/logs"
+
+# Vorherige Logs aufräumen (optional)
+echo "--- New Session $(date) ---" >> "$BASEDIR/logs/server.log"
+
+echo "  -> Starting Server..."
+"$BASEDIR/apps/ez-booth-server.app/Contents/MacOS/ez-booth-server" > "$BASEDIR/logs/server.log" 2>&1 &
 SERVER_PID=$!
 
-# Kurz warten, bis der Server (gRPC) bereit ist
+# Kurze Pause zur Initialisierung
 sleep 2
 
-# UI starten
-"$BASEDIR/apps/ez-booth-vaadin-ui.app/Contents/MacOS/ez-booth-vaadin-ui"
+# Prüfen, ob der Server noch läuft
+if ! kill -0 $SERVER_PID 2>/dev/null; then
+    echo "❌ Server failed to start! Opening logs..."
+    open "$BASEDIR/logs"
+    exit 1
+fi
 
-# Wenn UI beendet wird, auch Server stoppen
-kill $SERVER_PID
+echo "  -> Starting UI..."
+"$BASEDIR/apps/ez-booth-vaadin-ui.app/Contents/MacOS/ez-booth-vaadin-ui" > "$BASEDIR/logs/ui.log" 2>&1
+
+# Aufräumen beim Beenden
+echo "👋 Shutting down..."
+kill $SERVER_PID 2>/dev/null
