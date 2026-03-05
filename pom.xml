@@ -14,11 +14,13 @@
         <module>server</module>
         <module>vaadin-ui</module>
         <module>test</module>
+        <module>distribution</module>
     </modules>
 
     <properties>
         <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jpackage.skip>true</jpackage.skip>
         <grpc.version>1.74.0</grpc.version>
         <protobuf-java.version>4.31.1</protobuf-java.version>
         <spring-boot.version>3.5.6</spring-boot.version>
@@ -239,11 +241,12 @@
                             <executions>
                                 <execution>
                                     <id>jpackage</id>
-                                    <phase>package</phase>
+                                    <phase>install</phase>
                                     <goals>
                                         <goal>exec</goal>
                                     </goals>
                                     <configuration>
+                                        <skip>${jpackage.skip}</skip>
                                         <executable>jpackage</executable>
                                         <arguments>
                                             <argument>--name</argument>
@@ -257,7 +260,8 @@
                                             <argument>--type</argument>
                                             <argument>app-image</argument>
                                             <argument>--dest</argument>
-                                            <argument>${project.build.directory}/dist</argument>
+                                            <argument>${project.build.directory}/dist</argument><argument>--runtime-image</argument>
+                                            <argument>${maven.multiModuleProjectDirectory}/shared-runtime</argument>
                                         </arguments>
                                     </configuration>
                                 </execution>
@@ -265,6 +269,48 @@
                         </plugin>
                     </plugins>
                 </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.basedir}/shared-runtime</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-runtime</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>jlink</executable>
+                                    <arguments>
+                                        <argument>--add-modules</argument>
+                                        <argument>java.base,java.desktop,java.instrument,java.naming,java.prefs,java.rmi,java.scripting,java.sql,java.xml,jdk.unsupported,jdk.management</argument>
+                                        <argument>--strip-debug</argument>
+                                        <argument>--no-man-pages</argument>
+                                        <argument>--no-header-files</argument>
+                                        <argument>--compress</argument>
+                                        <argument>zip-9</argument>
+                                        <argument>--output</argument>
+                                        <argument>${project.basedir}/shared-runtime</argument>
+                                    </arguments>
+                                    <successCodes>
+                                        <successCode>0</successCode>
+                                    </successCodes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>

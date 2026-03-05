@@ -14,6 +14,10 @@
     <artifactId>ez-booth-server</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <jpackage.skip>false</jpackage.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>tschuba.ez-booth</groupId>

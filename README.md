@@ -23,7 +23,7 @@ This command will create the following JAR files:
 ## Create JPackage application image
 
 ```shell
-mvn clean package -Pproduction -Pdist -pl server,vaadin-ui -am -DskipTests
+./mvnw clean install -Pproduction -Pdist -DskipTests
 ```
 
 ## Create application distribution archives
