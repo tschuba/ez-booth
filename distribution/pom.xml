@@ -59,6 +59,14 @@
                                               tofile="${project.build.directory}/ez-booth-suite/start.bat" />
 
                                         <chmod file="${project.build.directory}/ez-booth-suite/start.sh" perm="755" />
+
+                                        <chmod perm="755">
+                                            <fileset dir="${project.build.directory}/ez-booth-suite/apps">
+                                                <include name="**/Contents/MacOS/*" />
+                                            </fileset>
+                                        </chmod>
+
+                                        <chmod file="${project.build.directory}/ez-booth-suite/start.sh" perm="755" />
                                     </target>
                                 </configuration>
                             </execution>
