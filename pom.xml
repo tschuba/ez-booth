@@ -292,6 +292,7 @@
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
+                                <inherited>false</inherited>
                                 <configuration>
                                     <executable>jlink</executable>
                                     <arguments>
