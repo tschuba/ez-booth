@@ -5,7 +5,7 @@ Successor to [tschuba/ez-basar](https://github.com/tschuba/ez-basar).
 ## Build application JARs
 
 ```shell
-./mvnw package -Pproduction -pl server,vaadin-ui -am -DskipTests
+./mvnw clean package -Pproduction -pl server,vaadin-ui -am -DskipTests
 ```
 
 This command will create the following JAR files:
@@ -23,7 +23,7 @@ This command will create the following JAR files:
 ## Create JPackage application image
 
 ```shell
-mvn clean package -Pdist -pl server,vaadin-ui -am -DskipTests
+mvn clean package -Pproduction -Pdist -pl server,vaadin-ui -am -DskipTests
 ```
 
 ## Create application distribution archives
