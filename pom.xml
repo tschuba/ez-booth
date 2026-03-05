@@ -294,7 +294,7 @@
                                     <executable>jlink</executable>
                                     <arguments>
                                         <argument>--add-modules</argument>
-                                        <argument>java.base,java.logging,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,java.sql,java.xml,jdk.unsupported,java.net.http</argument>
+                                        <argument>java.base,java.logging,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,java.sql,java.xml,jdk.unsupported,java.net.http,jdk.zipfs</argument>
                                         <argument>--strip-debug</argument>
                                         <argument>--no-man-pages</argument>
                                         <argument>--no-header-files</argument>
