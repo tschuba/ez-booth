@@ -4,3 +4,6 @@
 **/target
 
 .flattened-pom.xml
+
+# Shared runtime used by jpackage
+/shared-runtime
