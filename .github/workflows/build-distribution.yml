@@ -57,7 +57,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -B clean install -Pdist,production --file pom.xml
+        run: mvn -B clean install "-Pdist,production" --file pom.xml
 
       - name: Verify distribution artifacts
         run: |
@@ -110,6 +110,7 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
 
 
