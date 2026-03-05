@@ -57,6 +57,8 @@
                                               tofile="${project.build.directory}/ez-booth-suite/start.sh" />
                                         <copy file="${project.basedir}/src/main/resources/run-suite.bat"
                                               tofile="${project.build.directory}/ez-booth-suite/start.bat" />
+                                        <copy file="${project.basedir}/src/main/resources/README.txt"
+                                              tofile="${project.build.directory}/ez-booth-suite/README.txt" />
 
                                         <chmod file="${project.build.directory}/ez-booth-suite/start.sh" perm="755" />
 
