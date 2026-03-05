@@ -251,6 +251,8 @@
                                         <arguments>
                                             <argument>--name</argument>
                                             <argument>${artifactId}</argument>
+                                            <argument>--java-options</argument>
+                                            <argument>-Djdk.lang.Process.launchMechanism=FORK</argument>
                                             <argument>--input</argument>
                                             <argument>${project.build.directory}/dist-input</argument>
                                             <argument>--main-jar</argument>
