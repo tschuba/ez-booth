@@ -14,10 +14,6 @@
     <artifactId>ez-booth-server</artifactId>
     <packaging>jar</packaging>
 
-    <properties>
-        <start-class>tschuba.ez.booth.ServerApplication</start-class>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>tschuba.ez-booth</groupId>
