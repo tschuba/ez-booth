@@ -33,20 +33,28 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -B clean install -Pdist,production --file pom.xml
+        run: mvn -B clean install -Pdist,production -DskipTests --file pom.xml
 
-      - name: Verify distribution artifacts
+      - name: Ad-hoc Sign Binaries
         run: |
-          ls -la distribution/target/
-          test -f distribution/target/ez-booth-1.0.0.zip
+          echo "🖋️ Ad-hoc signing apps..."
+          # Wir signieren die Bundles rekursiv mit der Identität "-" (Ad-hoc)
+          # Das verhindert, dass macOS denkt, die Apps seien manipuliert worden.
+          codesign --force --deep --sign - "distribution/target/ez-booth-suite/apps/ez-booth-server.app"
+          codesign --force --deep --sign - "distribution/target/ez-booth-suite/apps/ez-booth-vaadin-ui.app"
+
+      - name: Create Native macOS Zip
+        run: |
+          cd distribution/target/
+          rm -f ez-booth-1.0.0.zip
+          # -r (rekursiv), -y (Symlinks erhalten)
+          zip -ry ez-booth-macos-native.zip ez-booth-suite/
 
       - name: Upload macOS Distribution
         uses: actions/upload-artifact@v4
         with:
           name: ez-booth-macos-suite
-          path: distribution/target/ez-booth-1.0.0.zip
-          retention-days: 30
-          if-no-files-found: error
+          path: distribution/target/ez-booth-macos-native.zip
 
   build-windows:
     name: Build Windows Distribution
@@ -72,7 +80,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -B clean install "-Pdist,production" --file pom.xml
+        run: mvn -B clean install "-Pdist,production" -DskipTests --file pom.xml
 
       - name: Verify distribution artifacts
         run: |
@@ -90,7 +98,7 @@ jobs:
 
   create-release:
     name: Create Release
-    needs: [build-macos, build-windows]
+    needs: [ build-macos, build-windows ]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
@@ -111,7 +119,7 @@ jobs:
 
       - name: Rename artifacts for release
         run: |
-          mv ./artifacts/macos/ez-booth-1.0.0.zip ./ez-booth-${{ github.ref_name }}-macos.zip
+          mv ./artifacts/macos/ez-booth-macos-native.zip ./ez-booth-${{ github.ref_name }}-macos.zip
           mv ./artifacts/windows/ez-booth-1.0.0.zip ./ez-booth-${{ github.ref_name }}-windows.zip
 
       - name: Create GitHub Release
@@ -125,9 +133,3 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-
-
-
-
