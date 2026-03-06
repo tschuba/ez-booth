@@ -12,7 +12,9 @@
     <artifactId>ez-booth-vaadin-ui</artifactId>
     <packaging>jar</packaging>
 
+
     <properties>
+        <jpackage.skip>false</jpackage.skip>
         <vaadin.version>24.9.2</vaadin.version>
     </properties>
 
@@ -135,6 +137,20 @@
                                 <phase>compile</phase>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>dist</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

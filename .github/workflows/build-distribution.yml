@@ -1,0 +1,135 @@
+name: Build EZ-Booth Distribution
+
+on:
+  push:
+    branches: [ "main" ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: Build macOS Distribution
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Ensure origin/main exists for Spotless
+        run: |
+          git fetch origin main:refs/remotes/origin/main 2>/dev/null || true
+          git branch --list -a | grep origin/main
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B clean install -Pdist,production -DskipTests --file pom.xml
+
+      - name: Ad-hoc Sign Binaries
+        run: |
+          echo "🖋️ Ad-hoc signing apps..."
+          # Wir signieren die Bundles rekursiv mit der Identität "-" (Ad-hoc)
+          # Das verhindert, dass macOS denkt, die Apps seien manipuliert worden.
+          codesign --force --deep --sign - "distribution/target/ez-booth-suite/apps/ez-booth-server.app"
+          codesign --force --deep --sign - "distribution/target/ez-booth-suite/apps/ez-booth-vaadin-ui.app"
+
+      - name: Create Native macOS Zip
+        run: |
+          cd distribution/target/
+          rm -f ez-booth-1.0.0.zip
+          # -r (rekursiv), -y (Symlinks erhalten)
+          zip -ry ez-booth-macos-native.zip ez-booth-suite/
+
+      - name: Upload macOS Distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: ez-booth-macos-suite
+          path: distribution/target/ez-booth-macos-native.zip
+
+  build-windows:
+    name: Build Windows Distribution
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Ensure origin/main exists for Spotless
+        run: |
+          git fetch origin main:refs/remotes/origin/main 2>$null; if (-not $?) { $true }
+          git branch --list -a | Select-String "origin/main"
+        shell: pwsh
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B clean install "-Pdist,production" -DskipTests --file pom.xml
+
+      - name: Verify distribution artifacts
+        run: |
+          dir distribution\target\
+          if (-Not (Test-Path distribution\target\ez-booth-1.0.0.zip)) { exit 1 }
+        shell: pwsh
+
+      - name: Upload Windows Distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: ez-booth-windows-suite
+          path: distribution/target/ez-booth-1.0.0.zip
+          retention-days: 30
+          if-no-files-found: error
+
+  create-release:
+    name: Create Release
+    needs: [ build-macos, build-windows ]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ez-booth-macos-suite
+          path: ./artifacts/macos
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ez-booth-windows-suite
+          path: ./artifacts/windows
+
+      - name: Rename artifacts for release
+        run: |
+          mv ./artifacts/macos/ez-booth-macos-native.zip ./ez-booth-${{ github.ref_name }}-macos.zip
+          mv ./artifacts/windows/ez-booth-1.0.0.zip ./ez-booth-${{ github.ref_name }}-windows.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ez-booth-${{ github.ref_name }}-macos.zip
+            ez-booth-${{ github.ref_name }}-windows.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
