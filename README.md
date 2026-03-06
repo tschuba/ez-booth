@@ -43,3 +43,12 @@ This command will create the following distribution files:
 │   └── ez-booth-{version}-linux.tar.gz
 │   └── ez-booth-{version}-windows.zip
 ```
+
+## License
+
+This project is licensed under `PolyForm Noncommercial 1.0.0`.
+
+- Non-commercial use is allowed under the license terms.
+- Commercial use is not allowed without a separate written license.
+
+See `LICENSE` for details.
