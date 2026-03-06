@@ -9,6 +9,14 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
+    <licenses>
+        <license>
+            <name>PolyForm Noncommercial License 1.0.0</name>
+            <url>https://polyformproject.org/licenses/noncommercial/1.0.0/</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <modules>
         <module>core</module>
         <module>server</module>

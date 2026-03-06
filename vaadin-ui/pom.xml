@@ -12,6 +12,7 @@
     <artifactId>ez-booth-vaadin-ui</artifactId>
     <packaging>jar</packaging>
 
+
     <properties>
         <jpackage.skip>false</jpackage.skip>
         <vaadin.version>24.9.2</vaadin.version>
