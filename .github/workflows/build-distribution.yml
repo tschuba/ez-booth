@@ -35,24 +35,25 @@ jobs:
       - name: Build with Maven
         run: mvn -B clean install -Pdist,production -DskipTests --file pom.xml
 
+      - name: Ad-hoc Sign Binaries
+        run: |
+          echo "🖋️ Ad-hoc signing apps..."
+          # Wir signieren die Bundles rekursiv mit der Identität "-" (Ad-hoc)
+          # Das verhindert, dass macOS denkt, die Apps seien manipuliert worden.
+          codesign --force --deep --sign - "distribution/target/ez-booth-suite/apps/ez-booth-server.app"
+          codesign --force --deep --sign - "distribution/target/ez-booth-suite/apps/ez-booth-vaadin-ui.app"
+
       - name: Create Native macOS Zip
         run: |
-          # Change to the target directory
           cd distribution/target/
-          
-          # Delete the ZIP created by Maven (if present) to avoid confusion
           rm -f ez-booth-1.0.0.zip
-          
-          # Zip the directory manually with the native macOS tool.
-          # -r: recursive
-          # -y: preserve symlinks as symlinks (essential for JRE!)
+          # -r (rekursiv), -y (Symlinks erhalten)
           zip -ry ez-booth-macos-native.zip ez-booth-suite/
 
       - name: Upload macOS Distribution
         uses: actions/upload-artifact@v4
         with:
           name: ez-booth-macos-suite
-          # Hier laden wir nun das native Zip hoch
           path: distribution/target/ez-booth-macos-native.zip
 
   build-windows:
