@@ -37,16 +37,15 @@ jobs:
 
       - name: Create Native macOS Zip
         run: |
-          # Wir gehen in das target Verzeichnis
+          # Change to the target directory
           cd distribution/target/
           
-          # Wir löschen das von Maven erstellte ZIP (falls vorhanden), 
-          # um Verwirrung zu vermeiden
+          # Delete the ZIP created by Maven (if present) to avoid confusion
           rm -f ez-booth-1.0.0.zip
           
-          # Wir zippen den Ordner manuell mit dem nativen macOS Tool.
-          # -r: rekursiv
-          # -y: Symlinks als Symlinks erhalten (essenziell für JRE!)
+          # Zip the directory manually with the native macOS tool.
+          # -r: recursive
+          # -y: preserve symlinks as symlinks (essential for JRE!)
           zip -ry ez-booth-macos-native.zip ez-booth-suite/
 
       - name: Upload macOS Distribution
@@ -119,7 +118,7 @@ jobs:
 
       - name: Rename artifacts for release
         run: |
-          mv ./artifacts/macos/ez-booth-1.0.0.zip ./ez-booth-${{ github.ref_name }}-macos.zip
+          mv ./artifacts/macos/ez-booth-macos-native.zip ./ez-booth-${{ github.ref_name }}-macos.zip
           mv ./artifacts/windows/ez-booth-1.0.0.zip ./ez-booth-${{ github.ref_name }}-windows.zip
 
       - name: Create GitHub Release
