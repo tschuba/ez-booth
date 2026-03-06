@@ -14,6 +14,15 @@ for PORT in $SERVER_PORT $UI_PORT; do
     fi
 done
 
+# --- SELF-HEALING ---
+# Check if we are on macOS and if the quarantine attribute is set
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Attempt to remove the quarantine flag for the entire directory
+    # This suppresses the "App is corrupted" message for subsequent calls
+    xattr -d com.apple.quarantine "$BASEDIR" > /dev/null 2>&1
+    xattr -cr "$BASEDIR" > /dev/null 2>&1
+fi
+
 echo "🚀 Starting ez-booth Suite..."
 
 # Ensure log directory exists
