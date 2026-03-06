@@ -73,7 +73,7 @@ exit /b 1
 :SERVER_READY
 echo ✅ Suite is running!
 echo --------------------------------------------------
-echo 🌐 URL: http://localhost:%HTTP_PORT%
+echo 🌐 URL: http://localhost:%UI_PORT%
 echo 👉 Press any key to SHUT DOWN.
 echo --------------------------------------------------
 
