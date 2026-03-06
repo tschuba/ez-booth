@@ -87,18 +87,30 @@ pause
 exit /b 1
 
 :SERVER_READY
-echo ✅ Server is UP and listening!
-
-echo   ^> Starting UI...
+echo ✅ Server ist bereit!
+echo.
 echo --------------------------------------------------
-echo 🌐 URL: http://localhost:%UI_PORT%
+echo 🌐 URL: http://localhost:%HTTP_PORT%
+echo.
+echo 👉 Druecke eine beliebige Taste in diesem Fenster,
+echo    um die Suite VOLLSTAENDIG zu BEENDEN.
 echo --------------------------------------------------
 
-:: UI direkt starten (CMD wartet hier, bis UI geschlossen wird)
-"%UI_EXE%" -Djdk.lang.Process.launchMechanism=FORK
+:: UI starten (startet den Browser und "verabschiedet" sich)
+start "" "%UI_EXE%" -Djdk.lang.Process.launchMechanism=FORK
 
-echo 👋 UI closed. Cleaning up all processes...
+:: Hier bleibt das Skript stehen, bis der User eine Taste drückt
+pause >nul
+
+echo.
+echo 👋 Beende alle Prozesse...
 taskkill /PID %SERVER_PID% /F /T >nul 2>&1
+
+:: 2. Die UI-Exe explizit beenden (falls sie noch im Hintergrund haengt)
+taskkill /F /IM ez-booth-vaadin-ui.exe /T >nul 2>&1
+
+echo ✅ Alles sauber beendet. Bis zum naechsten Mal!
+timeout /t 2 >nul
 exit /b 0
 
 :PID_FAIL
