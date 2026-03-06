@@ -9,7 +9,17 @@ Windows Users:
     Double-click "run-suite.bat" or run it from command prompt:
     > run-suite.bat
 
-macOS/Linux Users:
+macOS Users:
+    IMPORTANT: Due to macOS security (Gatekeeper), follow these steps once:
+    1. Right-click "run-suite.sh" and select "Open".
+    2. If a warning appears, click "Open" again.
+
+    If the app shows a "damaged" or "corrupt" error:
+    Open Terminal in this directory and run:
+    $ xattr -cr .
+    Then start the script again.
+
+Linux Users:
     Open Terminal in this directory and execute:
     $ ./run-suite.sh
 
@@ -40,21 +50,26 @@ WHAT HAPPENS WHEN YOU START
 TROUBLESHOOTING
 ---------------
 
+macOS "App is damaged" or "Unidentified Developer":
+    - This is a common macOS security measure for unsigned software.
+    - Solution: Run 'xattr -cr .' in the application folder via Terminal.
+    - Always use Right-Click -> Open for the first launch.
+
 Server won't start:
-    - Check logs/server.log for error details
-    - On Windows, the log folder opens automatically on startup failure
-    - Ensure ports 8090 and 8091 are not blocked by firewall
-    - Verify Java runtime is properly bundled with the applications
+    - Check logs/server.log for error details.
+    - On Windows, the log folder opens automatically on startup failure.
+    - Ensure ports 8090 and 8091 are not blocked by firewall.
+    - Verify Java runtime is properly bundled in the 'shared-runtime' folder.
 
 UI won't load:
-    - Check logs/ui.log for error details
-    - Manually navigate to http://localhost:8090 in your browser
-    - Ensure the server started successfully first
+    - Check logs/ui.log for error details.
+    - Manually navigate to http://localhost:8090 in your browser.
+    - Ensure the server started successfully first (check logs/server.log).
 
 Port conflicts:
-    - The launcher automatically kills old processes on startup
+    - The launcher automatically kills old processes on startup.
     - If manual cleanup is needed:
-      Windows: Use Task Manager to end ez-booth processes
+      Windows: Use Task Manager to end ez-booth processes.
       macOS/Linux: Use Activity Monitor or run: killall -9 ez-booth-server
 
 
@@ -66,8 +81,8 @@ Windows:
     - PowerShell (pre-installed on modern Windows)
 
 macOS:
-    - macOS 10.14 or later
-    - Terminal access
+    - macOS 10.15 Catalina or later
+    - Terminal access for initial setup
 
 Linux:
     - Most modern distributions (tested on Ubuntu 20.04+)
@@ -106,8 +121,8 @@ ADVANCED USAGE
 --------------
 
 The launchers use fixed ports by default:
-    - Server: 8091
-    - UI: 8090
+    - Server: 8091 (gRPC)
+    - UI: 8090 (HTTP)
 
 If you need to change these ports or run multiple instances, you'll need to
 modify the launcher scripts directly or use the JAR-based deployment method
@@ -124,4 +139,3 @@ For issues, bugs, or feature requests, please contact:
 ================================================================================
 Copyright (c) 2026 Thomas Schulte-Bahrenberg. All rights reserved.
 ================================================================================
-
