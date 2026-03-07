@@ -4,9 +4,6 @@
  */
 package tschuba.ez.booth.ui.views;
 
-import static org.vaadin.lineawesome.LineAwesomeIcon.PLAY_SOLID;
-import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.ADDRESS_LABEL__TEXT;
-
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
@@ -14,6 +11,7 @@ import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.card.Card;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.Paragraph;
@@ -27,15 +25,21 @@ import com.vaadin.flow.component.popover.PopoverPosition;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.server.streams.DownloadEvent;
+import com.vaadin.flow.server.streams.DownloadHandler;
+import com.vaadin.flow.server.streams.InMemoryUploadCallback;
+import com.vaadin.flow.server.streams.InMemoryUploadHandler;
+import com.vaadin.flow.server.streams.TransferProgressListener;
+import com.vaadin.flow.server.streams.UploadHandler;
+import com.vaadin.flow.server.streams.UploadMetadata;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.LumoUtility.Width;
-import java.util.Optional;
 import lombok.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.vaadin.barcodes.Barcode;
 import org.vaadin.lineawesome.LineAwesomeIcon;
@@ -44,6 +48,7 @@ import tschuba.ez.booth.i18n.TranslationKeys.Common;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.Transfer;
 import tschuba.ez.booth.model.DataModel;
+import tschuba.ez.booth.proto.ProtoModel;
 import tschuba.ez.booth.services.BoothService;
 import tschuba.ez.booth.ui.Constraints;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
@@ -59,15 +64,24 @@ import tschuba.ez.booth.ui.util.Routing;
 import tschuba.ez.booth.ui.util.Server;
 import tschuba.ez.booth.ui.util.Spacing;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.vaadin.lineawesome.LineAwesomeIcon.PLAY_SOLID;
+import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.ADDRESS_LABEL__TEXT;
+import static tschuba.ez.booth.proto.ProtoServices.ExchangeData;
+
 @Route(value = "data-exchange", layout = AppLayoutWithMenu.class)
 @SpringComponent
 @UIScope
 public class DataExchangeView extends OneColumnLayout {
 
-  public DataExchangeView(@NonNull SelfInfoCard selfInfo, @NonNull TransferCard transferCard) {
+  public DataExchangeView(@NonNull SelfInfoCard selfInfo, @NonNull TransferCard transferCard, @NonNull FileExchangeCard fileExchangeCard) {
     Main content = new Main();
     setContent(content);
     content.add(new HorizontalLayout(selfInfo, transferCard));
+    content.add(fileExchangeCard);
   }
 
   @SpringComponent
@@ -127,9 +141,8 @@ public class DataExchangeView extends OneColumnLayout {
 
   @SpringComponent
   @UIScope
+  @Slf4j
   public static class TransferCard extends Composite<Card> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransferCard.class);
 
     private final BoothService booths;
     private final DataExchangeClient dataExchangeClient;
@@ -186,7 +199,7 @@ public class DataExchangeView extends OneColumnLayout {
                   Routing.Parameters.builder().returnToView(DataExchangeView.class).build();
               NavigateTo.view(BoothSelectionView.class, routeParameters).currentWindow();
             } catch (Exception ex) {
-              LOGGER.error("Failed to navigate to booth selection view", ex);
+              log.error("Failed to navigate to booth selection view", ex);
             }
           });
 
@@ -228,7 +241,7 @@ public class DataExchangeView extends OneColumnLayout {
       String input = addressField.getValue();
       Try<String> decodedValue = AddressCodec.Exchange.tryDecode(input);
       if (decodedValue.failed()) {
-        LOGGER.debug("Invalid target address entered: {}", input);
+        log.debug("Invalid target address entered: {}", input);
         addressField.focus();
         Notifications.error(getTranslation(Transfer.NOTIFICATION__INVALID_ADDRESS, input));
         return;
@@ -236,22 +249,76 @@ public class DataExchangeView extends OneColumnLayout {
       String targetAddress = decodedValue.get();
 
       DataModel.Booth.Key booth = BoothSelection.get().orElseThrow();
-      LOGGER.debug("Starting data transfer to {} for {}", targetAddress, booth.boothId());
+      log.debug("Starting data transfer to {} for {}", targetAddress, booth.boothId());
       try {
         addressField.setVisible(false);
         busyIndicator.open();
 
         dataExchangeClient.exchangeDataWith(targetAddress, booth);
-        LOGGER.debug(
+        log.debug(
             "Data transfer to {} for {} completed successfully.", targetAddress, booth.boothId());
         Notifications.success(getTranslation(Transfer.NOTIFICATION__TRANSFER_COMPLETED));
       } catch (Exception ex) {
-        LOGGER.error("Data transfer to {} for {} failed!", targetAddress, booth, ex);
+        log.error("Data transfer to {} for {} failed!", targetAddress, booth, ex);
         Notifications.error(getTranslation(Transfer.NOTIFICATION__TRANSFER_FAILED), ex);
       } finally {
         busyIndicator.close();
         addressField.setVisible(true);
       }
+    }
+  }
+
+  @SpringComponent
+  @UIScope
+  public static class FileExchangeCard extends Composite<Card> {
+
+    private final @NonNull BoothService booths;
+    private final @NonNull DataExchangeClient dataExchangeClient;
+
+    public FileExchangeCard(@NonNull BoothService booths, @NonNull DataExchangeClient dataExchangeClient) {
+      this.booths = booths;
+      this.dataExchangeClient = dataExchangeClient;
+
+      Anchor exportLink = new Anchor(new ExportHandler(), "Export Data");
+      getContent().add(exportLink);
+
+      InMemoryUploadHandler uploadHandler = UploadHandler.inMemory(new UploadCallback(), new PropressHandler());
+      Upload importUpload = new Upload(uploadHandler);
+      getContent().add(importUpload);
+
+    }
+
+    /**
+     * Handler for exporting booth data as a file.
+     */
+    class ExportHandler implements DownloadHandler {
+
+      @Override
+      public void handleDownloadRequest(DownloadEvent download) throws IOException {
+        ExchangeData exchangeData = dataExchangeClient.exportData(BoothSelection.get().orElseThrow());
+        ProtoModel.Booth booth = exchangeData.getBooth();
+        download.setFileName(booth.getDescription() + "-" + booth.getDate() + "-" + LocalDateTime.now() + ".ezb");
+        download.getResponse().setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        exchangeData.writeTo(download.getOutputStream());
+      }
+    }
+
+    /**
+     * Callback for handling uploaded data files.
+     */
+    class UploadCallback implements InMemoryUploadCallback {
+      @Override
+      public void complete(UploadMetadata metadata, byte[] bytes) throws IOException {
+        ExchangeData exchangeData = ExchangeData.parseFrom(bytes);
+        dataExchangeClient.mergeData(exchangeData);
+      }
+    }
+
+    /**
+     * Listener for tracking the progress of data uploads.
+     */
+    class PropressHandler implements TransferProgressListener {
+      // TODO:
     }
   }
 }
