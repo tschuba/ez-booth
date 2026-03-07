@@ -28,6 +28,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.streams.DownloadEvent;
 import com.vaadin.flow.server.streams.DownloadHandler;
 import com.vaadin.flow.server.streams.InMemoryUploadCallback;
@@ -41,6 +42,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Width;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.vaadin.barcodes.Barcode;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.Try;
@@ -297,8 +299,12 @@ public class DataExchangeView extends OneColumnLayout {
       public void handleDownloadRequest(DownloadEvent download) throws IOException {
         ExchangeData exchangeData = dataExchangeClient.exportData(BoothSelection.get().orElseThrow());
         ProtoModel.Booth booth = exchangeData.getBooth();
-        download.setFileName(booth.getDescription() + "-" + booth.getDate() + "-" + LocalDateTime.now() + ".ezb");
-        download.getResponse().setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+
+        String fileName = booth.getDescription() + "-" + booth.getDate() + "-" + LocalDateTime.now() + ".ezb";
+        download.setFileName(fileName);
+        VaadinResponse response = download.getResponse();
+        response.setHeader(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"%s\"".formatted(fileName));
         exchangeData.writeTo(download.getOutputStream());
       }
     }
