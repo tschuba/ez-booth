@@ -287,8 +287,10 @@ public class DataExchangeView extends OneColumnLayout {
     public FileExportCard(@NonNull DataExchangeClient dataExchangeClient) {
       this.dataExchangeClient = dataExchangeClient;
 
-      Anchor exportLink = new Anchor(new ExportHandler(), "Export Data");
-      getContent().add(exportLink);
+      Anchor exportLink = new Anchor(new ExportHandler(), "Export to file");
+      Card content = getContent();
+      content.setHeaderPrefix(LineAwesomeIcon.FILE_EXPORT_SOLID.create());
+      content.setHeader(exportLink);
     }
 
     /**
@@ -337,7 +339,10 @@ public class DataExchangeView extends OneColumnLayout {
       InMemoryUploadHandler uploadHandler = UploadHandler.inMemory(new ImportUploadCallback(), new ImportProgressHandler());
       Upload importUpload = new Upload(uploadHandler);
 
-      getContent().add(importUpload);
+      Card content = getContent();
+      content.setHeaderPrefix(LineAwesomeIcon.FILE_IMPORT_SOLID.create());
+      content.setTitle("Import from file");
+      content.add(importUpload);
 
     }
 
