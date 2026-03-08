@@ -8,6 +8,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.button.Button;
@@ -81,11 +82,15 @@ import static tschuba.ez.booth.proto.ProtoServices.ExchangeData;
 @UIScope
 public class DataExchangeView extends OneColumnLayout {
 
-  public DataExchangeView(@NonNull SelfInfoCard selfInfo, @NonNull TransferCard transferCard, @NonNull FileExchangeCard fileExchangeCard) {
+  public DataExchangeView(@NonNull SelfInfoCard selfInfo,
+                          @NonNull TransferCard transferCard,
+                          @NonNull FileExportCard fileExportCard,
+                          @NonNull FileImportCard fileImportCard) {
+    HorizontalLayout transferComponents = new HorizontalLayout(selfInfo, transferCard);
+    HorizontalLayout fileExchangeComponents = new HorizontalLayout(fileExportCard, fileImportCard);
     Main content = new Main();
+    content.add(new VerticalLayout(transferComponents, fileExchangeComponents));
     setContent(content);
-    content.add(new HorizontalLayout(selfInfo, transferCard));
-    content.add(fileExchangeCard);
   }
 
   @SpringComponent
@@ -275,37 +280,15 @@ public class DataExchangeView extends OneColumnLayout {
   @SpringComponent
   @UIScope
   @Slf4j
-  public static class FileExchangeCard extends Composite<Card> {
+  public static class FileExportCard extends Composite<Card> {
 
     private final @NonNull DataExchangeClient dataExchangeClient;
 
-    private final Popover busyIndicator = new Popover();
-    // TODO: translate text
-    private final Span busyIndicatorText = new Span("Läuft...");
-
-    public FileExchangeCard(@NonNull DataExchangeClient dataExchangeClient) {
+    public FileExportCard(@NonNull DataExchangeClient dataExchangeClient) {
       this.dataExchangeClient = dataExchangeClient;
-
-      ProgressBar progressBar = new ProgressBar();
-      progressBar.setIndeterminate(true);
-      busyIndicator.setTarget(this);
-      busyIndicator.setModal(true);
-      busyIndicator.setBackdropVisible(true);
-      busyIndicator.setOpenOnClick(false);
-      busyIndicator.setOpenOnFocus(false);
-      busyIndicator.setOpenOnHover(false);
-      busyIndicator.setCloseOnEsc(false);
-      busyIndicator.setCloseOnOutsideClick(false);
-      busyIndicator.setPosition(PopoverPosition.TOP);
-      busyIndicator.add(new VerticalLayout(busyIndicatorText, progressBar));
 
       Anchor exportLink = new Anchor(new ExportHandler(), "Export Data");
       getContent().add(exportLink);
-
-      InMemoryUploadHandler uploadHandler = UploadHandler.inMemory(new ImportUploadCallback(), new ImportProgressHandler());
-      Upload importUpload = new Upload(uploadHandler);
-      getContent().add(importUpload);
-
     }
 
     /**
@@ -337,6 +320,26 @@ public class DataExchangeView extends OneColumnLayout {
         }
       }
     }
+  }
+
+  @SpringComponent
+  @UIScope
+  @Slf4j
+  public static class FileImportCard extends Composite<Card> {
+
+    private final @NonNull DataExchangeClient dataExchangeClient;
+
+    private final BusyIndicator busyIndicator = new BusyIndicator();
+
+    public FileImportCard(@NonNull DataExchangeClient dataExchangeClient) {
+      this.dataExchangeClient = dataExchangeClient;
+
+      InMemoryUploadHandler uploadHandler = UploadHandler.inMemory(new ImportUploadCallback(), new ImportProgressHandler());
+      Upload importUpload = new Upload(uploadHandler);
+
+      getContent().add(importUpload);
+
+    }
 
     /**
      * Callback for handling uploaded data files.
@@ -347,9 +350,9 @@ public class DataExchangeView extends OneColumnLayout {
         try {
           ExchangeData exchangeData = ExchangeData.parseFrom(bytes);
           String boothDescription = exchangeData.getBooth().getDescription();
-          log.debug("Received data upload with booth description: {}", boothDescription);
+          log.debug("Received data upload for booth '{}'", boothDescription);
           dataExchangeClient.mergeData(exchangeData);
-          log.debug("Data upload with booth description {} merged successfully", boothDescription);
+          log.debug("Data upload with booth description '{}' merged successfully", boothDescription);
         } catch (InvalidProtocolBufferException ex) {
           log.error("Failed to parse uploaded data file", ex);
           // TODO: translate error message and show more user-friendly message
@@ -372,6 +375,47 @@ public class DataExchangeView extends OneColumnLayout {
       public void onComplete(TransferContext context, long transferredBytes) {
         busyIndicator.close();
       }
+    }
+  }
+
+  /**
+   * A simple busy indicator component that can be shown during long-running operations.
+   */
+  public static class BusyIndicator extends Composite<Popover> {
+
+    private final Span busyIndicatorText = new Span();
+
+    public BusyIndicator() {
+      ProgressBar progressBar = new ProgressBar();
+      progressBar.setIndeterminate(true);
+
+      Popover popover = getContent();
+      popover.setTarget(this);
+      popover.setModal(true);
+      popover.setBackdropVisible(true);
+      popover.setOpenOnClick(false);
+      popover.setOpenOnFocus(false);
+      popover.setOpenOnHover(false);
+      popover.setCloseOnEsc(false);
+      popover.setCloseOnOutsideClick(false);
+      popover.setPosition(PopoverPosition.TOP);
+      popover.add(new VerticalLayout(busyIndicatorText, progressBar));
+    }
+
+    public void setTarget(Component target) {
+      getContent().setTarget(target);
+    }
+
+    public void setText(String text) {
+      busyIndicatorText.setText(text);
+    }
+
+    public void open() {
+      getContent().open();
+    }
+
+    public void close() {
+      getContent().close();
     }
   }
 }
