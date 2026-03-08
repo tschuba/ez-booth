@@ -4,6 +4,7 @@
  */
 package tschuba.ez.booth.ui.views;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
@@ -33,6 +34,7 @@ import com.vaadin.flow.server.streams.DownloadEvent;
 import com.vaadin.flow.server.streams.DownloadHandler;
 import com.vaadin.flow.server.streams.InMemoryUploadCallback;
 import com.vaadin.flow.server.streams.InMemoryUploadHandler;
+import com.vaadin.flow.server.streams.TransferContext;
 import com.vaadin.flow.server.streams.TransferProgressListener;
 import com.vaadin.flow.server.streams.UploadHandler;
 import com.vaadin.flow.server.streams.UploadMetadata;
@@ -272,17 +274,35 @@ public class DataExchangeView extends OneColumnLayout {
 
   @SpringComponent
   @UIScope
+  @Slf4j
   public static class FileExchangeCard extends Composite<Card> {
 
     private final @NonNull DataExchangeClient dataExchangeClient;
 
+    private final Popover busyIndicator = new Popover();
+    // TODO: translate text
+    private final Span busyIndicatorText = new Span("Läuft...");
+
     public FileExchangeCard(@NonNull DataExchangeClient dataExchangeClient) {
       this.dataExchangeClient = dataExchangeClient;
+
+      ProgressBar progressBar = new ProgressBar();
+      progressBar.setIndeterminate(true);
+      busyIndicator.setTarget(this);
+      busyIndicator.setModal(true);
+      busyIndicator.setBackdropVisible(true);
+      busyIndicator.setOpenOnClick(false);
+      busyIndicator.setOpenOnFocus(false);
+      busyIndicator.setOpenOnHover(false);
+      busyIndicator.setCloseOnEsc(false);
+      busyIndicator.setCloseOnOutsideClick(false);
+      busyIndicator.setPosition(PopoverPosition.TOP);
+      busyIndicator.add(new VerticalLayout(busyIndicatorText, progressBar));
 
       Anchor exportLink = new Anchor(new ExportHandler(), "Export Data");
       getContent().add(exportLink);
 
-      InMemoryUploadHandler uploadHandler = UploadHandler.inMemory(new UploadCallback(), new PropressHandler());
+      InMemoryUploadHandler uploadHandler = UploadHandler.inMemory(new ImportUploadCallback(), new ImportProgressHandler());
       Upload importUpload = new Upload(uploadHandler);
       getContent().add(importUpload);
 
@@ -295,34 +315,63 @@ public class DataExchangeView extends OneColumnLayout {
 
       @Override
       public void handleDownloadRequest(DownloadEvent download) throws IOException {
-        ExchangeData exchangeData = dataExchangeClient.exportData(BoothSelection.get().orElseThrow());
-        ProtoModel.Booth booth = exchangeData.getBooth();
+        try {
+          download.getSession().lock();
 
-        String fileName = booth.getDescription() + "-" + booth.getDate() + "-" + LocalDateTime.now() + ".ezb";
-        download.setFileName(fileName);
-        VaadinResponse response = download.getResponse();
-        response.setHeader(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"%s\"".formatted(fileName));
-        exchangeData.writeTo(download.getOutputStream());
+          DataModel.Booth.Key key = BoothSelection.get().orElseThrow();
+          ExchangeData exchangeData = dataExchangeClient.exportData(key);
+          ProtoModel.Booth booth = exchangeData.getBooth();
+
+          String fileName = booth.getDescription() + "-" + booth.getDate() + "-" + LocalDateTime.now() + ".ezb";
+          download.setFileName(fileName);
+          VaadinResponse response = download.getResponse();
+          response.setHeader(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
+          response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"%s\"".formatted(fileName));
+          exchangeData.writeTo(download.getOutputStream());
+        } catch (Exception ex) {
+          log.error("Failed to export data for download", ex);
+          // TODO: translate error message and show more user-friendly message
+          Notifications.error("Failed to export data. Please try again.", ex);
+        } finally {
+          download.getSession().unlock();
+        }
       }
     }
 
     /**
      * Callback for handling uploaded data files.
      */
-    class UploadCallback implements InMemoryUploadCallback {
+    class ImportUploadCallback implements InMemoryUploadCallback {
       @Override
       public void complete(UploadMetadata metadata, byte[] bytes) throws IOException {
-        ExchangeData exchangeData = ExchangeData.parseFrom(bytes);
-        dataExchangeClient.mergeData(exchangeData);
+        try {
+          ExchangeData exchangeData = ExchangeData.parseFrom(bytes);
+          String boothDescription = exchangeData.getBooth().getDescription();
+          log.debug("Received data upload with booth description: {}", boothDescription);
+          dataExchangeClient.mergeData(exchangeData);
+          log.debug("Data upload with booth description {} merged successfully", boothDescription);
+        } catch (InvalidProtocolBufferException ex) {
+          log.error("Failed to parse uploaded data file", ex);
+          // TODO: translate error message and show more user-friendly message
+          Notifications.error("Failed to parse uploaded data file. Please make sure to upload a valid .ezb file.", ex);
+        }
       }
     }
 
     /**
      * Listener for tracking the progress of data uploads.
      */
-    class PropressHandler implements TransferProgressListener {
-      // TODO:
+    class ImportProgressHandler implements TransferProgressListener {
+
+      @Override
+      public void onStart(TransferContext context) {
+        busyIndicator.open();
+      }
+
+      @Override
+      public void onComplete(TransferContext context, long transferredBytes) {
+        busyIndicator.close();
+      }
     }
   }
 }
