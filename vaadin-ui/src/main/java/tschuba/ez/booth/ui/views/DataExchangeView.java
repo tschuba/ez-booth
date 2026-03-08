@@ -87,9 +87,15 @@ public class DataExchangeView extends OneColumnLayout {
                           @NonNull FileExportCard fileExportCard,
                           @NonNull FileImportCard fileImportCard) {
     HorizontalLayout transferComponents = new HorizontalLayout(selfInfo, transferCard);
-    HorizontalLayout fileExchangeComponents = new HorizontalLayout(fileExportCard, fileImportCard);
+    HorizontalLayout fileExchangeComponents = new HorizontalLayout(JustifyContentMode.BETWEEN, fileExportCard, fileImportCard);
+    fileExchangeComponents.setFlexGrow(1, fileExportCard);
+    fileExchangeComponents.setFlexGrow(2, fileImportCard);
+
+    VerticalLayout verticalLayout = new VerticalLayout(Alignment.STRETCH, transferComponents, fileExchangeComponents);
+    Spacing.spacing(verticalLayout).xlarge();
+
     Main content = new Main();
-    content.add(new VerticalLayout(transferComponents, fileExchangeComponents));
+    content.add(verticalLayout);
     setContent(content);
   }
 
