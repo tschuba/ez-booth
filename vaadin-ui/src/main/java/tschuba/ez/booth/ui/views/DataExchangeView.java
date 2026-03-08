@@ -274,11 +274,9 @@ public class DataExchangeView extends OneColumnLayout {
   @UIScope
   public static class FileExchangeCard extends Composite<Card> {
 
-    private final @NonNull BoothService booths;
     private final @NonNull DataExchangeClient dataExchangeClient;
 
-    public FileExchangeCard(@NonNull BoothService booths, @NonNull DataExchangeClient dataExchangeClient) {
-      this.booths = booths;
+    public FileExchangeCard(@NonNull DataExchangeClient dataExchangeClient) {
       this.dataExchangeClient = dataExchangeClient;
 
       Anchor exportLink = new Anchor(new ExportHandler(), "Export Data");
