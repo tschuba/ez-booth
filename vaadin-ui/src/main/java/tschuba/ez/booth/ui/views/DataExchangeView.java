@@ -320,7 +320,7 @@ public class DataExchangeView extends OneColumnLayout {
       exportLink = new Anchor(new ExportHandler(), null);
       Card content = getContent();
       content.setHeaderPrefix(LineAwesomeIcon.FILE_EXPORT_SOLID.create());
-      content.add(exportLink);
+      content.add(new VerticalLayout(Alignment.CENTER, new HorizontalLayout(JustifyContentMode.CENTER, exportLink)));
     }
 
     @Override
