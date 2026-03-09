@@ -4,9 +4,6 @@
  */
 package tschuba.ez.booth.ui.layouts.app;
 
-import static org.vaadin.lineawesome.LineAwesomeIcon.*;
-
-import java.util.List;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -17,6 +14,13 @@ import tschuba.ez.booth.ui.views.BoothSelectionView;
 import tschuba.ez.booth.ui.views.CheckoutView;
 import tschuba.ez.booth.ui.views.DataExchangeView;
 import tschuba.ez.booth.ui.views.VendorReportView;
+
+import java.util.List;
+
+import static org.vaadin.lineawesome.LineAwesomeIcon.CASH_REGISTER_SOLID;
+import static org.vaadin.lineawesome.LineAwesomeIcon.COINS_SOLID;
+import static org.vaadin.lineawesome.LineAwesomeIcon.EXCHANGE_ALT_SOLID;
+import static org.vaadin.lineawesome.LineAwesomeIcon.STORE_SOLID;
 
 public class AppLayoutWithMenu extends CustomAppLayout {
   @Autowired
@@ -38,7 +42,7 @@ public class AppLayoutWithMenu extends CustomAppLayout {
                 VendorReportView.class),
             MainMenuItem.create(
                 I18N.textKey(TranslationKeys.DataExchangeView.MENU_ITEM__TEXT),
-                FILE_ARCHIVE.create(),
+                EXCHANGE_ALT_SOLID.create(),
                 DataExchangeView.class)),
         environment);
   }
