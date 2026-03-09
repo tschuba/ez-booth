@@ -216,6 +216,7 @@ public interface TranslationKeys {
     interface FileExport {
       String TITLE = "DataExchangeView.FileExportCard.title";
       String EXPORT_LINK__TEXT = "DataExchangeView.FileExportCard.exportLink.text";
+      String EXPORT_FAILED = "DataExchangeView.FileExportCard.uploadFailed";
     }
 
     interface FileImport {
@@ -223,6 +224,7 @@ public interface TranslationKeys {
       String UPLOAD_ADD_FILE__LABEL = "DataExchangeView.FileImportCard.addFile";
       String INCORRECT_FILE_TYPE__TEXT = "DataExchangeView.FileImportCard.incorrectFileType";
       String STATUS_PROCESSING__TEXT = "DataExchangeView.FileImportCard.statusProcessing";
+      String UPLOAD_FAILED = "DataExchangeView.FileImportCard.uploadFailed";
     }
   }
 

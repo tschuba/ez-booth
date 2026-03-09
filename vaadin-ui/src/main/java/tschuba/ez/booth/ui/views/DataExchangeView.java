@@ -90,6 +90,7 @@ import static tschuba.ez.booth.proto.ProtoServices.ExchangeData;
 @UIScope
 public class DataExchangeView extends OneColumnLayout {
 
+  protected static final String DATA_FILE_EXTENSION = ".ezb";
   private final Tab transferTab;
   private final Tab fileExchangeTab;
 
@@ -340,7 +341,7 @@ public class DataExchangeView extends OneColumnLayout {
           ExchangeData exchangeData = dataExchangeClient.exportData(key);
           ProtoModel.Booth booth = exchangeData.getBooth();
 
-          String fileName = booth.getDescription() + "-" + booth.getDate() + "-" + LocalDateTime.now() + ".ezb";
+          String fileName = booth.getDescription() + "-" + LocalDateTime.now() + DATA_FILE_EXTENSION;
           download.setFileName(fileName);
           VaadinResponse response = download.getResponse();
           response.setHeader(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
@@ -348,8 +349,7 @@ public class DataExchangeView extends OneColumnLayout {
           exchangeData.writeTo(download.getOutputStream());
         } catch (Exception ex) {
           log.error("Failed to export data for download", ex);
-          // TODO: translate error message and show more user-friendly message
-          Notifications.error("Failed to export data. Please try again.", ex);
+          Notifications.error(getTranslation(FileExport.EXPORT_FAILED), ex);
         } finally {
           download.getSession().unlock();
         }
@@ -372,14 +372,13 @@ public class DataExchangeView extends OneColumnLayout {
 
       InMemoryUploadHandler uploadHandler = UploadHandler.inMemory(new ImportUploadCallback(), new ImportProgressHandler());
       upload = new Upload(uploadHandler);
-      upload.setAcceptedFileTypes("application/ez-booth", ".ezb");
+      upload.setAcceptedFileTypes("application/ez-booth", DATA_FILE_EXTENSION);
       upload.setMaxFiles(1);
       upload.setMaxFileSize((int) DataSize.ofMegabytes(50).toBytes());
 
       Card content = getContent();
       content.setHeaderPrefix(LineAwesomeIcon.FILE_IMPORT_SOLID.create());
       content.add(upload);
-
     }
 
     @Override
@@ -404,8 +403,7 @@ public class DataExchangeView extends OneColumnLayout {
           log.debug("Data upload with booth description '{}' merged successfully", boothDescription);
         } catch (InvalidProtocolBufferException ex) {
           log.error("Failed to parse uploaded data file", ex);
-          // TODO: translate error message and show more user-friendly message
-          Notifications.error("Failed to parse uploaded data file. Please make sure to upload a valid .ezb file.", ex);
+          Notifications.error(getTranslation(FileImport.UPLOAD_FAILED), ex);
         }
       }
     }
