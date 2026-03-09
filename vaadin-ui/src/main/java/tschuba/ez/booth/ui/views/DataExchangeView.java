@@ -25,9 +25,12 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.popover.Popover;
 import com.vaadin.flow.component.popover.PopoverPosition;
 import com.vaadin.flow.component.progressbar.ProgressBar;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.UploadI18N;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.server.VaadinResponse;
@@ -50,6 +53,9 @@ import org.vaadin.barcodes.Barcode;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.Try;
 import tschuba.ez.booth.i18n.TranslationKeys.Common;
+import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.FileExchange;
+import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.FileExport;
+import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.FileImport;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.Transfer;
 import tschuba.ez.booth.model.DataModel;
@@ -82,21 +88,35 @@ import static tschuba.ez.booth.proto.ProtoServices.ExchangeData;
 @UIScope
 public class DataExchangeView extends OneColumnLayout {
 
+  private final Tab transferTab;
+  private final Tab fileExchangeTab;
+
   public DataExchangeView(@NonNull SelfInfoCard selfInfo,
                           @NonNull TransferCard transferCard,
                           @NonNull FileExportCard fileExportCard,
                           @NonNull FileImportCard fileImportCard) {
-    HorizontalLayout transferComponents = new HorizontalLayout(selfInfo, transferCard);
-    HorizontalLayout fileExchangeComponents = new HorizontalLayout(JustifyContentMode.BETWEEN, fileExportCard, fileImportCard);
-    fileExchangeComponents.setFlexGrow(1, fileExportCard);
-    fileExchangeComponents.setFlexGrow(2, fileImportCard);
+    HorizontalLayout transferCards = new HorizontalLayout(selfInfo, transferCard);
 
-    VerticalLayout verticalLayout = new VerticalLayout(Alignment.STRETCH, transferComponents, fileExchangeComponents);
-    Spacing.spacing(verticalLayout).xlarge();
+    HorizontalLayout fileExchangeCards = new HorizontalLayout(JustifyContentMode.BETWEEN, fileExportCard, fileImportCard);
+    fileExchangeCards.setFlexGrow(1, fileExportCard);
+    fileExchangeCards.setFlexGrow(2, fileImportCard);
+
+
+    TabSheet tabSheet = new TabSheet();
+    transferTab = new Tab();
+    tabSheet.add(transferTab, transferCards);
+    fileExchangeTab = new Tab();
+    tabSheet.add(fileExchangeTab, fileExchangeCards);
 
     Main content = new Main();
-    content.add(verticalLayout);
+    content.add(tabSheet);
     setContent(content);
+  }
+
+  @Override
+  protected void onAttach(AttachEvent attachEvent) {
+    transferTab.setLabel(getTranslation(Transfer.TITLE));
+    fileExchangeTab.setLabel(getTranslation(FileExchange.TITLE));
   }
 
   @SpringComponent
@@ -289,14 +309,21 @@ public class DataExchangeView extends OneColumnLayout {
   public static class FileExportCard extends Composite<Card> {
 
     private final @NonNull DataExchangeClient dataExchangeClient;
+    private final Anchor exportLink;
 
     public FileExportCard(@NonNull DataExchangeClient dataExchangeClient) {
       this.dataExchangeClient = dataExchangeClient;
 
-      Anchor exportLink = new Anchor(new ExportHandler(), "Export to file");
+      exportLink = new Anchor(new ExportHandler(), null);
       Card content = getContent();
       content.setHeaderPrefix(LineAwesomeIcon.FILE_EXPORT_SOLID.create());
-      content.setHeader(exportLink);
+      content.add(exportLink);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+      getContent().setTitle(getTranslation(FileExport.TITLE));
+      exportLink.setText(getTranslation(FileExport.EXPORT_LINK__TEXT));
     }
 
     /**
@@ -338,18 +365,27 @@ public class DataExchangeView extends OneColumnLayout {
     private final @NonNull DataExchangeClient dataExchangeClient;
 
     private final BusyIndicator busyIndicator = new BusyIndicator();
+    private final Upload upload;
 
     public FileImportCard(@NonNull DataExchangeClient dataExchangeClient) {
       this.dataExchangeClient = dataExchangeClient;
 
       InMemoryUploadHandler uploadHandler = UploadHandler.inMemory(new ImportUploadCallback(), new ImportProgressHandler());
-      Upload importUpload = new Upload(uploadHandler);
+      upload = new Upload(uploadHandler);
 
       Card content = getContent();
       content.setHeaderPrefix(LineAwesomeIcon.FILE_IMPORT_SOLID.create());
-      content.setTitle("Import from file");
-      content.add(importUpload);
+      content.add(upload);
 
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+      getContent().setTitle(getTranslation(FileImport.TITLE));
+
+      String i18nPrefix = "%s.%s".formatted(DataExchangeView.class.getSimpleName(), FileImportCard.class.getSimpleName());
+      UploadI18N uploadI18N = tschuba.ez.booth.i18n.Upload.upload(i18nPrefix, getLocale());
+      upload.setI18n(uploadI18N);
     }
 
     /**
@@ -357,7 +393,7 @@ public class DataExchangeView extends OneColumnLayout {
      */
     class ImportUploadCallback implements InMemoryUploadCallback {
       @Override
-      public void complete(UploadMetadata metadata, byte[] bytes) throws IOException {
+      public void complete(UploadMetadata metadata, byte[] bytes) {
         try {
           ExchangeData exchangeData = ExchangeData.parseFrom(bytes);
           String boothDescription = exchangeData.getBooth().getDescription();
