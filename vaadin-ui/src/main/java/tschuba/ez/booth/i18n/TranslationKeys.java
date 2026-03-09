@@ -221,9 +221,6 @@ public interface TranslationKeys {
 
     interface FileImport {
       String TITLE = "DataExchangeView.FileImportCard.title";
-      String UPLOAD_ADD_FILE__LABEL = "DataExchangeView.FileImportCard.addFile";
-      String INCORRECT_FILE_TYPE__TEXT = "DataExchangeView.FileImportCard.incorrectFileType";
-      String STATUS_PROCESSING__TEXT = "DataExchangeView.FileImportCard.statusProcessing";
       String UPLOAD_FAILED = "DataExchangeView.FileImportCard.uploadFailed";
     }
   }

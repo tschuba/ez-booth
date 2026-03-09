@@ -27,6 +27,7 @@ import com.vaadin.flow.component.popover.PopoverPosition;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabSheet;
+import com.vaadin.flow.component.tabs.TabSheetVariant;
 import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
@@ -105,6 +106,7 @@ public class DataExchangeView extends OneColumnLayout {
     fileExchangeCards.setFlexGrow(2, fileImportCard);
 
     TabSheet tabSheet = new TabSheet();
+    tabSheet.addThemeVariants(TabSheetVariant.LUMO_TABS_EQUAL_WIDTH_TABS);
     transferTab = new Tab();
     tabSheet.add(transferTab, transferCards);
     fileExchangeTab = new Tab();
