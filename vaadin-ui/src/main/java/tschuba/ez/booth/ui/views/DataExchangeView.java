@@ -323,10 +323,12 @@ public class DataExchangeView extends OneColumnLayout {
   @Slf4j
   public static class FileExportCard extends Composite<Card> {
 
+    private final @NonNull BoothService booths;
     private final @NonNull DataExchangeClient dataExchangeClient;
     private final Anchor exportLink;
 
-    public FileExportCard(@NonNull DataExchangeClient dataExchangeClient) {
+    public FileExportCard(@NonNull BoothService boothService, @NonNull DataExchangeClient dataExchangeClient) {
+      this.booths = boothService;
       this.dataExchangeClient = dataExchangeClient;
 
       exportLink = new Anchor(new ExportHandler(), null);
@@ -338,7 +340,11 @@ public class DataExchangeView extends OneColumnLayout {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
       getContent().setTitle(getTranslation(FileExport.TITLE));
+
+      Optional<DataModel.Booth.Key> boothId = BoothSelection.get();
+      exportLink.setEnabled(boothId.isPresent());
       exportLink.setText(getTranslation(FileExport.EXPORT_LINK__TEXT));
+      boothId.flatMap(booths::findById).ifPresent(booth -> exportLink.setText(booth.description()));
     }
 
     /**
