@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2025 Thomas Schulte-Bahrenberg
+ * Copyright (c) 2023-2026 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
 package tschuba.ez.booth.i18n;
@@ -187,6 +187,11 @@ public interface TranslationKeys {
     String TITLE = "DataExchangeView.title";
     String MENU_ITEM__TEXT = "DataExchangeView.menuItem.text";
 
+    interface PeerToPeerExchange {
+      String TITLE = "DataExchangeView.PeerToPeerExchange.title";
+      String DESCRIPTION = "DataExchangeView.PeerToPeerExchange.description";
+    }
+
     interface SelfInfo {
       String TITLE = "DataExchangeView.SelfInfoCard.title";
       String ADDRESS_LABEL__TEXT = "DataExchangeView.SelfInfoCard.addressLabel.text";
@@ -208,5 +213,43 @@ public interface TranslationKeys {
       String NOTIFICATION__TRANSFER_COMPLETED =
           "DataExchangeView.TransferCard.notification.transferCompleted";
     }
+
+    interface FileExchange {
+      String TITLE = "DataExchangeView.FileExchange.title";
+      String DESCRIPTION = "DataExchangeView.FileExchange.description";
+    }
+
+    interface FileExport {
+      String TITLE = "DataExchangeView.FileExportCard.title";
+      String EXPORT_LINK__TEXT = "DataExchangeView.FileExportCard.exportLink.text";
+      String EXPORT_FAILED = "DataExchangeView.FileExportCard.uploadFailed";
+    }
+
+    interface FileImport {
+      String TITLE = "DataExchangeView.FileImportCard.title";
+      String UPLOAD_FAILED = "DataExchangeView.FileImportCard.uploadFailed";
+    }
+  }
+
+  interface Upload {
+    String DROP_FILE__TEXT = "Upload.dropFile";
+    String DROP_FILES__TEXT = "Upload.dropFiles";
+    String ADD_FILE__TEXT = "Upload.addFile";
+    String ADD_FILES__TEXT = "Upload.addFiles";
+    String FILE_RETRY__TEXT = "Upload.file.retry";
+    String FILE_START__TEXT = "Upload.file.start";
+    String FILE_REMOVE__TEXT = "Upload.file.remove";
+    String ERROR_TOO_MANY_FILES__TEXT = "Upload.error.tooManyFiles";
+    String ERROR_FILE_IS_TOO_BIG__TEXT = "Upload.error.fileIsTooBig";
+    String ERROR_INCORRECT_FILE_TYPE__TEXT = "Upload.error.incorrectFileType";
+    String ERROR_SERVER_UNAVAILABLE__TEXT = "Upload.error.serverUnavailable";
+    String ERROR_UNEXPECTED_SERVER_ERROR__TEXT = "Upload.error.unexpectedServerError";
+    String ERROR_FORBIDDEN__TEXT = "Upload.error.forbidden";
+    String STATUS_CONNECTING__TEXT = "Upload.uploading.status.connecting";
+    String STATUS_STALLED__TEXT = "Upload.uploading.status.stalled";
+    String STATUS_PROCESSING__TEXT = "Upload.uploading.status.processing";
+    String STATUS_HELD__TEXT = "Upload.uploading.status.held";
+    String REMAINING_TIME_PREFIX__TEXT = "Upload.uploading.remainingTime.prefix";
+    String REMAINING_TIME_UNKNOWN__TEXT = "Upload.uploading.remainingTime.unknown";
   }
 }
