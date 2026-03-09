@@ -208,5 +208,21 @@ public interface TranslationKeys {
       String NOTIFICATION__TRANSFER_COMPLETED =
           "DataExchangeView.TransferCard.notification.transferCompleted";
     }
+
+    interface FileExchange {
+      String TITLE = "DataExchangeView.FileExchangeCard.title";
+    }
+
+    interface FileExport {
+      String TITLE = "DataExchangeView.FileExportCard.title";
+      String EXPORT_LINK__TEXT = "DataExchangeView.FileExportCard.exportLink.text";
+    }
+
+    interface FileImport {
+      String TITLE = "DataExchangeView.FileImportCard.title";
+      String UPLOAD_ADD_FILE__LABEL = "DataExchangeView.FileImportCard.addFile";
+      String INCORRECT_FILE_TYPE__TEXT = "DataExchangeView.FileImportCard.incorrectFileType";
+      String STATUS_PROCESSING__TEXT = "DataExchangeView.FileImportCard.statusProcessing";
+    }
   }
 }
