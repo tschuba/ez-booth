@@ -58,6 +58,7 @@ import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.FileExport;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.FileImport;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.Transfer;
+import tschuba.ez.booth.i18n.UploadTranslation;
 import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.proto.ProtoModel;
 import tschuba.ez.booth.services.BoothService;
@@ -381,8 +382,7 @@ public class DataExchangeView extends OneColumnLayout {
     protected void onAttach(AttachEvent attachEvent) {
       getContent().setTitle(getTranslation(FileImport.TITLE));
 
-      String i18nPrefix = "%s.%s".formatted(DataExchangeView.class.getSimpleName(), FileImportCard.class.getSimpleName());
-      UploadI18N uploadI18N = tschuba.ez.booth.i18n.Upload.upload(i18nPrefix, getLocale());
+      UploadI18N uploadI18N = new UploadTranslation().get(getLocale());
       upload.setI18n(uploadI18N);
     }
 
