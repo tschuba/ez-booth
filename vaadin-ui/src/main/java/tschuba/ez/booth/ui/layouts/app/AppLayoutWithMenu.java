@@ -1,9 +1,15 @@
 /**
- * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * Copyright (c) 2025-2026 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
 package tschuba.ez.booth.ui.layouts.app;
 
+import static org.vaadin.lineawesome.LineAwesomeIcon.CASH_REGISTER_SOLID;
+import static org.vaadin.lineawesome.LineAwesomeIcon.COINS_SOLID;
+import static org.vaadin.lineawesome.LineAwesomeIcon.EXCHANGE_ALT_SOLID;
+import static org.vaadin.lineawesome.LineAwesomeIcon.STORE_SOLID;
+
+import java.util.List;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -14,13 +20,6 @@ import tschuba.ez.booth.ui.views.BoothSelectionView;
 import tschuba.ez.booth.ui.views.CheckoutView;
 import tschuba.ez.booth.ui.views.DataExchangeView;
 import tschuba.ez.booth.ui.views.VendorReportView;
-
-import java.util.List;
-
-import static org.vaadin.lineawesome.LineAwesomeIcon.CASH_REGISTER_SOLID;
-import static org.vaadin.lineawesome.LineAwesomeIcon.COINS_SOLID;
-import static org.vaadin.lineawesome.LineAwesomeIcon.EXCHANGE_ALT_SOLID;
-import static org.vaadin.lineawesome.LineAwesomeIcon.STORE_SOLID;
 
 public class AppLayoutWithMenu extends CustomAppLayout {
   @Autowired

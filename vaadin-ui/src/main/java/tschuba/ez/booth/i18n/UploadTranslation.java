@@ -1,10 +1,13 @@
+/**
+ * Copyright (c) 2026 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.i18n;
 
 import com.vaadin.flow.component.upload.UploadI18N;
-import lombok.NonNull;
-
 import java.util.Locale;
 import java.util.function.Consumer;
+import lombok.NonNull;
 
 /**
  * Helper class to create a fully translated {@link UploadI18N} instance for the upload component.
@@ -22,7 +25,8 @@ public class UploadTranslation {
     UploadI18N.Uploading.Error uploadingError = new UploadI18N.Uploading.Error();
     uploading.setError(uploadingError);
     uploadingError.setForbidden(TranslationKeys.Upload.ERROR_FORBIDDEN__TEXT);
-    uploadingError.setUnexpectedServerError(TranslationKeys.Upload.ERROR_UNEXPECTED_SERVER_ERROR__TEXT);
+    uploadingError.setUnexpectedServerError(
+        TranslationKeys.Upload.ERROR_UNEXPECTED_SERVER_ERROR__TEXT);
     uploadingError.setServerUnavailable(TranslationKeys.Upload.ERROR_SERVER_UNAVAILABLE__TEXT);
 
     UploadI18N.Uploading.Status status = new UploadI18N.Uploading.Status();
@@ -91,7 +95,8 @@ public class UploadTranslation {
 
     UploadI18N.Error error = new UploadI18N.Error();
     result.setError(error);
-    error.setIncorrectFileType(i18N.getTranslation(upload.getError().getIncorrectFileType(), locale));
+    error.setIncorrectFileType(
+        i18N.getTranslation(upload.getError().getIncorrectFileType(), locale));
     error.setFileIsTooBig(i18N.getTranslation(upload.getError().getFileIsTooBig(), locale));
     error.setTooManyFiles(i18N.getTranslation(upload.getError().getTooManyFiles(), locale));
 
@@ -106,21 +111,28 @@ public class UploadTranslation {
 
     UploadI18N.Uploading.Error uploadingError = new UploadI18N.Uploading.Error();
     uploading.setError(uploadingError);
-    uploadingError.setForbidden(i18N.getTranslation(upload.getUploading().getError().getForbidden(), locale));
-    uploadingError.setUnexpectedServerError(i18N.getTranslation(upload.getUploading().getError().getUnexpectedServerError(), locale));
-    uploadingError.setServerUnavailable(i18N.getTranslation(upload.getUploading().getError().getServerUnavailable(), locale));
+    uploadingError.setForbidden(
+        i18N.getTranslation(upload.getUploading().getError().getForbidden(), locale));
+    uploadingError.setUnexpectedServerError(
+        i18N.getTranslation(upload.getUploading().getError().getUnexpectedServerError(), locale));
+    uploadingError.setServerUnavailable(
+        i18N.getTranslation(upload.getUploading().getError().getServerUnavailable(), locale));
 
     UploadI18N.Uploading.Status status = new UploadI18N.Uploading.Status();
     uploading.setStatus(status);
-    status.setConnecting(i18N.getTranslation(upload.getUploading().getStatus().getConnecting(), locale));
+    status.setConnecting(
+        i18N.getTranslation(upload.getUploading().getStatus().getConnecting(), locale));
     status.setHeld(i18N.getTranslation(upload.getUploading().getStatus().getHeld(), locale));
-    status.setProcessing(i18N.getTranslation(upload.getUploading().getStatus().getProcessing(), locale));
+    status.setProcessing(
+        i18N.getTranslation(upload.getUploading().getStatus().getProcessing(), locale));
     status.setStalled(i18N.getTranslation(upload.getUploading().getStatus().getStalled(), locale));
 
     UploadI18N.Uploading.RemainingTime remainingTime = new UploadI18N.Uploading.RemainingTime();
     uploading.setRemainingTime(remainingTime);
-    remainingTime.setPrefix(i18N.getTranslation(upload.getUploading().getRemainingTime().getPrefix(), locale));
-    remainingTime.setUnknown(i18N.getTranslation(upload.getUploading().getRemainingTime().getUnknown(), locale));
+    remainingTime.setPrefix(
+        i18N.getTranslation(upload.getUploading().getRemainingTime().getPrefix(), locale));
+    remainingTime.setUnknown(
+        i18N.getTranslation(upload.getUploading().getRemainingTime().getUnknown(), locale));
 
     return result;
   }

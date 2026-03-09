@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * Copyright (c) 2025-2026 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
 package tschuba.ez.booth.ui.services;
@@ -62,7 +62,8 @@ public class DataExchangeClient {
    */
   public @NonNull ProtoServices.ExchangeData exportData(@NonNull DataModel.Booth.Key booth) {
     try {
-      ProtoServices.ExchangeData exportData = dataExchangeService.exportData(ProtoMapper.objectToMessage(booth));
+      ProtoServices.ExchangeData exportData =
+          dataExchangeService.exportData(ProtoMapper.objectToMessage(booth));
       log.info("Exported data request completed for booth {}", booth);
       return exportData;
     } catch (Exception ex) {

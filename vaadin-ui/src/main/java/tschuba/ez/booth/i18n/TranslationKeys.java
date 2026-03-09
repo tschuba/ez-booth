@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2025 Thomas Schulte-Bahrenberg
+ * Copyright (c) 2023-2026 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
 package tschuba.ez.booth.i18n;

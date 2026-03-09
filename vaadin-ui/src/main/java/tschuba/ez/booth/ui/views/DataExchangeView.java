@@ -1,8 +1,12 @@
 /**
- * Copyright (c) 2025 Thomas Schulte-Bahrenberg
+ * Copyright (c) 2025-2026 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
 package tschuba.ez.booth.ui.views;
+
+import static org.vaadin.lineawesome.LineAwesomeIcon.PLAY_SOLID;
+import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.ADDRESS_LABEL__TEXT;
+import static tschuba.ez.booth.proto.ProtoServices.ExchangeData;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
@@ -47,6 +51,9 @@ import com.vaadin.flow.server.streams.UploadMetadata;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.LumoUtility.Width;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -80,14 +87,6 @@ import tschuba.ez.booth.ui.util.Routing;
 import tschuba.ez.booth.ui.util.Server;
 import tschuba.ez.booth.ui.util.Spacing;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static org.vaadin.lineawesome.LineAwesomeIcon.PLAY_SOLID;
-import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.ADDRESS_LABEL__TEXT;
-import static tschuba.ez.booth.proto.ProtoServices.ExchangeData;
-
 @Route(value = "data-exchange", layout = AppLayoutWithMenu.class)
 @SpringComponent
 @UIScope
@@ -97,18 +96,23 @@ public class DataExchangeView extends OneColumnLayout {
   private final Tab transferTab;
   private final Tab fileExchangeTab;
 
-  public DataExchangeView(@NonNull SelfInfoCard selfInfo,
-                          @NonNull TransferCard transferCard,
-                          @NonNull FileExportCard fileExportCard,
-                          @NonNull FileImportCard fileImportCard) {
+  public DataExchangeView(
+      @NonNull SelfInfoCard selfInfo,
+      @NonNull TransferCard transferCard,
+      @NonNull FileExportCard fileExportCard,
+      @NonNull FileImportCard fileImportCard) {
 
     Paragraph transferDescription = new Paragraph(getTranslation(PeerToPeerExchange.DESCRIPTION));
     transferDescription.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
-    VerticalLayout transferContents = new VerticalLayout(transferDescription, new HorizontalLayout(selfInfo, transferCard));
+    VerticalLayout transferContents =
+        new VerticalLayout(transferDescription, new HorizontalLayout(selfInfo, transferCard));
 
     Paragraph fileExchangeDescription = new Paragraph(getTranslation(FileExchange.DESCRIPTION));
     fileExchangeDescription.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
-    VerticalLayout fileExchangeContents = new VerticalLayout(fileExchangeDescription, new HorizontalLayout(JustifyContentMode.BETWEEN, fileExportCard, fileImportCard));
+    VerticalLayout fileExchangeContents =
+        new VerticalLayout(
+            fileExchangeDescription,
+            new HorizontalLayout(JustifyContentMode.BETWEEN, fileExportCard, fileImportCard));
     fileExchangeContents.setFlexGrow(1, fileExportCard);
     fileExchangeContents.setFlexGrow(2, fileImportCard);
 
@@ -128,10 +132,8 @@ public class DataExchangeView extends OneColumnLayout {
     transferTab.setLabel(getTranslation(PeerToPeerExchange.TITLE));
     fileExchangeTab.setLabel(getTranslation(FileExchange.TITLE));
 
-    Tooltip.forComponent(transferTab)
-        .setText(getTranslation(PeerToPeerExchange.DESCRIPTION));
-    Tooltip.forComponent(fileExchangeTab)
-        .setText(getTranslation(FileExchange.DESCRIPTION));
+    Tooltip.forComponent(transferTab).setText(getTranslation(PeerToPeerExchange.DESCRIPTION));
+    Tooltip.forComponent(fileExchangeTab).setText(getTranslation(FileExchange.DESCRIPTION));
   }
 
   @SpringComponent
@@ -327,14 +329,17 @@ public class DataExchangeView extends OneColumnLayout {
     private final @NonNull DataExchangeClient dataExchangeClient;
     private final Anchor exportLink;
 
-    public FileExportCard(@NonNull BoothService boothService, @NonNull DataExchangeClient dataExchangeClient) {
+    public FileExportCard(
+        @NonNull BoothService boothService, @NonNull DataExchangeClient dataExchangeClient) {
       this.booths = boothService;
       this.dataExchangeClient = dataExchangeClient;
 
       exportLink = new Anchor(new ExportHandler(), null);
       Card content = getContent();
       content.setHeaderPrefix(LineAwesomeIcon.FILE_EXPORT_SOLID.create());
-      content.add(new VerticalLayout(Alignment.CENTER, new HorizontalLayout(JustifyContentMode.CENTER, exportLink)));
+      content.add(
+          new VerticalLayout(
+              Alignment.CENTER, new HorizontalLayout(JustifyContentMode.CENTER, exportLink)));
     }
 
     @Override
@@ -361,11 +366,13 @@ public class DataExchangeView extends OneColumnLayout {
           ExchangeData exchangeData = dataExchangeClient.exportData(key);
           ProtoModel.Booth booth = exchangeData.getBooth();
 
-          String fileName = booth.getDescription() + "-" + LocalDateTime.now() + DATA_FILE_EXTENSION;
+          String fileName =
+              booth.getDescription() + "-" + LocalDateTime.now() + DATA_FILE_EXTENSION;
           download.setFileName(fileName);
           VaadinResponse response = download.getResponse();
           response.setHeader(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
-          response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"%s\"".formatted(fileName));
+          response.setHeader(
+              HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"%s\"".formatted(fileName));
           exchangeData.writeTo(download.getOutputStream());
         } catch (Exception ex) {
           log.error("Failed to export data for download", ex);
@@ -390,7 +397,8 @@ public class DataExchangeView extends OneColumnLayout {
     public FileImportCard(@NonNull DataExchangeClient dataExchangeClient) {
       this.dataExchangeClient = dataExchangeClient;
 
-      InMemoryUploadHandler uploadHandler = UploadHandler.inMemory(new ImportUploadCallback(), new ImportProgressHandler());
+      InMemoryUploadHandler uploadHandler =
+          UploadHandler.inMemory(new ImportUploadCallback(), new ImportProgressHandler());
       upload = new Upload(uploadHandler);
       upload.setAcceptedFileTypes("application/ez-booth", DATA_FILE_EXTENSION);
       upload.setMaxFiles(1);
@@ -420,7 +428,8 @@ public class DataExchangeView extends OneColumnLayout {
           String boothDescription = exchangeData.getBooth().getDescription();
           log.debug("Received data upload for booth '{}'", boothDescription);
           dataExchangeClient.mergeData(exchangeData);
-          log.debug("Data upload with booth description '{}' merged successfully", boothDescription);
+          log.debug(
+              "Data upload with booth description '{}' merged successfully", boothDescription);
         } catch (InvalidProtocolBufferException ex) {
           log.error("Failed to parse uploaded data file", ex);
           Notifications.error(getTranslation(FileImport.UPLOAD_FAILED), ex);
