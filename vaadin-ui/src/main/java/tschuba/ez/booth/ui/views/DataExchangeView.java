@@ -101,15 +101,13 @@ public class DataExchangeView extends OneColumnLayout {
     fileExchangeCards.setFlexGrow(1, fileExportCard);
     fileExchangeCards.setFlexGrow(2, fileImportCard);
 
-
     TabSheet tabSheet = new TabSheet();
     transferTab = new Tab();
     tabSheet.add(transferTab, transferCards);
     fileExchangeTab = new Tab();
     tabSheet.add(fileExchangeTab, fileExchangeCards);
 
-    Main content = new Main();
-    content.add(tabSheet);
+    Main content = new Main(tabSheet);
     setContent(content);
   }
 
