@@ -49,6 +49,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
+import org.springframework.util.unit.DataSize;
 import org.vaadin.barcodes.Barcode;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.Try;
@@ -371,6 +372,9 @@ public class DataExchangeView extends OneColumnLayout {
 
       InMemoryUploadHandler uploadHandler = UploadHandler.inMemory(new ImportUploadCallback(), new ImportProgressHandler());
       upload = new Upload(uploadHandler);
+      upload.setAcceptedFileTypes("application/ez-booth", ".ezb");
+      upload.setMaxFiles(1);
+      upload.setMaxFileSize((int) DataSize.ofMegabytes(50).toBytes());
 
       Card content = getContent();
       content.setHeaderPrefix(LineAwesomeIcon.FILE_IMPORT_SOLID.create());
