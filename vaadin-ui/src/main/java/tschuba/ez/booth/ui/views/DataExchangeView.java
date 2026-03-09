@@ -25,6 +25,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.popover.Popover;
 import com.vaadin.flow.component.popover.PopoverPosition;
 import com.vaadin.flow.component.progressbar.ProgressBar;
+import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.tabs.TabSheetVariant;
@@ -58,6 +59,7 @@ import tschuba.ez.booth.i18n.TranslationKeys.Common;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.FileExchange;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.FileExport;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.FileImport;
+import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.PeerToPeerExchange;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.Transfer;
 import tschuba.ez.booth.i18n.UploadTranslation;
@@ -99,18 +101,23 @@ public class DataExchangeView extends OneColumnLayout {
                           @NonNull TransferCard transferCard,
                           @NonNull FileExportCard fileExportCard,
                           @NonNull FileImportCard fileImportCard) {
-    HorizontalLayout transferCards = new HorizontalLayout(selfInfo, transferCard);
 
-    HorizontalLayout fileExchangeCards = new HorizontalLayout(JustifyContentMode.BETWEEN, fileExportCard, fileImportCard);
-    fileExchangeCards.setFlexGrow(1, fileExportCard);
-    fileExchangeCards.setFlexGrow(2, fileImportCard);
+    Paragraph transferDescription = new Paragraph(getTranslation(PeerToPeerExchange.DESCRIPTION));
+    transferDescription.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
+    VerticalLayout transferContents = new VerticalLayout(transferDescription, new HorizontalLayout(selfInfo, transferCard));
+
+    Paragraph fileExchangeDescription = new Paragraph(getTranslation(FileExchange.DESCRIPTION));
+    fileExchangeDescription.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
+    VerticalLayout fileExchangeContents = new VerticalLayout(fileExchangeDescription, new HorizontalLayout(JustifyContentMode.BETWEEN, fileExportCard, fileImportCard));
+    fileExchangeContents.setFlexGrow(1, fileExportCard);
+    fileExchangeContents.setFlexGrow(2, fileImportCard);
 
     TabSheet tabSheet = new TabSheet();
     tabSheet.addThemeVariants(TabSheetVariant.LUMO_TABS_EQUAL_WIDTH_TABS);
     transferTab = new Tab();
-    tabSheet.add(transferTab, transferCards);
+    tabSheet.add(transferTab, transferContents);
     fileExchangeTab = new Tab();
-    tabSheet.add(fileExchangeTab, fileExchangeCards);
+    tabSheet.add(fileExchangeTab, fileExchangeContents);
 
     Main content = new Main(tabSheet);
     setContent(content);
@@ -118,8 +125,13 @@ public class DataExchangeView extends OneColumnLayout {
 
   @Override
   protected void onAttach(AttachEvent attachEvent) {
-    transferTab.setLabel(getTranslation(Transfer.TITLE));
+    transferTab.setLabel(getTranslation(PeerToPeerExchange.TITLE));
     fileExchangeTab.setLabel(getTranslation(FileExchange.TITLE));
+
+    Tooltip.forComponent(transferTab)
+        .setText(getTranslation(PeerToPeerExchange.DESCRIPTION));
+    Tooltip.forComponent(fileExchangeTab)
+        .setText(getTranslation(FileExchange.DESCRIPTION));
   }
 
   @SpringComponent

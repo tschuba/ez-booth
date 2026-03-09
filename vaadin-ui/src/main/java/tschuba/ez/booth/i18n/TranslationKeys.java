@@ -188,7 +188,8 @@ public interface TranslationKeys {
     String MENU_ITEM__TEXT = "DataExchangeView.menuItem.text";
 
     interface PeerToPeerExchange {
-      String TITLE = "DataExchangeView.PeerToPeerExchangeCard.title";
+      String TITLE = "DataExchangeView.PeerToPeerExchange.title";
+      String DESCRIPTION = "DataExchangeView.PeerToPeerExchange.description";
     }
 
     interface SelfInfo {
@@ -214,7 +215,8 @@ public interface TranslationKeys {
     }
 
     interface FileExchange {
-      String TITLE = "DataExchangeView.FileExchangeCard.title";
+      String TITLE = "DataExchangeView.FileExchange.title";
+      String DESCRIPTION = "DataExchangeView.FileExchange.description";
     }
 
     interface FileExport {
