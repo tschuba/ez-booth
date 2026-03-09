@@ -225,4 +225,26 @@ public interface TranslationKeys {
       String STATUS_PROCESSING__TEXT = "DataExchangeView.FileImportCard.statusProcessing";
     }
   }
+
+  interface Upload {
+    String DROP_FILE__TEXT = "Upload.dropFile";
+    String DROP_FILES__TEXT = "Upload.dropFiles";
+    String ADD_FILE__TEXT = "Upload.addFile";
+    String ADD_FILES__TEXT = "Upload.addFiles";
+    String FILE_RETRY__TEXT = "Upload.file.retry";
+    String FILE_START__TEXT = "Upload.file.start";
+    String FILE_REMOVE__TEXT = "Upload.file.remove";
+    String ERROR_TOO_MANY_FILES__TEXT = "Upload.error.tooManyFiles";
+    String ERROR_FILE_IS_TOO_BIG__TEXT = "Upload.error.fileIsTooBig";
+    String ERROR_INCORRECT_FILE_TYPE__TEXT = "Upload.error.incorrectFileType";
+    String ERROR_SERVER_UNAVAILABLE__TEXT = "Upload.error.serverUnavailable";
+    String ERROR_UNEXPECTED_SERVER_ERROR__TEXT = "Upload.error.unexpectedServerError";
+    String ERROR_FORBIDDEN__TEXT = "Upload.error.forbidden";
+    String STATUS_CONNECTING__TEXT = "Upload.uploading.status.connecting";
+    String STATUS_STALLED__TEXT = "Upload.uploading.status.stalled";
+    String STATUS_PROCESSING__TEXT = "Upload.uploading.status.processing";
+    String STATUS_HELD__TEXT = "Upload.uploading.status.held";
+    String REMAINING_TIME_PREFIX__TEXT = "Upload.uploading.remainingTime.prefix";
+    String REMAINING_TIME_UNKNOWN__TEXT = "Upload.uploading.remainingTime.unknown";
+  }
 }

@@ -142,6 +142,25 @@
     "Notifications.copiedToClipboard.message": "Wert wurde in die Zwischenablage kopiert",
     "Notifications.showErrorButton.text": "Fehler anzeigen",
     "Notifications.hideErrorButton.text": "Fehler ausblenden",
-    "Common.or": "oder"
+    "Common.or": "oder",
+    "Upload.dropFile": "Datei hier ablegen",
+    "Upload.dropFiles": "Dateien hier ablegen",
+    "Upload.addFile": "Datei hochladen",
+    "Upload.addFiles": "Dateien hochladen",
+    "Upload.file.retry": "Wiederholen",
+    "Upload.file.start": "Starten",
+    "Upload.file.remove": "Entfernen",
+    "Upload.error.tooManyFiles": "Zu viele Dateien.",
+    "Upload.error.fileIsTooBig": "Die Datei überschreitet die maximale Größe.",
+    "Upload.error.incorrectFileType": "Dieser Dateityp wird nicht unterstützt.",
+    "Upload.error.serverUnavailable": "Hochladen der Datei fehlgeschlagen. Server nicht erreichbar.",
+    "Upload.error.unexpectedServerError": "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "Upload.error.forbidden": "Die Datei konnte nicht hochgeladen werden. Ihnen fehlen notwendige Berechtigungen.",
+    "Upload.uploading.status.connecting": "Verbindung wird hergestellt...",
+    "Upload.uploading.status.stalled": "Verbindung unterbrochen",
+    "Upload.uploading.status.processing": "Daten werden verarbeitet...",
+    "Upload.uploading.status.held": "Verbindung wird gehalten",
+    "Upload.uploading.remainingTime.prefix": "Verbleibende Zeit: ",
+    "Upload.uploading.remainingTime.unknown": "Unbekannt"
   }
 }
