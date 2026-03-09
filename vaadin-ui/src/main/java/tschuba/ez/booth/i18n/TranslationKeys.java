@@ -187,6 +187,10 @@ public interface TranslationKeys {
     String TITLE = "DataExchangeView.title";
     String MENU_ITEM__TEXT = "DataExchangeView.menuItem.text";
 
+    interface PeerToPeerExchange {
+      String TITLE = "DataExchangeView.PeerToPeerExchangeCard.title";
+    }
+
     interface SelfInfo {
       String TITLE = "DataExchangeView.SelfInfoCard.title";
       String ADDRESS_LABEL__TEXT = "DataExchangeView.SelfInfoCard.addressLabel.text";
