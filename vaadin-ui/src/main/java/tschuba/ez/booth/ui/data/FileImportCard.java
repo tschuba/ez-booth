@@ -8,8 +8,6 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.UploadI18N;
 import com.vaadin.flow.server.streams.InMemoryUploadCallback;
 import com.vaadin.flow.server.streams.InMemoryUploadHandler;
-import com.vaadin.flow.server.streams.TransferContext;
-import com.vaadin.flow.server.streams.TransferProgressListener;
 import com.vaadin.flow.server.streams.UploadHandler;
 import com.vaadin.flow.server.streams.UploadMetadata;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -18,7 +16,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.unit.DataSize;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import tschuba.ez.booth.i18n.TranslationKeys;
+import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.FileImport;
 import tschuba.ez.booth.i18n.UploadTranslation;
 import tschuba.ez.booth.proto.ProtoServices;
 import tschuba.ez.booth.ui.components.BusyIndicator;
@@ -42,7 +40,7 @@ public class FileImportCard extends Composite<Card> {
     this.dataExchangeClient = dataExchangeClient;
 
     InMemoryUploadHandler uploadHandler =
-        UploadHandler.inMemory(new ImportUploadCallback(), new ImportProgressHandler());
+        UploadHandler.inMemory(new ImportUploadCallback());
     upload = new Upload(uploadHandler);
     upload.setAcceptedFileTypes("application/ez-booth", DataExchangeView.DATA_FILE_EXTENSION);
     upload.setMaxFiles(1);
@@ -55,7 +53,7 @@ public class FileImportCard extends Composite<Card> {
 
   @Override
   protected void onAttach(AttachEvent attachEvent) {
-    getContent().setTitle(getTranslation(TranslationKeys.DataExchangeView.FileImport.TITLE));
+    getContent().setTitle(getTranslation(FileImport.TITLE));
 
     UploadI18N uploadI18N = new UploadTranslation().get(getLocale());
     upload.setI18n(uploadI18N);
@@ -67,6 +65,8 @@ public class FileImportCard extends Composite<Card> {
   class ImportUploadCallback implements InMemoryUploadCallback {
     @Override
     public void complete(UploadMetadata metadata, byte[] bytes) {
+      busyIndicator.open();
+
       try {
         ProtoServices.ExchangeData exchangeData = ProtoServices.ExchangeData.parseFrom(bytes);
         String boothDescription = exchangeData.getBooth().getDescription();
@@ -74,26 +74,14 @@ public class FileImportCard extends Composite<Card> {
         dataExchangeClient.mergeData(exchangeData);
         log.debug(
             "Data upload with booth description '{}' merged successfully", boothDescription);
+        Notifications.success(getTranslation(FileImport.UPLOAD_COMPLETED));
+        upload.clearFileList();
       } catch (InvalidProtocolBufferException ex) {
         log.error("Failed to parse uploaded data file", ex);
-        Notifications.error(getTranslation(TranslationKeys.DataExchangeView.FileImport.UPLOAD_FAILED), ex);
+        Notifications.error(getTranslation(FileImport.UPLOAD_FAILED), ex);
+      } finally {
+        busyIndicator.close();
       }
-    }
-  }
-
-  /**
-   * Listener for tracking the progress of data uploads.
-   */
-  class ImportProgressHandler implements TransferProgressListener {
-
-    @Override
-    public void onStart(TransferContext context) {
-      busyIndicator.open();
-    }
-
-    @Override
-    public void onComplete(TransferContext context, long transferredBytes) {
-      busyIndicator.close();
     }
   }
 }

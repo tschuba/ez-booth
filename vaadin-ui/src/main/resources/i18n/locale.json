@@ -144,6 +144,7 @@
     "DataExchangeView.FileImportCard.incorrectFileType": "Dateityp nicht unterstützt! Bitte wählen Sie eine Datei mit der Endung .ezb",
     "DataExchangeView.FileImportCard.statusProcessing": "Datei wird verarbeitet...",
     "DataExchangeView.FileImportCard.uploadFailed": "Hochladen der Datei fehlgeschlagen!",
+    "DataExchangeView.FileImportCard.uploadCompleted": "Datei wurde erfolgreich verarbeitet!",
     "Notifications.genericError.text": "Es ist ein Fehler aufgetreten!",
     "Notifications.copiedToClipboard.message": "Wert wurde in die Zwischenablage kopiert",
     "Notifications.showErrorButton.text": "Fehler anzeigen",
