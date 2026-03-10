@@ -186,6 +186,7 @@ public interface TranslationKeys {
   interface DataExchangeView {
     String TITLE = "DataExchangeView.title";
     String MENU_ITEM__TEXT = "DataExchangeView.menuItem.text";
+    String DESCRIPTION = "DataExchangeView.description";
 
     interface PeerToPeerExchange {
       String TITLE = "DataExchangeView.PeerToPeerExchange.title";
@@ -228,6 +229,7 @@ public interface TranslationKeys {
     interface FileImport {
       String TITLE = "DataExchangeView.FileImportCard.title";
       String UPLOAD_FAILED = "DataExchangeView.FileImportCard.uploadFailed";
+      String UPLOAD_COMPLETED = "DataExchangeView.FileImportCard.uploadCompleted";
     }
   }
 
