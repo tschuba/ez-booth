@@ -4,22 +4,23 @@
  */
 package tschuba.ez.booth.ui.layouts.app;
 
-import static org.vaadin.lineawesome.LineAwesomeIcon.CASH_REGISTER_SOLID;
-import static org.vaadin.lineawesome.LineAwesomeIcon.COINS_SOLID;
-import static org.vaadin.lineawesome.LineAwesomeIcon.EXCHANGE_ALT_SOLID;
-import static org.vaadin.lineawesome.LineAwesomeIcon.STORE_SOLID;
-
-import java.util.List;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import tschuba.ez.booth.i18n.I18N;
 import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.services.BoothService;
+import tschuba.ez.booth.ui.data.DataExchangeView;
 import tschuba.ez.booth.ui.views.BoothSelectionView;
 import tschuba.ez.booth.ui.views.CheckoutView;
-import tschuba.ez.booth.ui.views.DataExchangeView;
 import tschuba.ez.booth.ui.views.VendorReportView;
+
+import java.util.List;
+
+import static org.vaadin.lineawesome.LineAwesomeIcon.CASH_REGISTER_SOLID;
+import static org.vaadin.lineawesome.LineAwesomeIcon.COINS_SOLID;
+import static org.vaadin.lineawesome.LineAwesomeIcon.EXCHANGE_ALT_SOLID;
+import static org.vaadin.lineawesome.LineAwesomeIcon.STORE_SOLID;
 
 public class AppLayoutWithMenu extends CustomAppLayout {
   @Autowired

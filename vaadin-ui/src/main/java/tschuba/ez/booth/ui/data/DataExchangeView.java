@@ -2,7 +2,7 @@
  * Copyright (c) 2025-2026 Thomas Schulte-Bahrenberg
  * All rights reserved.
  */
-package tschuba.ez.booth.ui.views;
+package tschuba.ez.booth.ui.data;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
@@ -99,7 +99,6 @@ public class DataExchangeView extends OneColumnLayout {
   private final Tab transferTab = new Tab();
   private final Paragraph fileExchangeDescription = new Paragraph();
   private final Tab fileExchangeTab = new Tab();
-  //private final Paragraph dataExchangeDescription = new Paragraph();
   private final Markdown dataExchangeDescription = new Markdown();
 
   public DataExchangeView(
@@ -125,7 +124,6 @@ public class DataExchangeView extends OneColumnLayout {
     tabSheet.add(transferTab, transferContents);
     tabSheet.add(fileExchangeTab, fileExchangeContents);
 
-    //dataExchangeDescription.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
     dataExchangeDescription.addClassNames(LumoUtility.Padding.Left.XLARGE, LumoUtility.Padding.Right.XLARGE);
 
     Main content = new Main(tabSheet, dataExchangeDescription);
@@ -138,7 +136,6 @@ public class DataExchangeView extends OneColumnLayout {
     transferTab.setLabel(getTranslation(PeerToPeerExchange.TITLE));
     fileExchangeDescription.setText(getTranslation(FileExchange.DESCRIPTION));
     fileExchangeTab.setLabel(getTranslation(FileExchange.TITLE));
-    //dataExchangeDescription.setText(getTranslation(TranslationKeys.DataExchangeView.DESCRIPTION));
     dataExchangeDescription.setContent(getTranslation(TranslationKeys.DataExchangeView.DESCRIPTION));
 
     Tooltip.forComponent(transferTab).setText(getTranslation(PeerToPeerExchange.DESCRIPTION));
