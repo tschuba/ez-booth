@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2026 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.data;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -39,8 +43,7 @@ public class FileImportCard extends Composite<Card> {
   public FileImportCard(@NonNull DataExchangeClient dataExchangeClient) {
     this.dataExchangeClient = dataExchangeClient;
 
-    InMemoryUploadHandler uploadHandler =
-        UploadHandler.inMemory(new ImportUploadCallback());
+    InMemoryUploadHandler uploadHandler = UploadHandler.inMemory(new ImportUploadCallback());
     upload = new Upload(uploadHandler);
     upload.setAcceptedFileTypes("application/ez-booth", DataExchangeView.DATA_FILE_EXTENSION);
     upload.setMaxFiles(1);
@@ -72,8 +75,7 @@ public class FileImportCard extends Composite<Card> {
         String boothDescription = exchangeData.getBooth().getDescription();
         log.debug("Received data upload for booth '{}'", boothDescription);
         dataExchangeClient.mergeData(exchangeData);
-        log.debug(
-            "Data upload with booth description '{}' merged successfully", boothDescription);
+        log.debug("Data upload with booth description '{}' merged successfully", boothDescription);
         Notifications.success(getTranslation(FileImport.UPLOAD_COMPLETED));
         upload.clearFileList();
       } catch (InvalidProtocolBufferException ex) {

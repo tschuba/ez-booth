@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2026 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components;
 
 import com.vaadin.flow.component.Component;

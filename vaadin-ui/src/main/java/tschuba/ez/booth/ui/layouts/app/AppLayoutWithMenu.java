@@ -4,12 +4,11 @@
  */
 package tschuba.ez.booth.ui.layouts.app;
 
+import java.util.List;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import tschuba.ez.booth.services.BoothService;
-
-import java.util.List;
 
 public class AppLayoutWithMenu extends CustomAppLayout {
   @Autowired
@@ -20,8 +19,7 @@ public class AppLayoutWithMenu extends CustomAppLayout {
             MainMenuItem.BOOTH_SELECTION_VIEW.get(),
             MainMenuItem.CHECKOUT_VIEW.get(),
             MainMenuItem.VENDOR_REPORT_VIEW.get(),
-            MainMenuItem.DATA_EXCHANGE_VIEW.get()
-        ),
+            MainMenuItem.DATA_EXCHANGE_VIEW.get()),
         environment);
   }
 }

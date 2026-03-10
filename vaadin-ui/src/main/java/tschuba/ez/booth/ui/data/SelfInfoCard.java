@@ -1,4 +1,10 @@
+/**
+ * Copyright (c) 2026 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.data;
+
+import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.ADDRESS_LABEL__TEXT;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Composite;
@@ -19,8 +25,6 @@ import tschuba.ez.booth.ui.util.AddressCodec;
 import tschuba.ez.booth.ui.util.Badges;
 import tschuba.ez.booth.ui.util.Server;
 import tschuba.ez.booth.ui.util.Spacing;
-
-import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.ADDRESS_LABEL__TEXT;
 
 /**
  * Card component for displaying the user's own booth information, such as the external gRPC address and a QR code for it.

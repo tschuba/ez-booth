@@ -65,7 +65,8 @@ public class DataExchangeView extends OneColumnLayout {
     tabSheet.add(transferTab, transferContents);
     tabSheet.add(fileExchangeTab, fileExchangeContents);
 
-    dataExchangeDescription.addClassNames(LumoUtility.Padding.Left.XLARGE, LumoUtility.Padding.Right.XLARGE);
+    dataExchangeDescription.addClassNames(
+        LumoUtility.Padding.Left.XLARGE, LumoUtility.Padding.Right.XLARGE);
 
     Main content = new Main(tabSheet, dataExchangeDescription);
     setContent(content);
@@ -77,10 +78,10 @@ public class DataExchangeView extends OneColumnLayout {
     transferTab.setLabel(getTranslation(PeerToPeerExchange.TITLE));
     fileExchangeDescription.setText(getTranslation(FileExchange.DESCRIPTION));
     fileExchangeTab.setLabel(getTranslation(FileExchange.TITLE));
-    dataExchangeDescription.setContent(getTranslation(TranslationKeys.DataExchangeView.DESCRIPTION));
+    dataExchangeDescription.setContent(
+        getTranslation(TranslationKeys.DataExchangeView.DESCRIPTION));
 
     Tooltip.forComponent(transferTab).setText(getTranslation(PeerToPeerExchange.DESCRIPTION));
     Tooltip.forComponent(fileExchangeTab).setText(getTranslation(FileExchange.DESCRIPTION));
   }
-
 }

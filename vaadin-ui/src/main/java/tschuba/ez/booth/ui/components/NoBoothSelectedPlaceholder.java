@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2026 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.components;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -24,8 +28,7 @@ import tschuba.ez.booth.ui.views.BoothSelectionView;
 public class NoBoothSelectedPlaceholder extends Composite<VerticalLayout> {
 
   private final Paragraph noBoothSelectedText = new Paragraph();
-  private final Button selectBoothButton =
-      new Button(LineAwesomeIcon.PERSON_BOOTH_SOLID.create());
+  private final Button selectBoothButton = new Button(LineAwesomeIcon.PERSON_BOOTH_SOLID.create());
 
   public NoBoothSelectedPlaceholder() {
     VerticalLayout content = getContent();

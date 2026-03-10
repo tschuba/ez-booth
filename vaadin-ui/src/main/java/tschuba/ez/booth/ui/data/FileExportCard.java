@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2026 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.data;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -12,6 +16,8 @@ import com.vaadin.flow.server.streams.DownloadEvent;
 import com.vaadin.flow.server.streams.DownloadHandler;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -26,9 +32,6 @@ import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.services.DataExchangeClient;
 import tschuba.ez.booth.ui.util.Notifications;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 /**
  * Card component for exporting booth data as a file.
  */
@@ -40,9 +43,12 @@ public class FileExportCard extends Composite<Card> {
   private final @NonNull BoothService booths;
   private final @NonNull DataExchangeClient dataExchangeClient;
   private final Anchor exportLink = new Anchor(new ExportHandler(), null);
-  private final VerticalLayout exportLinkContainer = new VerticalLayout(
-      FlexComponent.Alignment.CENTER, new HorizontalLayout(FlexComponent.JustifyContentMode.CENTER, exportLink));
-  private final NoBoothSelectedPlaceholder noBoothSelectedPlaceholder = new NoBoothSelectedPlaceholder();
+  private final VerticalLayout exportLinkContainer =
+      new VerticalLayout(
+          FlexComponent.Alignment.CENTER,
+          new HorizontalLayout(FlexComponent.JustifyContentMode.CENTER, exportLink));
+  private final NoBoothSelectedPlaceholder noBoothSelectedPlaceholder =
+      new NoBoothSelectedPlaceholder();
 
   public FileExportCard(
       @NonNull BoothService boothService, @NonNull DataExchangeClient dataExchangeClient) {
@@ -66,7 +72,8 @@ public class FileExportCard extends Composite<Card> {
     } else {
       noBoothSelectedPlaceholder.removeFromParent();
       content.add(exportLinkContainer);
-      exportLink.setText(getTranslation(TranslationKeys.DataExchangeView.FileExport.EXPORT_LINK__TEXT));
+      exportLink.setText(
+          getTranslation(TranslationKeys.DataExchangeView.FileExport.EXPORT_LINK__TEXT));
       exportLink.setText(booth.get().description());
     }
   }
@@ -86,7 +93,10 @@ public class FileExportCard extends Composite<Card> {
         ProtoModel.Booth booth = exchangeData.getBooth();
 
         String fileName =
-            booth.getDescription() + "-" + LocalDateTime.now() + DataExchangeView.DATA_FILE_EXTENSION;
+            booth.getDescription()
+                + "-"
+                + LocalDateTime.now()
+                + DataExchangeView.DATA_FILE_EXTENSION;
         download.setFileName(fileName);
         VaadinResponse response = download.getResponse();
         response.setHeader(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
@@ -95,7 +105,8 @@ public class FileExportCard extends Composite<Card> {
         exchangeData.writeTo(download.getOutputStream());
       } catch (Exception ex) {
         log.error("Failed to export data for download", ex);
-        Notifications.error(getTranslation(TranslationKeys.DataExchangeView.FileExport.EXPORT_FAILED), ex);
+        Notifications.error(
+            getTranslation(TranslationKeys.DataExchangeView.FileExport.EXPORT_FAILED), ex);
       } finally {
         download.getSession().unlock();
       }

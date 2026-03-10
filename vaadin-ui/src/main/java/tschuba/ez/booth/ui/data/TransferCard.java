@@ -1,4 +1,10 @@
+/**
+ * Copyright (c) 2026 Thomas Schulte-Bahrenberg
+ * All rights reserved.
+ */
 package tschuba.ez.booth.ui.data;
+
+import static org.vaadin.lineawesome.LineAwesomeIcon.PLAY_SOLID;
 
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.AttachEvent;
@@ -15,6 +21,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import tschuba.ez.booth.Try;
@@ -30,10 +37,6 @@ import tschuba.ez.booth.ui.util.AddressCodec;
 import tschuba.ez.booth.ui.util.Buttons;
 import tschuba.ez.booth.ui.util.Notifications;
 
-import java.util.Optional;
-
-import static org.vaadin.lineawesome.LineAwesomeIcon.PLAY_SOLID;
-
 /**
  * Card component for transferring booth data to another booth via peer-to-peer exchange.
  */
@@ -48,7 +51,8 @@ public class TransferCard extends Composite<Card> {
   private final TextField addressField = new TextField();
   private final Button transferButton = new Button(PLAY_SOLID.create());
   private final Paragraph description = new Paragraph();
-  private final NoBoothSelectedPlaceholder noBoothSelectedPlaceholder = new NoBoothSelectedPlaceholder();
+  private final NoBoothSelectedPlaceholder noBoothSelectedPlaceholder =
+      new NoBoothSelectedPlaceholder();
   private final BusyIndicator busyIndicator = new BusyIndicator();
 
   public TransferCard(
@@ -91,12 +95,17 @@ public class TransferCard extends Composite<Card> {
           currentBooth
               .map(
                   booth ->
-                      getTranslation(TranslationKeys.DataExchangeView.Transfer.TRANSFER_DESCRIPTION__TEXT, booth.description()))
+                      getTranslation(
+                          TranslationKeys.DataExchangeView.Transfer.TRANSFER_DESCRIPTION__TEXT,
+                          booth.description()))
               .orElse(""));
-      addressField.setLabel(getTranslation(TranslationKeys.DataExchangeView.Transfer.ADDRESS_FIELD__LABEL));
-      transferButton.setText(getTranslation(TranslationKeys.DataExchangeView.Transfer.TRANSFER_BUTTON__LABEL));
+      addressField.setLabel(
+          getTranslation(TranslationKeys.DataExchangeView.Transfer.ADDRESS_FIELD__LABEL));
+      transferButton.setText(
+          getTranslation(TranslationKeys.DataExchangeView.Transfer.TRANSFER_BUTTON__LABEL));
 
-      busyIndicator.setText(getTranslation(TranslationKeys.DataExchangeView.Transfer.TRANSFER_IN_PROGRESS__TEXT));
+      busyIndicator.setText(
+          getTranslation(TranslationKeys.DataExchangeView.Transfer.TRANSFER_IN_PROGRESS__TEXT));
 
       getContent().add(new VerticalLayout(addressField, transferButton), busyIndicator);
     }
@@ -112,7 +121,9 @@ public class TransferCard extends Composite<Card> {
     if (decodedValue.failed()) {
       log.debug("Invalid target address entered: {}", input);
       addressField.focus();
-      Notifications.error(getTranslation(TranslationKeys.DataExchangeView.Transfer.NOTIFICATION__INVALID_ADDRESS, input));
+      Notifications.error(
+          getTranslation(
+              TranslationKeys.DataExchangeView.Transfer.NOTIFICATION__INVALID_ADDRESS, input));
       return;
     }
     String targetAddress = decodedValue.get();
@@ -126,10 +137,14 @@ public class TransferCard extends Composite<Card> {
       dataExchangeClient.exchangeDataWith(targetAddress, booth);
       log.debug(
           "Data transfer to {} for {} completed successfully.", targetAddress, booth.boothId());
-      Notifications.success(getTranslation(TranslationKeys.DataExchangeView.Transfer.NOTIFICATION__TRANSFER_COMPLETED));
+      Notifications.success(
+          getTranslation(
+              TranslationKeys.DataExchangeView.Transfer.NOTIFICATION__TRANSFER_COMPLETED));
     } catch (Exception ex) {
       log.error("Data transfer to {} for {} failed!", targetAddress, booth, ex);
-      Notifications.error(getTranslation(TranslationKeys.DataExchangeView.Transfer.NOTIFICATION__TRANSFER_FAILED), ex);
+      Notifications.error(
+          getTranslation(TranslationKeys.DataExchangeView.Transfer.NOTIFICATION__TRANSFER_FAILED),
+          ex);
     } finally {
       busyIndicator.close();
       addressField.setVisible(true);
