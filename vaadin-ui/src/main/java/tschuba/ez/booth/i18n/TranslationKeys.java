@@ -186,6 +186,7 @@ public interface TranslationKeys {
   interface DataExchangeView {
     String TITLE = "DataExchangeView.title";
     String MENU_ITEM__TEXT = "DataExchangeView.menuItem.text";
+    String DESCRIPTION = "DataExchangeView.description";
 
     interface PeerToPeerExchange {
       String TITLE = "DataExchangeView.PeerToPeerExchange.title";

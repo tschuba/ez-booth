@@ -18,6 +18,7 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.markdown.Markdown;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -45,6 +46,7 @@ import com.vaadin.flow.server.streams.UploadHandler;
 import com.vaadin.flow.server.streams.UploadMetadata;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vaadin.flow.theme.lumo.LumoUtility.Width;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +56,7 @@ import org.springframework.util.unit.DataSize;
 import org.vaadin.barcodes.Barcode;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import tschuba.ez.booth.Try;
+import tschuba.ez.booth.i18n.TranslationKeys;
 import tschuba.ez.booth.i18n.TranslationKeys.Common;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.FileExchange;
 import tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.FileExport;
@@ -92,8 +95,12 @@ import static tschuba.ez.booth.proto.ProtoServices.ExchangeData;
 public class DataExchangeView extends OneColumnLayout {
 
   protected static final String DATA_FILE_EXTENSION = ".ezb";
-  private final Tab transferTab;
-  private final Tab fileExchangeTab;
+  private final Paragraph transferDescription = new Paragraph();
+  private final Tab transferTab = new Tab();
+  private final Paragraph fileExchangeDescription = new Paragraph();
+  private final Tab fileExchangeTab = new Tab();
+  //private final Paragraph dataExchangeDescription = new Paragraph();
+  private final Markdown dataExchangeDescription = new Markdown();
 
   public DataExchangeView(
       @NonNull SelfInfoCard selfInfo,
@@ -101,12 +108,10 @@ public class DataExchangeView extends OneColumnLayout {
       @NonNull FileExportCard fileExportCard,
       @NonNull FileImportCard fileImportCard) {
 
-    Paragraph transferDescription = new Paragraph(getTranslation(PeerToPeerExchange.DESCRIPTION));
     transferDescription.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
     VerticalLayout transferContents =
         new VerticalLayout(transferDescription, new HorizontalLayout(selfInfo, transferCard));
 
-    Paragraph fileExchangeDescription = new Paragraph(getTranslation(FileExchange.DESCRIPTION));
     fileExchangeDescription.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
     VerticalLayout fileExchangeContents =
         new VerticalLayout(
@@ -117,19 +122,24 @@ public class DataExchangeView extends OneColumnLayout {
 
     TabSheet tabSheet = new TabSheet();
     tabSheet.addThemeVariants(TabSheetVariant.LUMO_TABS_EQUAL_WIDTH_TABS);
-    transferTab = new Tab();
     tabSheet.add(transferTab, transferContents);
-    fileExchangeTab = new Tab();
     tabSheet.add(fileExchangeTab, fileExchangeContents);
 
-    Main content = new Main(tabSheet);
+    //dataExchangeDescription.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
+    dataExchangeDescription.addClassNames(LumoUtility.Padding.Left.XLARGE, LumoUtility.Padding.Right.XLARGE);
+
+    Main content = new Main(tabSheet, dataExchangeDescription);
     setContent(content);
   }
 
   @Override
   protected void onAttach(AttachEvent attachEvent) {
+    transferDescription.setText(getTranslation(PeerToPeerExchange.DESCRIPTION));
     transferTab.setLabel(getTranslation(PeerToPeerExchange.TITLE));
+    fileExchangeDescription.setText(getTranslation(FileExchange.DESCRIPTION));
     fileExchangeTab.setLabel(getTranslation(FileExchange.TITLE));
+    //dataExchangeDescription.setText(getTranslation(TranslationKeys.DataExchangeView.DESCRIPTION));
+    dataExchangeDescription.setContent(getTranslation(TranslationKeys.DataExchangeView.DESCRIPTION));
 
     Tooltip.forComponent(transferTab).setText(getTranslation(PeerToPeerExchange.DESCRIPTION));
     Tooltip.forComponent(fileExchangeTab).setText(getTranslation(FileExchange.DESCRIPTION));
