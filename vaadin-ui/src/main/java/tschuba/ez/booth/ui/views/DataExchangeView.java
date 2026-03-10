@@ -4,10 +4,6 @@
  */
 package tschuba.ez.booth.ui.views;
 
-import static org.vaadin.lineawesome.LineAwesomeIcon.PLAY_SOLID;
-import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.ADDRESS_LABEL__TEXT;
-import static tschuba.ez.booth.proto.ProtoServices.ExchangeData;
-
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.AttachEvent;
@@ -38,7 +34,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.UploadI18N;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.streams.DownloadEvent;
 import com.vaadin.flow.server.streams.DownloadHandler;
@@ -51,9 +46,6 @@ import com.vaadin.flow.server.streams.UploadMetadata;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.LumoUtility.Width;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -74,6 +66,7 @@ import tschuba.ez.booth.model.DataModel;
 import tschuba.ez.booth.proto.ProtoModel;
 import tschuba.ez.booth.services.BoothService;
 import tschuba.ez.booth.ui.Constraints;
+import tschuba.ez.booth.ui.components.NoBoothSelectedPlaceholder;
 import tschuba.ez.booth.ui.components.event.BoothSelection;
 import tschuba.ez.booth.ui.layouts.OneColumnLayout;
 import tschuba.ez.booth.ui.layouts.app.AppLayoutWithMenu;
@@ -81,11 +74,17 @@ import tschuba.ez.booth.ui.services.DataExchangeClient;
 import tschuba.ez.booth.ui.util.AddressCodec;
 import tschuba.ez.booth.ui.util.Badges;
 import tschuba.ez.booth.ui.util.Buttons;
-import tschuba.ez.booth.ui.util.NavigateTo;
 import tschuba.ez.booth.ui.util.Notifications;
-import tschuba.ez.booth.ui.util.Routing;
 import tschuba.ez.booth.ui.util.Server;
 import tschuba.ez.booth.ui.util.Spacing;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.vaadin.lineawesome.LineAwesomeIcon.PLAY_SOLID;
+import static tschuba.ez.booth.i18n.TranslationKeys.DataExchangeView.SelfInfo.ADDRESS_LABEL__TEXT;
+import static tschuba.ez.booth.proto.ProtoServices.ExchangeData;
 
 @Route(value = "data-exchange", layout = AppLayoutWithMenu.class)
 @SpringComponent
@@ -202,11 +201,7 @@ public class DataExchangeView extends OneColumnLayout {
     private final TextField addressField = new TextField();
     private final Button transferButton = new Button(PLAY_SOLID.create());
     private final Paragraph description = new Paragraph();
-    private final Paragraph noBoothSelectedText = new Paragraph();
-    private final Button selectBoothButton =
-        new Button(LineAwesomeIcon.PERSON_BOOTH_SOLID.create());
-    private final VerticalLayout noBoothSelectedLayout =
-        new VerticalLayout(Alignment.CENTER, noBoothSelectedText, selectBoothButton);
+    private final NoBoothSelectedPlaceholder noBoothSelectedPlaceholder = new NoBoothSelectedPlaceholder();
     private final Popover busyIndicator = new Popover();
     private final Span busyIndicatorText = new Span();
 
@@ -243,18 +238,6 @@ public class DataExchangeView extends OneColumnLayout {
 
       description.setWhiteSpace(HasText.WhiteSpace.PRE_LINE);
 
-      Buttons.disableUntilAfterClick(
-          selectBoothButton,
-          _ -> {
-            try {
-              RouteParameters routeParameters =
-                  Routing.Parameters.builder().returnToView(DataExchangeView.class).build();
-              NavigateTo.view(BoothSelectionView.class, routeParameters).currentWindow();
-            } catch (Exception ex) {
-              log.error("Failed to navigate to booth selection view", ex);
-            }
-          });
-
       getContent().setSubtitle(description);
     }
 
@@ -265,10 +248,7 @@ public class DataExchangeView extends OneColumnLayout {
 
       getContent().removeAll();
       if (currentBooth.isEmpty()) {
-        noBoothSelectedText.setText(getTranslation(Transfer.NOTIFICATION__NO_BOOTH_SELECTED));
-        selectBoothButton.setText(getTranslation(Transfer.SELECT_BOOTH_BUTTON__TEXT));
-
-        getContent().add(noBoothSelectedLayout);
+        getContent().add(noBoothSelectedPlaceholder);
       } else {
         description.setText(
             currentBooth
@@ -327,29 +307,36 @@ public class DataExchangeView extends OneColumnLayout {
 
     private final @NonNull BoothService booths;
     private final @NonNull DataExchangeClient dataExchangeClient;
-    private final Anchor exportLink;
+    private final Anchor exportLink = new Anchor(new ExportHandler(), null);
+    private final VerticalLayout exportLinkContainer = new VerticalLayout(
+        Alignment.CENTER, new HorizontalLayout(JustifyContentMode.CENTER, exportLink));
+    private final NoBoothSelectedPlaceholder noBoothSelectedPlaceholder = new NoBoothSelectedPlaceholder();
 
     public FileExportCard(
         @NonNull BoothService boothService, @NonNull DataExchangeClient dataExchangeClient) {
       this.booths = boothService;
       this.dataExchangeClient = dataExchangeClient;
 
-      exportLink = new Anchor(new ExportHandler(), null);
       Card content = getContent();
       content.setHeaderPrefix(LineAwesomeIcon.FILE_EXPORT_SOLID.create());
-      content.add(
-          new VerticalLayout(
-              Alignment.CENTER, new HorizontalLayout(JustifyContentMode.CENTER, exportLink)));
     }
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-      getContent().setTitle(getTranslation(FileExport.TITLE));
+      Card content = getContent();
+      content.setTitle(getTranslation(FileExport.TITLE));
 
-      Optional<DataModel.Booth.Key> boothId = BoothSelection.get();
-      exportLink.setEnabled(boothId.isPresent());
-      exportLink.setText(getTranslation(FileExport.EXPORT_LINK__TEXT));
-      boothId.flatMap(booths::findById).ifPresent(booth -> exportLink.setText(booth.description()));
+      Optional<DataModel.Booth> booth = BoothSelection.get().flatMap(booths::findById);
+
+      if (booth.isEmpty()) {
+        exportLink.removeFromParent();
+        content.add(noBoothSelectedPlaceholder);
+      } else {
+        noBoothSelectedPlaceholder.removeFromParent();
+        content.add(exportLinkContainer);
+        exportLink.setText(getTranslation(FileExport.EXPORT_LINK__TEXT));
+        exportLink.setText(booth.get().description());
+      }
     }
 
     /**
